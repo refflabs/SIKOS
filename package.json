@@ -1,0 +1,10 @@
+{
+  "name": "sikos",
+  "private": true,
+  "scripts": {
+    "dev:api": "cd Backend && php artisan serve",
+    "dev:front": "cd Front && npm run dev",
+    "dev:socket": "cd realtime-server && npm run dev",
+    "dev": "echo Run in 3 terminals: npm run dev:api, npm run dev:socket, npm run dev:front"
+  }
+}

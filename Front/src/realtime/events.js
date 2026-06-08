@@ -1,0 +1,27 @@
+/** @readonly Keep in sync with realtime-server/src/events.js and Backend/config/realtime.php */
+export const RealtimeEvents = {
+  BOOKING_CREATED: 'booking:created',
+  BOOKING_STATUS_CHANGED: 'booking:status_changed',
+  BOOKINGS_UPDATED: 'bookings:updated',
+  ROOM_UPDATED: 'room:updated',
+  SERVER_ERROR: 'server:error',
+  CLIENT_SUBSCRIBE: 'client:subscribe',
+}
+
+export const RealtimeChannels = {
+  PUBLIC: 'public',
+  ADMIN: 'admin',
+}
+
+/** @typedef {{ type: string, payload: object, meta?: { version: number, timestamp: string } }} RealtimeEnvelope */
+
+export function isEnvelope(data) {
+  return data && typeof data === 'object' && typeof data.type === 'string' && 'payload' in data
+}
+
+export function parseEnvelope(data) {
+  if (isEnvelope(data)) {
+    return data
+  }
+  return { type: null, payload: data, meta: null }
+}
