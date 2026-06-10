@@ -220,16 +220,12 @@ Deployment               ███░░░░░░░ 30%
 <b>Refflabs</b>
 </a>
 </td>
-</tr>
-</table>
 
-<table>
-<tr>
 <td align="center">
 <a href="https://github.com/Luthfi0808">
 <img src="https://github.com/Luthfi0808.png" width="120px;" alt="Contributor"/>
 <br />
-<b>Refflabs</b>
+<b>Luthfi0808</b>
 </a>
 </td>
 </tr>
