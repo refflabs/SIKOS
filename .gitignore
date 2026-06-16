@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+Front/node_modules/
+realtime-server/node_modules/
+Backend/node_modules/
+Backend/vendor/
+
+# Local env files
+.env
+Front/.env
+realtime-server/.env
+Backend/.env
+
+# Production builds
+dist/
+Front/dist/
+Backend/public/build/
+
+# IDE / System files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# App data
+realtime-server/messages.json
+Backend/storage/*.key
+Backend/storage/logs/
+Backend/storage/framework/sessions/
+Backend/storage/framework/views/
+Backend/storage/framework/cache/

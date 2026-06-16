@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Calendar, Lock } from 'lucide-react'
+import { Calendar } from 'lucide-react'
 import { Button } from '../components/Button'
 import { LazyImage } from '../../components/LazyImage'
 import {
@@ -7,7 +7,7 @@ import {
   useRoomQuery,
   useCreateBookingMutation,
 } from '../../hooks/queries'
-import { register, login, isAuthenticated } from '../../api/auth'
+import { useAuth } from '../../context/AuthContext'
 import { formatPrice, roomImage } from '../../api/roomUtils'
 import { QueryError } from '../../components/QueryError'
 
@@ -22,7 +22,7 @@ function BookingFormSkeleton() {
 
 export function BookingPage({ search = '' }) {
   const preselectedRoom = new URLSearchParams(search).get('room')
-  const [loggedIn, setLoggedIn] = useState(isAuthenticated())
+  const { isAuthenticated, isLoading: authLoading } = useAuth()
   const [message, setMessage] = useState({ type: '', text: '' })
 
   const [form, setForm] = useState({
@@ -30,12 +30,17 @@ export function BookingPage({ search = '' }) {
     check_in: '',
     duration_months: '1',
     notes: '',
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
-    password_confirmation: '',
   })
+
+  // Redirect unauthenticated users to login
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      const returnUrl = preselectedRoom
+        ? `/booking?room=${preselectedRoom}`
+        : '/booking'
+      window.location.href = `/login?redirect=${encodeURIComponent(returnUrl)}`
+    }
+  }, [authLoading, isAuthenticated, preselectedRoom])
 
   const { data: roomsData, isLoading: roomsLoading, isError: roomsError, refetch } =
     useRoomsQuery({ status: 'available' })
@@ -58,45 +63,11 @@ export function BookingPage({ search = '' }) {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  const ensureAuth = async () => {
-    if (isAuthenticated()) return true
-    try {
-      await register({
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        password: form.password,
-        password_confirmation: form.password_confirmation,
-      })
-      setLoggedIn(true)
-      return true
-    } catch {
-      try {
-        await login(form.email, form.password)
-        setLoggedIn(true)
-        return true
-      } catch {
-        return false
-      }
-    }
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault()
     setMessage({ type: '', text: '' })
 
     try {
-      if (!loggedIn) {
-        const ok = await ensureAuth()
-        if (!ok) {
-          setMessage({
-            type: 'error',
-            text: 'Login gagal. Periksa email/password (min. 8 karakter).',
-          })
-          return
-        }
-      }
-
       await createBooking.mutateAsync({
         room_id: Number(form.room_id),
         check_in: form.check_in,
@@ -118,6 +89,15 @@ export function BookingPage({ search = '' }) {
     }
   }
 
+  // Don't render until auth check completes
+  if (authLoading || !isAuthenticated) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="h-8 w-8 border-2 border-teal-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
+
   const total = room ? Number(room.price) * Number(form.duration_months || 1) : 0
   const loading = roomsLoading || (roomLoading && roomId)
 
@@ -126,7 +106,7 @@ export function BookingPage({ search = '' }) {
       <div className="bg-surface-teal border-b border-border">
         <div className="container-app py-8 md:py-10 max-w-5xl">
           <p className="text-label text-teal-800/70 mb-2">Reservasi</p>
-          <h1 className="text-hero text-2xl sm:text-3xl mb-2">Form booking</h1>
+          <h1 className="text-hero text-2xl sm:text-3xl mb-2">Form Booking</h1>
           <p className="text-subtitle text-sm">Lengkapi data — proses cepat & aman.</p>
         </div>
       </div>
@@ -154,23 +134,6 @@ export function BookingPage({ search = '' }) {
               onSubmit={handleSubmit}
               className="bg-white rounded-2xl border border-border p-6 md:p-8 space-y-6 shadow-sm"
             >
-              {!loggedIn && (
-                <div className="space-y-4 pb-6 border-b border-border bg-surface-warm -mx-6 md:-mx-8 px-6 md:px-8 pt-2 pb-6 rounded-t-2xl">
-                  <p className="text-sm font-semibold flex items-center gap-2">
-                    <Lock className="h-4 w-4" /> Data akun
-                  </p>
-                  <input name="name" placeholder="Nama lengkap" value={form.name} onChange={handleChange} className="input-field" required />
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <input name="email" type="email" placeholder="Email" value={form.email} onChange={handleChange} className="input-field" required />
-                    <input name="phone" placeholder="WhatsApp" value={form.phone} onChange={handleChange} className="input-field" />
-                  </div>
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <input name="password" type="password" placeholder="Password" value={form.password} onChange={handleChange} className="input-field" required minLength={8} />
-                    <input name="password_confirmation" type="password" placeholder="Ulangi password" value={form.password_confirmation} onChange={handleChange} className="input-field" required />
-                  </div>
-                </div>
-              )}
-
               <div>
                 <label className="text-label block mb-2">Kamar</label>
                 <select name="room_id" value={form.room_id} onChange={handleChange} className="input-field" required>
@@ -203,7 +166,8 @@ export function BookingPage({ search = '' }) {
               </div>
 
               <Button type="submit" variant="primary" size="lg" className="w-full" disabled={createBooking.isPending || message.type === 'success'}>
-                {createBooking.isPending ? 'Mengirim…' : 'Kirim booking'}
+                <Calendar className="h-4 w-4" />
+                {createBooking.isPending ? 'Mengirim…' : 'Kirim Booking'}
               </Button>
             </form>
 

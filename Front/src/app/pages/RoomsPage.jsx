@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Search, SlidersHorizontal } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { ListingCard } from '../components/ListingCard'
 import { useRoomsQuery } from '../../hooks/queries'
 import { ListingGridSkeleton } from '../../components/skeletons/ListingCardSkeleton'
@@ -31,7 +31,7 @@ export function RoomsPage() {
       {/* Seamless page intro — no second navbar */}
       <div className="container-app pt-8 pb-6">
         <p className="text-label mb-2">Katalog</p>
-        <h1 className="text-hero text-2xl sm:text-3xl lg:text-4xl mb-2">Daftar kamar</h1>
+        <h1 className="text-hero text-2xl sm:text-3xl lg:text-4xl mb-2">Daftar Kamar</h1>
         <p className="text-subtitle">
           {isLoading ? 'Memuat…' : `${filtered.length} kamar ditemukan`}
         </p>
@@ -39,7 +39,7 @@ export function RoomsPage() {
 
       <div className="sticky top-14 sm:top-16 z-20 bg-background/95 backdrop-blur-md border-y border-border">
         <div className="container-app py-3">
-          <div className="flex flex-col lg:flex-row gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1 relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
@@ -47,15 +47,15 @@ export function RoomsPage() {
                 placeholder="Cari nama kamar…"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="input-field pl-11"
+                className="input-field"
+                style={{ paddingLeft: '2.75rem' }}
               />
             </div>
-            <div className="flex flex-wrap gap-2 items-center">
-              <SlidersHorizontal className="h-4 w-4 text-muted-foreground hidden sm:block" />
+            <div className="flex gap-2 items-center">
               <select
                 value={selectedType}
                 onChange={(e) => setSelectedType(e.target.value)}
-                className="input-field !w-auto min-w-[120px] py-2.5"
+                className="input-field w-32 py-2.5"
               >
                 <option value="all">Semua tipe</option>
                 <option value="single">Single</option>
@@ -65,7 +65,7 @@ export function RoomsPage() {
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="input-field !w-auto min-w-[130px] py-2.5"
+                className="input-field w-36 py-2.5"
               >
                 <option value="all">Semua status</option>
                 <option value="available">Tersedia</option>

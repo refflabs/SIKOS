@@ -5,30 +5,24 @@ import { StatCard } from '../components/StatCard'
 import { Badge } from '../components/Badge'
 import { EmptyState } from '../components/EmptyState'
 import { useRoomsQuery, useBookingsQuery } from '../../hooks/queries'
-import { getStoredUser } from '../../api/auth'
+import { useAuth } from '../../context/AuthContext'
 import { formatPrice } from '../../api/roomUtils'
 import { DashboardSkeleton } from '../../components/skeletons/DashboardSkeleton'
 import { QueryError } from '../../components/QueryError'
 import { useSocket } from '../../context/SocketContext'
+import { AdminChatPanel } from '../components/AdminChatPanel'
 
 export function DashboardPage({ search = '' }) {
   const tab = new URLSearchParams(search).get('tab') || 'overview'
-  const user = getStoredUser()
+  const { user } = useAuth()
   const { refreshSubscriptions } = useSocket()
 
-  const roomsQuery = useRoomsQuery({}, { enabled: Boolean(localStorage.getItem('token')) })
-  const bookingsQuery = useBookingsQuery({
-    enabled: Boolean(localStorage.getItem('token')) && user?.role === 'admin',
-  })
+  const roomsQuery = useRoomsQuery()
+  const bookingsQuery = useBookingsQuery()
 
   useEffect(() => {
-    if (!localStorage.getItem('token')) {
-      window.location.href = '/login'
-      return
-    }
-    if (user?.role !== 'admin') return
     refreshSubscriptions()
-  }, [user, refreshSubscriptions])
+  }, [refreshSubscriptions])
 
   const rooms = Array.isArray(roomsQuery.data) ? roomsQuery.data : []
   const bookings = Array.isArray(bookingsQuery.data) ? bookingsQuery.data : []
@@ -45,14 +39,20 @@ export function DashboardPage({ search = '' }) {
 
   const loading = roomsQuery.isLoading || bookingsQuery.isLoading
   const error =
-    user?.role !== 'admin'
-      ? 'Akses khusus admin.'
-      : roomsQuery.isError || bookingsQuery.isError
-        ? 'Gagal memuat data dashboard.'
-        : ''
+    roomsQuery.isError || bookingsQuery.isError
+      ? 'Gagal memuat data dashboard.'
+      : ''
 
   const activeTab =
-    tab === 'rooms' ? 'rooms' : tab === 'bookings' ? 'bookings' : tab === 'settings' ? 'settings' : 'overview'
+    tab === 'rooms'
+      ? 'rooms'
+      : tab === 'bookings'
+      ? 'bookings'
+      : tab === 'chats'
+      ? 'chats'
+      : tab === 'settings'
+      ? 'settings'
+      : 'overview'
 
   return (
     <AdminLayout activeTab={activeTab}>
@@ -66,6 +66,8 @@ export function DashboardPage({ search = '' }) {
             bookingsQuery.refetch()
           }}
         />
+      ) : activeTab === 'chats' ? (
+        <AdminChatPanel />
       ) : activeTab === 'settings' ? (
         <div className="rounded-xl border border-border bg-white p-8">
           <h2 className="text-section-title mb-2">Pengaturan</h2>

@@ -1,17 +1,44 @@
 import { useState } from 'react'
 import { Building2, Menu, X, MessageCircle } from 'lucide-react'
 import { Button } from '../components/Button'
-import { getStoredUser } from '../../api/auth'
+import { useAuth } from '../../context/AuthContext'
+import { ChatWidget } from '../components/ChatWidget'
 
 export function MainLayout({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false)
-  const user = getStoredUser()
+  const { user, logout } = useAuth()
 
   const links = [
     { name: 'Beranda', href: '/' },
-    { name: 'Cari Kamar', href: '/rooms' },
-    { name: 'Booking', href: '/booking' },
+    { name: 'Cari Kost', href: '/rooms' },
   ]
+
+  if (user) {
+    if (user.role === 'admin') {
+      links.push({ name: 'Dashboard', href: '/dashboard' })
+    } else {
+      links.push(
+        { name: 'Booking Saya', href: '/?tab=bookings' },
+        { name: 'Bantuan', href: '/?tab=help' },
+        { name: 'Profil', href: '/?tab=profile' }
+      )
+    }
+  }
+
+  const currentPath = window.location.pathname
+  const currentSearch = window.location.search
+
+  const isActive = (item) => {
+    if (item.href === '/') {
+      return currentPath === '/' && !currentSearch
+    }
+    if (item.href.startsWith('/?')) {
+      const itemTab = new URLSearchParams(item.href.split('?')[1]).get('tab')
+      const currentTab = new URLSearchParams(currentSearch).get('tab')
+      return currentPath === '/' && itemTab === currentTab
+    }
+    return currentPath === item.href
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -32,28 +59,41 @@ export function MainLayout({ children }) {
               <a
                 key={item.name}
                 href={item.href}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                className={`text-sm font-medium transition-colors ${
+                  isActive(item)
+                    ? 'text-primary font-semibold'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
               >
                 {item.name}
               </a>
             ))}
           </nav>
 
-          <div className="hidden md:flex items-center gap-3">
-            {user?.role === 'admin' ? (
-              <a href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground">
-                Dashboard
-              </a>
-            ) : (
-              <a href="/login" className="text-sm font-medium text-muted-foreground hover:text-foreground">
-                Admin
-              </a>
-            )}
-            <a href="/rooms">
-              <Button size="sm" variant="primary">
-                Cari kamar
+          <div className="hidden md:flex items-center gap-2.5">
+            {user ? (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={logout}
+                className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
+              >
+                Keluar
               </Button>
-            </a>
+            ) : (
+              <>
+                <a href="/login">
+                  <Button size="sm" variant="outline">
+                    Masuk
+                  </Button>
+                </a>
+                <a href="/register">
+                  <Button size="sm" variant="primary">
+                    Daftar
+                  </Button>
+                </a>
+              </>
+            )}
           </div>
 
           <button
@@ -72,32 +112,48 @@ export function MainLayout({ children }) {
               <a
                 key={item.name}
                 href={item.href}
-                className="block py-2.5 text-sm font-medium"
+                className={`block py-2.5 text-sm font-medium transition-colors ${
+                  isActive(item)
+                    ? 'text-primary font-semibold'
+                    : 'text-foreground hover:text-primary'
+                }`}
                 onClick={() => setMobileOpen(false)}
               >
                 {item.name}
               </a>
             ))}
-            <a href="/rooms" className="block pt-3" onClick={() => setMobileOpen(false)}>
-              <Button variant="primary" className="w-full">
-                Cari kamar
-              </Button>
-            </a>
+            {user ? (
+              <button
+                type="button"
+                className="block w-full text-left py-2.5 text-sm font-medium text-red-600 hover:text-red-700"
+                onClick={() => {
+                  setMobileOpen(false)
+                  logout()
+                }}
+              >
+                Keluar
+              </button>
+            ) : (
+              <div className="flex gap-2 pt-3">
+                <a href="/login" className="flex-1" onClick={() => setMobileOpen(false)}>
+                  <Button variant="outline" className="w-full">
+                    Masuk
+                  </Button>
+                </a>
+                <a href="/register" className="flex-1" onClick={() => setMobileOpen(false)}>
+                  <Button variant="primary" className="w-full">
+                    Daftar
+                  </Button>
+                </a>
+              </div>
+            )}
           </div>
         )}
       </header>
 
       <main className="flex-1 page-gradient-top">{children}</main>
 
-      <a
-        href="https://wa.me/6281234567890"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-stone-900 text-white shadow-lg hover:bg-stone-800 transition-colors"
-        aria-label="WhatsApp"
-      >
-        <MessageCircle className="h-5 w-5" />
-      </a>
+      <ChatWidget />
 
       <footer className="bg-surface-stone border-t border-border mt-16">
         <div className="container-app py-12 md:py-14">

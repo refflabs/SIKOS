@@ -6,6 +6,13 @@ export const RealtimeEvents = {
   ROOM_UPDATED: 'room:updated',
   SERVER_ERROR: 'server:error',
   CLIENT_SUBSCRIBE: 'client:subscribe',
+  CHAT_SEND_MESSAGE: 'chat:send_message',
+  CHAT_MESSAGE_RECEIVED: 'chat:message_received',
+  CHAT_GET_HISTORY: 'chat:get_history',
+  CHAT_HISTORY: 'chat:history',
+  CHAT_GET_THREADS: 'chat:get_threads',
+  CHAT_THREADS: 'chat:threads',
+  CHAT_THREAD_UPDATED: 'chat:thread_updated',
 }
 
 export const RealtimeChannels = {

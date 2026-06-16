@@ -5,20 +5,22 @@ import {
   LayoutDashboard,
   LogOut,
   Settings,
+  MessageSquare,
 } from 'lucide-react'
 import { Button } from '../components/Button'
-import { getStoredUser, logout } from '../../api/auth'
+import { useAuth } from '../../context/AuthContext'
 import { useSocket } from '../../context/SocketContext'
 
 const NAV = [
   { name: 'Overview', href: '/dashboard', icon: LayoutDashboard, id: 'overview' },
   { name: 'Kamar', href: '/dashboard?tab=rooms', icon: Building2, id: 'rooms' },
   { name: 'Booking', href: '/dashboard?tab=bookings', icon: CalendarDays, id: 'bookings' },
+  { name: 'Chat', href: '/dashboard?tab=chats', icon: MessageSquare, id: 'chats' },
   { name: 'Pengaturan', href: '/dashboard?tab=settings', icon: Settings, id: 'settings' },
 ]
 
 export function AdminLayout({ children, activeTab = 'overview' }) {
-  const user = getStoredUser()
+  const { user, logout } = useAuth()
   const { connected, refreshSubscriptions } = useSocket()
 
   useEffect(() => {

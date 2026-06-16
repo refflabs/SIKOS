@@ -2,6 +2,7 @@ import { Suspense, lazy, useState, useEffect } from "react";
 import { MainLayout } from "./layouts/MainLayout";
 import { AuthLayout } from "./layouts/AuthLayout";
 import { LoadingSpinner } from "./components/LoadingSpinner";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 const LandingPage = lazy(() =>
   import("./pages/LandingPage").then((m) => ({ default: m.LandingPage })),
@@ -17,6 +18,9 @@ const BookingPage = lazy(() =>
 );
 const LoginPage = lazy(() =>
   import("./pages/LoginPage").then((m) => ({ default: m.LoginPage })),
+);
+const RegisterPage = lazy(() =>
+  import("./pages/RegisterPage").then((m) => ({ default: m.RegisterPage })),
 );
 const DashboardPage = lazy(() =>
   import("./pages/DashboardPage").then((m) => ({ default: m.DashboardPage })),
@@ -58,7 +62,7 @@ export default function App() {
       case "/":
         return (
           <MainLayout>
-            <LandingPage />
+            <LandingPage search={search} />
           </MainLayout>
         );
       case "/rooms":
@@ -85,12 +89,22 @@ export default function App() {
             <LoginPage />
           </AuthLayout>
         );
+      case "/register":
+        return (
+          <AuthLayout>
+            <RegisterPage />
+          </AuthLayout>
+        );
       case "/dashboard":
-        return <DashboardPage search={search} />;
+        return (
+          <ProtectedRoute requireAdmin>
+            <DashboardPage search={search} />
+          </ProtectedRoute>
+        );
       default:
         return (
           <MainLayout>
-            <LandingPage />
+            <LandingPage search={search} />
           </MainLayout>
         );
     }

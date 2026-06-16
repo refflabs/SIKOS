@@ -4,6 +4,7 @@ import { Toaster } from 'sonner'
 import App from './app/App.jsx'
 import './styles/index.css'
 import { queryClient } from './lib/queryClient'
+import { AuthProvider } from './context/AuthContext'
 import { SocketProvider } from './context/SocketContext'
 import { assertEnv } from './config/env'
 
@@ -15,9 +16,12 @@ try {
 
 createRoot(document.getElementById('root')).render(
   <QueryClientProvider client={queryClient}>
-    <SocketProvider>
-      <App />
-      <Toaster position="top-right" richColors closeButton />
-    </SocketProvider>
+    <AuthProvider>
+      <SocketProvider>
+        <App />
+        <Toaster position="top-right" richColors closeButton />
+      </SocketProvider>
+    </AuthProvider>
   </QueryClientProvider>,
 )
+
