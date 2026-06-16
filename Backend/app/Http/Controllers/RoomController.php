@@ -40,7 +40,7 @@ class RoomController extends Controller
     // POST /api/rooms
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name'        => 'required|string|max:255',
             'type'        => 'required|string',
             'price'       => 'required|numeric|min:0',
@@ -51,7 +51,7 @@ class RoomController extends Controller
             'facilities'  => 'nullable|array',
         ]);
 
-        $room = Room::create($request->all());
+        $room = Room::create($validated);
 
         return response()->json([
             'message' => 'Kamar berhasil ditambahkan',
@@ -63,7 +63,19 @@ class RoomController extends Controller
     public function update(Request $request, $id)
     {
         $room = Room::findOrFail($id);
-        $room->update($request->all());
+
+        $validated = $request->validate([
+            'name'        => 'sometimes|required|string|max:255',
+            'type'        => 'sometimes|required|string',
+            'price'       => 'sometimes|required|numeric|min:0',
+            'description' => 'nullable|string',
+            'image'       => 'nullable|string',
+            'floor'       => 'nullable|integer',
+            'size'        => 'nullable|string',
+            'facilities'  => 'nullable|array',
+        ]);
+
+        $room->update($validated);
 
         return response()->json([
             'message' => 'Kamar berhasil diupdate',

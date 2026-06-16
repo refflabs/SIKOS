@@ -12,20 +12,19 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Buat admin
-        User::create([
+        $admin = User::create([
             'name'     => 'Admin Kost',
             'email'    => 'admin@kost.com',
             'password' => Hash::make('password'),
-            'role'     => 'admin',
             'phone'    => '081234567890',
         ]);
+        $admin->forceFill(['role' => 'admin'])->save();
 
         // Buat user contoh
         User::create([
             'name'     => 'Budi Santoso',
             'email'    => 'budi@example.com',
             'password' => Hash::make('password'),
-            'role'     => 'user',
             'phone'    => '089876543210',
         ]);
 

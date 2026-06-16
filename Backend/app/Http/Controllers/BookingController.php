@@ -95,10 +95,8 @@ class BookingController extends Controller
 
         $booking->update(['status' => $request->status]);
 
-        // Kalau cancelled, kembalikan status kamar jadi available
         if ($request->status === 'cancelled') {
-            $booking->room->update(['status' => 'available']);
-            app(RealtimeService::class)->roomUpdated($booking->room->fresh());
+            $this->syncRoomAvailability($booking->room);
         }
 
         app(RealtimeService::class)->bookingStatusChanged($booking->fresh(['user', 'room']));
@@ -109,16 +107,31 @@ class BookingController extends Controller
         ]);
     }
 
-    // DELETE /api/bookings/{id}
+    // DELETE /api/bookings/{id} (admin only)
     public function destroy($id)
     {
         $booking = Booking::findOrFail($id);
         $room = $booking->room;
-        $room->update(['status' => 'available']);
         $booking->delete();
 
-        app(RealtimeService::class)->roomUpdated($room->fresh());
+        $this->syncRoomAvailability($room);
 
         return response()->json(['message' => 'Booking dihapus']);
+    }
+
+    private function syncRoomAvailability(Room $room): void
+    {
+        $hasActiveBookings = $room->bookings()
+            ->where('status', '!=', 'cancelled')
+            ->exists();
+
+        $newStatus = $hasActiveBookings ? 'booked' : 'available';
+
+        if ($room->status === $newStatus) {
+            return;
+        }
+
+        $room->update(['status' => $newStatus]);
+        app(RealtimeService::class)->roomUpdated($room->fresh());
     }
 }

@@ -27,14 +27,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me',      [AuthController::class, 'me']);
 
     // Bookings
-    Route::get('/bookings',          [BookingController::class, 'index']);
-    Route::get('/bookings/{id}',     [BookingController::class, 'show']);
-    Route::post('/bookings',         [BookingController::class, 'store']);
-    Route::put('/bookings/{id}',     [BookingController::class, 'update']);
-    Route::delete('/bookings/{id}',  [BookingController::class, 'destroy']);
+    Route::get('/bookings',      [BookingController::class, 'index']);
+    Route::get('/bookings/{id}', [BookingController::class, 'show']);
+    Route::post('/bookings',     [BookingController::class, 'store']);
 
-    // Rooms - hanya admin yang bisa CRUD
-    Route::post('/rooms',            [RoomController::class, 'store']);
-    Route::put('/rooms/{id}',        [RoomController::class, 'update']);
-    Route::delete('/rooms/{id}',     [RoomController::class, 'destroy']);
+    Route::middleware('admin')->group(function () {
+        Route::put('/bookings/{id}',    [BookingController::class, 'update']);
+        Route::delete('/bookings/{id}', [BookingController::class, 'destroy']);
+
+        Route::post('/rooms',           [RoomController::class, 'store']);
+        Route::put('/rooms/{id}',       [RoomController::class, 'update']);
+        Route::delete('/rooms/{id}',    [RoomController::class, 'destroy']);
+    });
 });
