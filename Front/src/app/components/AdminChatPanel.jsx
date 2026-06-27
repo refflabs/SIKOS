@@ -31,12 +31,20 @@ export function AdminChatPanel() {
     const socket = getSocket()
     if (!socket) return
 
-    // Fetch active chat threads
-    socket.emit(RealtimeEvents.CHAT_GET_THREADS, {}, (threadsList) => {
-      if (Array.isArray(threadsList)) {
-        setThreads(threadsList)
-      }
-    })
+    // Retry fetch threads when socket connects
+    const doFetch = () => {
+      socket.emit(RealtimeEvents.CHAT_GET_THREADS, {}, (threadsList) => {
+        if (Array.isArray(threadsList)) {
+          setThreads(threadsList)
+        }
+      })
+    }
+
+    // Fetch active chat threads (with retry on connect)
+    if (socket.connected) {
+      doFetch()
+    }
+    socket.on('connect', doFetch)
 
     // Listen for thread list updates
     const handleThreadsUpdate = (updatedThreads) => {
@@ -60,6 +68,7 @@ export function AdminChatPanel() {
     socket.on(RealtimeEvents.CHAT_MESSAGE_RECEIVED, handleNewMessage)
 
     return () => {
+      socket.off('connect', doFetch)
       socket.off(RealtimeEvents.CHAT_THREAD_UPDATED, handleThreadsUpdate)
       socket.off(RealtimeEvents.CHAT_MESSAGE_RECEIVED, handleNewMessage)
     }
@@ -139,28 +148,28 @@ export function AdminChatPanel() {
   }
 
   const filteredThreads = threads.filter((t) =>
-    t.userName.toLowerCase().includes(searchQuery.toLowerCase()),
+    (t.userName || '').toLowerCase().includes(searchQuery.toLowerCase()),
   )
 
   return (
-    <div className="bg-white rounded-2xl border border-border overflow-hidden shadow-sm h-[600px] grid grid-cols-1 md:grid-cols-[280px_1fr]">
+    <div className="bg-white rounded-3xl border border-border overflow-hidden shadow-sm h-[600px] grid grid-cols-1 md:grid-cols-[290px_1fr]">
       {/* Left Pane: Threads Sidebar */}
-      <div className="border-r border-border flex flex-col h-full bg-stone-50/50">
-        <div className="p-4 border-b border-border bg-white">
-          <h3 className="font-bold text-sm text-foreground mb-3">Pesan Masuk</h3>
+      <div className="border-r border-border flex flex-col h-full bg-stone-50/30 min-h-0">
+        <div className="p-4.5 border-b border-border bg-white">
+          <h3 className="font-bold text-xs uppercase tracking-wider text-muted-foreground mb-3">Pesan Masuk</h3>
           <div className="relative">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground/70" />
+            <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground/60" />
             <input
               type="text"
               placeholder="Cari penghuni..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-stone-100 rounded-xl text-xs border border-transparent focus:outline-none focus:bg-white focus:border-border focus:ring-1 focus:ring-ring"
+              className="w-full pl-9.5 pr-4 py-2 bg-stone-100 border border-transparent rounded-xl text-xs focus:outline-none focus:bg-white focus:border-border focus:ring-1 focus:ring-ring transition-all"
             />
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto divide-y divide-border/60">
+        <div className="flex-1 overflow-y-auto divide-y divide-border/50">
           {filteredThreads.length === 0 ? (
             <div className="p-6 text-center text-xs text-muted-foreground">
               {searchQuery ? 'Tidak ada hasil pencarian.' : 'Belum ada obrolan aktif.'}
@@ -176,29 +185,29 @@ export function AdminChatPanel() {
                     setSelectedUserId(thread.userId)
                     setSelectedUserName(thread.userName)
                   }}
-                  className={`w-full text-left p-3.5 flex gap-3 items-start transition-colors ${
+                  className={`w-full text-left p-4 flex gap-3 items-start transition-all duration-200 cursor-pointer ${
                     isSelected
-                      ? 'bg-stone-900 text-white'
-                      : 'hover:bg-stone-100 bg-white'
+                      ? 'bg-primary text-primary-foreground shadow-inner'
+                      : 'hover:bg-surface-warm/40 bg-white'
                   }`}
                 >
                   <span
-                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-bold ${
+                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-extrabold shadow-sm ${
                       isSelected
-                        ? 'bg-white/10 text-white border border-white/10'
-                        : 'bg-stone-200 text-stone-700'
+                        ? 'bg-white/15 text-white'
+                        : 'bg-[#EDE8DC] text-[#412D15]'
                     }`}
                   >
                     {getInitials(thread.userName)}
                   </span>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-baseline mb-0.5">
-                      <span className="font-semibold text-xs truncate pr-1">
+                      <span className="font-bold text-xs truncate pr-1">
                         {thread.userName}
                       </span>
                       <span
                         className={`text-[9px] ${
-                          isSelected ? 'text-stone-300' : 'text-muted-foreground'
+                          isSelected ? 'text-[#EDE8DC]/80' : 'text-muted-foreground'
                         }`}
                       >
                         {formatTime(thread.timestamp)}
@@ -206,7 +215,7 @@ export function AdminChatPanel() {
                     </div>
                     <p
                       className={`text-[11px] truncate leading-tight ${
-                        isSelected ? 'text-stone-300' : 'text-muted-foreground'
+                        isSelected ? 'text-[#EDE8DC]/70' : 'text-muted-foreground'
                       }`}
                     >
                       {thread.lastMessage}
@@ -220,28 +229,28 @@ export function AdminChatPanel() {
       </div>
 
       {/* Right Pane: Chat History */}
-      <div className="flex flex-col h-full bg-stone-50">
+      <div className="flex flex-col h-full bg-stone-50/20 min-h-0">
         {selectedUserId ? (
           <>
             {/* Header */}
             <div className="px-5 py-4 border-b border-border bg-white flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-stone-900 text-white text-xs font-bold">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground text-xs font-extrabold shadow-md">
                   {getInitials(selectedUserName)}
                 </span>
                 <div>
                   <h4 className="font-bold text-sm text-foreground">{selectedUserName}</h4>
                   <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                    <span className="text-[10px] text-muted-foreground">Aktif</span>
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-[10px] text-muted-foreground font-medium">Aktif</span>
                   </div>
                 </div>
               </div>
-              <span className="text-xs text-muted-foreground">User ID: #{selectedUserId}</span>
+              <span className="text-xs text-muted-foreground font-medium bg-stone-100 border border-stone-200/50 px-2 py-0.5 rounded-md">User ID: #{selectedUserId}</span>
             </div>
 
             {/* Conversation Messages */}
-            <div className="flex-1 overflow-y-auto p-5 space-y-4">
+            <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-background/50">
               {messages.map((msg) => {
                 const isAdmin = msg.role === 'admin'
                 return (
@@ -252,13 +261,13 @@ export function AdminChatPanel() {
                     <div
                       className={`max-w-[70%] rounded-2xl px-4 py-2.5 text-xs leading-relaxed shadow-sm ${
                         isAdmin
-                          ? 'bg-stone-900 text-white rounded-tr-none'
-                          : 'bg-white border border-border text-foreground rounded-tl-none'
+                          ? 'bg-primary text-primary-foreground rounded-tr-none'
+                          : 'bg-card border border-border text-[#1F150C] rounded-tl-none'
                       }`}
                     >
                       {msg.text}
                     </div>
-                    <span className="text-[9px] text-muted-foreground mt-1 px-1">
+                    <span className="text-[9px] text-muted-foreground/80 mt-1 px-1">
                       {formatDateTime(msg.timestamp)}
                     </span>
                   </div>
@@ -278,23 +287,23 @@ export function AdminChatPanel() {
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder={connected ? 'Ketik tanggapan Anda...' : 'Menghubungkan kembali...'}
                 disabled={!connected}
-                className="flex-1 bg-stone-100 rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-1 focus:ring-ring border border-transparent focus:bg-white transition-all"
+                className="flex-1 bg-stone-100 rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-1 focus:ring-ring border border-transparent focus:bg-white focus:border-border transition-all"
               />
               <Button
                 type="submit"
                 disabled={!inputText.trim() || !connected}
                 variant="primary"
                 size="sm"
-                className="rounded-xl"
+                className="rounded-xl px-4 py-2.5 cursor-pointer transition-transform hover:scale-[1.02] active:scale-95"
               >
-                <Send className="h-4 w-4 mr-1.5" /> Balas
+                <Send className="h-3.5 w-3.5 mr-1.5" /> Balas
               </Button>
             </form>
           </>
         ) : (
           /* Unselected State */
           <div className="flex flex-col items-center justify-center h-full text-center px-8 space-y-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-50 border border-teal-100 text-teal-700 shadow-sm animate-pulse">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sage/20 border border-sage/30 text-primary shadow-inner">
               <MessageSquare className="h-6 w-6" />
             </div>
             <div>
@@ -303,8 +312,8 @@ export function AdminChatPanel() {
                 Pilih salah satu penghuni di daftar sebelah kiri untuk membalas pertanyaan atau keluhan fasilitas secara real-time.
               </p>
             </div>
-            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground bg-white border border-border px-3 py-1.5 rounded-full">
-              <Sparkles className="h-3 w-3 text-amber-500 animate-spin" />
+            <div className="flex items-center gap-1.5 text-[10px] text-[#4a7c59] bg-[#f0f2ec] border border-[#B0BA99]/30 px-3.5 py-1.5 rounded-full font-medium">
+              <Sparkles className="h-3 w-3 text-amber-500 animate-pulse" />
               Notifikasi chat baru akan muncul otomatis secara instan.
             </div>
           </div>
@@ -313,3 +322,4 @@ export function AdminChatPanel() {
     </div>
   )
 }
+

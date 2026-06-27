@@ -3,6 +3,7 @@ import { MainLayout } from "./layouts/MainLayout";
 import { AuthLayout } from "./layouts/AuthLayout";
 import { LoadingSpinner } from "./components/LoadingSpinner";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { RenewalReminder } from "./components/RenewalReminder";
 
 const LandingPage = lazy(() =>
   import("./pages/LandingPage").then((m) => ({ default: m.LandingPage })),
@@ -110,5 +111,10 @@ export default function App() {
     }
   };
 
-  return <Suspense fallback={<LoadingSpinner />}>{renderPage()}</Suspense>;
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      {renderPage()}
+      <RenewalReminder />
+    </Suspense>
+  );
 }

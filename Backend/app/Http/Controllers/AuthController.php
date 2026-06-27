@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Http\Controllers\BookingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -49,6 +50,7 @@ class AuthController extends Controller
         }
 
         $user  = Auth::user();
+        BookingController::autoReleaseExpiredBookings();
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -69,6 +71,7 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
+        BookingController::autoReleaseExpiredBookings();
         return response()->json($request->user());
     }
 }

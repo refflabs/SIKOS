@@ -3,50 +3,50 @@
 :root {
   --font-size: 16px;
 
-  /* Brand */
-  --brand: #0d9488;
-  --brand-hover: #0f766e;
-  --brand-foreground: #ffffff;
+  /* Brand — Mocca Brown */
+  --brand: #412D15;
+  --brand-hover: #2e1e0a;
+  --brand-foreground: #E1DCC9;
 
   --primary: var(--brand);
   --primary-dark: var(--brand-hover);
   --primary-foreground: var(--brand-foreground);
 
   /* Accents */
-  --amber: #f59e0b;
-  --amber-soft: #fffbeb;
-  --indigo: #4f46e5;
-  --indigo-soft: #eef2ff;
+  --sage: #B0BA99;
+  --sage-soft: #f0f2ec;
+  --mocca: #412D15;
+  --mocca-soft: #f5efe6;
 
-  /* Warm neutrals */
-  --background: #faf9f7;
-  --foreground: #1c1917;
-  --card: #ffffff;
-  --card-foreground: #1c1917;
+  /* Warm neutrals — Beige/Coffee */
+  --background: #F7F4EE;
+  --foreground: #1F150C;
+  --card: #FDFCF9;
+  --card-foreground: #1F150C;
 
-  --secondary: #f5f5f4;
-  --secondary-foreground: #44403c;
-  --muted: #f5f5f4;
-  --muted-foreground: #78716c;
+  --secondary: #EDE8DC;
+  --secondary-foreground: #412D15;
+  --muted: #EDE8DC;
+  --muted-foreground: #7a6247;
 
-  --border: #e7e5e4;
-  --input: #e7e5e4;
-  --input-background: #ffffff;
-  --ring: #a8a29e;
+  --border: #D8D0BE;
+  --input: #D8D0BE;
+  --input-background: #FDFCF9;
+  --ring: #B0BA99;
 
-  --destructive: #dc2626;
-  --success: #15803d;
-  --warning: var(--amber);
-  --info: var(--indigo);
+  --destructive: #c0392b;
+  --success: #4a7c59;
+  --warning: #c07d3a;
+  --info: #5b7fa6;
 
   --radius: 0.75rem;
 
   /* Section surfaces */
-  --surface-warm: #faf8f5;
-  --surface-teal: #f0fdfa;
-  --surface-amber: #fffbeb;
-  --surface-indigo: #eef2ff;
-  --surface-stone: #f5f5f4;
+  --surface-warm: #F7F4EE;
+  --surface-beige: #E1DCC9;
+  --surface-sage: #f0f2ec;
+  --surface-mocca: #f5efe6;
+  --surface-stone: #EDE8DC;
 }
 
 @theme inline {
@@ -78,12 +78,69 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.15s ease;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
   }
+
+  /* Custom Premium Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(65, 45, 21, 0.18);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(65, 45, 21, 0.35);
+  }
+  
+  html.dark ::-webkit-scrollbar-thumb {
+    background: rgba(176, 186, 153, 0.2);
+  }
+  html.dark ::-webkit-scrollbar-thumb:hover {
+    background: rgba(176, 186, 153, 0.4);
+  }
+
+
+  /* ─── DARK MODE ─── */
+  html.dark {
+    --background: #120d08;
+    --foreground: #E1DCC9;
+    --card: #1d1409;
+    --card-foreground: #E1DCC9;
+
+    --secondary: #2a1d0f;
+    --secondary-foreground: #B0BA99;
+    --muted: #2a1d0f;
+    --muted-foreground: #8a7060;
+
+    --border: #3a2a18;
+    --input: #3a2a18;
+    --input-background: #1d1409;
+    --ring: #B0BA99;
+
+    --brand: #B0BA99;
+    --brand-hover: #c8d0b5;
+    --brand-foreground: #1F150C;
+    --primary: var(--brand);
+    --primary-dark: var(--brand-hover);
+    --primary-foreground: var(--brand-foreground);
+
+    --surface-warm: #120d08;
+    --surface-beige: #1d1409;
+    --surface-sage: #1a1f14;
+    --surface-mocca: #1d1409;
+    --surface-stone: #2a1d0f;
+  }
 }
+
 
 @layer utilities {
   .text-label {
@@ -117,21 +174,21 @@
   .bg-surface-warm {
     background: var(--surface-warm);
   }
-  .bg-surface-teal {
-    background: linear-gradient(135deg, var(--surface-teal) 0%, #ffffff 100%);
+  .bg-surface-beige {
+    background: linear-gradient(135deg, #E1DCC9 0%, #F7F4EE 100%);
   }
-  .bg-surface-amber {
-    background: linear-gradient(160deg, var(--surface-amber) 0%, #ffffff 70%);
+  .bg-surface-sage {
+    background: linear-gradient(160deg, #f0f2ec 0%, #F7F4EE 70%);
   }
-  .bg-surface-indigo {
-    background: linear-gradient(160deg, var(--surface-indigo) 0%, #ffffff 65%);
+  .bg-surface-mocca {
+    background: linear-gradient(160deg, #f5efe6 0%, #F7F4EE 65%);
   }
   .bg-surface-stone {
     background: var(--surface-stone);
   }
 
   .page-gradient-top {
-    background: linear-gradient(180deg, var(--surface-warm) 0%, var(--background) 120px);
+    background: linear-gradient(180deg, #F7F4EE 0%, #FDFCF9 120px);
   }
 
   .input-field {

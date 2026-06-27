@@ -6,6 +6,7 @@ import './styles/index.css'
 import { queryClient } from './lib/queryClient'
 import { AuthProvider } from './context/AuthContext'
 import { SocketProvider } from './context/SocketContext'
+import { ThemeProvider } from './context/ThemeContext'
 import { assertEnv } from './config/env'
 
 try {
@@ -16,12 +17,14 @@ try {
 
 createRoot(document.getElementById('root')).render(
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <SocketProvider>
-        <App />
-        <Toaster position="top-right" richColors closeButton />
-      </SocketProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <SocketProvider>
+          <App />
+          <Toaster position="top-right" richColors closeButton />
+        </SocketProvider>
+      </AuthProvider>
+    </ThemeProvider>
   </QueryClientProvider>,
 )
 

@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getRooms, getRoomById } from '../api/rooms'
-import { getBookings, createBooking } from '../api/bookings'
+import { getRooms, getRoomById, createRoom, updateRoom, deleteRoom } from '../api/rooms'
+import { getBookings, createBooking, updateBookingStatus, deleteBooking, requestBookingRenewal, handleBookingRenewalAction } from '../api/bookings'
+import { getUsers, getUserById, updateUser, deleteUser } from '../api/users'
 
 export const roomKeys = {
   all: ['rooms'],
@@ -47,3 +48,114 @@ export function useCreateBookingMutation() {
     },
   })
 }
+
+export function useUpdateBookingStatusMutation() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, status }) => updateBookingStatus(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: bookingKeys.all })
+      queryClient.invalidateQueries({ queryKey: roomKeys.all })
+    },
+  })
+}
+
+export function useDeleteBookingMutation() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: deleteBooking,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: bookingKeys.all })
+      queryClient.invalidateQueries({ queryKey: roomKeys.all })
+    },
+  })
+}
+
+export function useRequestBookingRenewalMutation() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, durationMonths }) => requestBookingRenewal(id, durationMonths),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: bookingKeys.all })
+    },
+  })
+}
+
+export function useHandleBookingRenewalActionMutation() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, action }) => handleBookingRenewalAction(id, action),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: bookingKeys.all })
+      queryClient.invalidateQueries({ queryKey: roomKeys.all })
+    },
+  })
+}
+
+export function useCreateRoomMutation() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: createRoom,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: roomKeys.all })
+    },
+  })
+}
+
+export function useUpdateRoomMutation() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, data }) => updateRoom(id, data),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: roomKeys.all })
+      queryClient.invalidateQueries({ queryKey: roomKeys.detail(variables.id) })
+    },
+  })
+}
+
+export function useDeleteRoomMutation() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: deleteRoom,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: roomKeys.all })
+    },
+  })
+}
+
+export const userKeys = {
+  all: ['users'],
+  list: (params) => ['users', 'list', params],
+  detail: (id) => ['users', 'detail', id],
+}
+
+export function useUsersQuery(params = {}, options = {}) {
+  return useQuery({
+    queryKey: userKeys.list(params),
+    queryFn: () => getUsers(params),
+    ...options,
+  })
+}
+
+export function useUpdateUserMutation() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, data }) => updateUser(id, data),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: userKeys.all })
+      queryClient.invalidateQueries({ queryKey: userKeys.detail(variables.id) })
+    },
+  })
+}
+
+export function useDeleteUserMutation() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: deleteUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: userKeys.all })
+    },
+  })
+}
+
+

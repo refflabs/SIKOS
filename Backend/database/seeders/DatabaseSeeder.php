@@ -85,5 +85,50 @@ class DatabaseSeeder extends Seeder
         foreach ($rooms as $room) {
             Room::create($room);
         }
+
+        // --- BUAT USER DUMMY PERPANJANGAN (WARNING & EXPIRED) ---
+        // 1. User Kasus 1: Budi Peringatan (Tenggat sewa 5 hari lagi)
+        $userWarning = User::create([
+            'name'     => 'Budi Peringatan',
+            'email'    => 'warning@sikos.com',
+            'password' => Hash::make('password'),
+            'phone'    => '081111111111',
+        ]);
+
+        $roomB2 = Room::where('name', 'Kamar B2')->first();
+        if ($roomB2) {
+            $roomB2->update(['status' => 'booked']);
+            \App\Models\Booking::create([
+                'user_id'         => $userWarning->id,
+                'room_id'         => $roomB2->id,
+                'check_in'        => now()->subDays(25),
+                'check_out'       => now()->addDays(5),
+                'status'          => 'accepted',
+                'duration_months' => 1,
+                'total_price'     => $roomB2->price,
+            ]);
+        }
+
+        // 2. User Kasus 2: Andi Tenggat (Tenggat sewa lewat 1 hari)
+        $userExpired = User::create([
+            'name'     => 'Andi Tenggat',
+            'email'    => 'expired@sikos.com',
+            'password' => Hash::make('password'),
+            'phone'    => '082222222222',
+        ]);
+
+        $roomSuite = Room::where('name', 'Kamar Suite')->first();
+        if ($roomSuite) {
+            $roomSuite->update(['status' => 'booked']);
+            \App\Models\Booking::create([
+                'user_id'         => $userExpired->id,
+                'room_id'         => $roomSuite->id,
+                'check_in'        => now()->subDays(31),
+                'check_out'       => now()->subDays(1),
+                'status'          => 'accepted',
+                'duration_months' => 1,
+                'total_price'     => $roomSuite->price,
+            ]);
+        }
     }
 }

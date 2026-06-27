@@ -32,6 +32,11 @@ export function SocketProvider({ children }) {
     const unsubscribe = onConnectionStatusChange(setStatus)
 
     const onAuthChanged = () => {
+      // Emit offline dulu sebelum token diganti / socket reconnect
+      const socket = getSocket()
+      if (socket?.connected) {
+        socket.emit('presence:offline')
+      }
       refreshSocketAuth()
     }
 

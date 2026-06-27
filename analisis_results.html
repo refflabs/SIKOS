@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisis Sistem SIKOS</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <!-- Mermaid JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: { useMaxWidth: true, htmlLabels: true },
+            themeVariables: {
+                fontFamily: 'Plus Jakarta Sans',
+                primaryColor: '#0f766e',
+                primaryTextColor: '#ffffff',
+                lineColor: '#94a3b8'
+            }
+        });
+    </script>
+    <style>
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background: white;
+                color: black;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
+
+    <!-- Navbar / Header -->
+    <header class="bg-teal-900 text-white shadow-md no-print">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex flex-wrap justify-between items-center gap-4">
+            <div>
+                <h1 class="text-xl font-bold tracking-tight">SIKOS Analysis Report</h1>
+                <p class="text-xs text-teal-200">Sistem Informasi Kos - Analisis & Diagram Lengkap</p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="window.print()" class="bg-teal-600 hover:bg-teal-500 text-white font-medium text-sm px-4 py-2 rounded-xl transition shadow flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229-2.523a1.125 1.125 0 0 1 1.12-1.007H21m-4.17 3.53-3.09-3.09m0 0a1.125 1.125 0 0 1 1.59-1.59L17.66 18m-4.17 0H2.25m9-13.5a1.5 1.5 0 0 1 1.5-1.5h3a1.5 1.5 0 0 1 1.5 1.5M9 6.75h12m-12 3h12m-12 3h12M9 16.5h3" />
+                    </svg>
+                    Simpan sebagai PDF / Cetak
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
+        
+        <!-- Jumbotron / Title -->
+        <section class="bg-white rounded-2xl border border-slate-200 p-8 md:p-10 shadow-sm space-y-4">
+            <span class="bg-teal-100 text-teal-800 font-semibold text-xs px-3 py-1 rounded-full uppercase tracking-wider">Laporan Teknis</span>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">Analisis Source Code SIKOS (Sistem Informasi Kos)</h1>
+            <p class="text-slate-500 text-base leading-relaxed max-w-3xl">
+                Dokumen analisis teknis terintegrasi ini mencakup identifikasi kelas, skema database (ERD), diagram arsitektur sistem, penjelasan komponen, serta alur request-response.
+            </p>
+            <div class="flex flex-wrap gap-6 pt-4 border-t border-slate-100 text-sm text-slate-500">
+                <div><strong>Backend:</strong> Laravel REST API (Sanctum)</div>
+                <div><strong>Frontend:</strong> React SPA (Vite + TypeScript)</div>
+                <div><strong>Realtime:</strong> Node.js + Socket.IO Server</div>
+            </div>
+        </section>
+
+        <!-- 1. Ringkasan Sistem -->
+        <section class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm space-y-4">
+            <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-100 text-teal-700 text-sm font-bold">1</span>
+                Ringkasan Sistem
+            </h2>
+            <div class="prose max-w-none text-slate-600 space-y-3 leading-relaxed">
+                <p>
+                    SIKOS adalah aplikasi berbasis web untuk manajemen pemesanan kamar kos (Sistem Informasi Kos). Sistem ini menyediakan antarmuka bagi <strong>Penghuni (Tenant)</strong> untuk melihat kamar tersedia, melakukan pemesanan (booking), dan berkomunikasi secara real-time dengan pengelola kos (<strong>Pak RT/Admin</strong>). Pengelola memiliki panel dashboard khusus untuk melacak ketersediaan kamar, mengonfirmasi/membatalkan pesanan, dan membalas obrolan penghuni.
+                </p>
+                <p>
+                    Aplikasi ini menggunakan model <strong>decoupled architecture</strong>:
+                </p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Frontend</strong> berkomunikasi dengan <strong>Backend</strong> melalui REST API JSON.</li>
+                    <li><strong>Frontend</strong> terhubung ke <strong>Realtime-Server</strong> melalui WebSocket (Socket.IO).</li>
+                    <li><strong>Backend</strong> mengirim event real-time (seperti booking baru atau perubahan status kamar) ke <strong>Realtime-Server</strong> menggunakan HTTP POST <code>/broadcast</code> yang dilindungi token rahasia, yang kemudian diteruskan ke klien yang berhak melalui Socket.IO.</li>
+                    <li><strong>Realtime-Server</strong> memverifikasi token sesi klien dengan melakukan callback HTTP GET <code>/api/me</code> ke Laravel Backend.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 2. Diagram Arsitektur Sistem -->
+        <section class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm space-y-6 page-break">
+            <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-100 text-teal-700 text-sm font-bold">2</span>
+                Diagram Arsitektur Sistem
+            </h2>
+            <p class="text-sm text-slate-500">
+                Bagan di bawah menjelaskan alur request-response dan pertukaran data real-time antar subsistem:
+            </p>
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex justify-center overflow-x-auto">
+                <div class="mermaid w-full max-w-3xl">
+graph TB
+    subgraph Client ["Client Browser (Frontend React SPA)"]
+        UI["React SPA UI<br>(Pages: Landing, Rooms, Booking, Login, Dashboard)"]
+        RQ["React Query Client<br>(Cache & API state)"]
+        SC["Socket.io Client<br>(Real-time subscriptions)"]
+        LS["Local Storage<br>(JWT Token & User State)"]
+    end
+
+    subgraph Backend ["Laravel REST API Backend"]
+        routes["API Router<br>(routes/api.php)"]
+        auth_mid["Sanctum Middleware<br>(Authentication)"]
+        admin_mid["Admin Middleware<br>(Role Verification)"]
+        ctrls["Controllers<br>(AuthController, RoomController, BookingController)"]
+        rt_service["RealtimeService.php<br>(Dispatches Realtime Events)"]
+        models["Eloquent Models<br>(User, Room, Booking)"]
+    end
+
+    subgraph RealtimeServer ["Node.js Realtime Server"]
+        express["Express Router<br>(broadcast, health)"]
+        socket_io["Socket.IO Server<br>(WebSocket Connection)"]
+        socket_handlers["Socket Handlers<br>(chat & subscriptions)"]
+        auth_verify["verifyToken.js<br>(Validates JWT with Laravel)"]
+        chat_store["chatStore.js<br>(messages.json Storage)"]
+    end
+
+    subgraph Database ["Persistence Layer"]
+        DB[("Database<br>(SQL Server/MySQL/SQLite)")]
+        JSON[("messages.json<br>(Chat persistence)")]
+    end
+
+    %% Client Interactions
+    UI --> RQ
+    UI --> SC
+    SC --> LS
+    RQ --> LS
+
+    %% REST API Alur
+    RQ -->|HTTP Requests with Bearer Token| routes
+    routes --> auth_mid
+    auth_mid --> admin_mid
+    admin_mid --> ctrls
+    ctrls --> models
+    models -->|SQL Queries| DB
+
+    %% Realtime Connection & Authentication Alur
+    SC <-->|WebSocket Connections<br>ws://| socket_io
+    socket_io --> socket_handlers
+    socket_io -->|handshake auth token| auth_verify
+    auth_verify -->|HTTP GET /api/me| routes
+
+    %% Realtime Broadcasting Alur
+    ctrls -->|Trigger Broadcast| rt_service
+    rt_service -->|HTTP POST /broadcast<br>with X-Socket-Secret| express
+    express -->|Forward Event data| socket_io
+    socket_io -.->|Websocket Push| SC
+
+    %% Chat flow
+    socket_handlers --> chat_store
+    chat_store <-->|Read / Write| JSON
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. UML Class Diagram -->
+        <section class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm space-y-6 page-break">
+            <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-100 text-teal-700 text-sm font-bold">3</span>
+                UML Class Diagram
+            </h2>
+            <p class="text-sm text-slate-500">
+                Diagram kelas yang memetakan model, kontroler, dan ketergantungan relasi antar objek pada backend SIKOS:
+            </p>
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex justify-center overflow-x-auto">
+                <div class="mermaid w-full max-w-3xl">
+classDiagram
+    %% Backend Models
+    class User {
+        +int id
+        +string name
+        +string email
+        +string password
+        +string role
+        +string phone
+        +string address
+        +datetime email_verified_at
+        +string remember_token
+        +casts() array
+    }
+
+    class Room {
+        +int id
+        +string name
+        +string type
+        +decimal price
+        +string status
+        +string description
+        +string image
+        +array facilities
+        +int floor
+        +string size
+        +bookings() HasMany
+    }
+
+    class Booking {
+        +int id
+        +int user_id
+        +int room_id
+        +date check_in
+        +date check_out
+        +int duration_months
+        +decimal total_price
+        +string status
+        +string notes
+        +user() BelongsTo
+        +room() BelongsTo
+    }
+
+    %% Backend Controllers
+    class Controller {
+        &lt;&lt;abstract&gt;&gt;
+    }
+
+    class AuthController {
+        +register(Request request) JsonResponse
+        +login(Request request) JsonResponse
+        +logout(Request request) JsonResponse
+        +me(Request request) JsonResponse
+    }
+
+    class RoomController {
+        +index(Request request) JsonResponse
+        +show(int id) JsonResponse
+        +store(Request request) JsonResponse
+        +update(Request request, int id) JsonResponse
+        +destroy(int id) JsonResponse
+    }
+
+    class BookingController {
+        +index(Request request) JsonResponse
+        +show(Request request, int id) JsonResponse
+        +store(Request request) JsonResponse
+        +update(Request request, int id) JsonResponse
+        +destroy(int id) JsonResponse
+        -syncRoomAvailability(Room room) void
+    }
+
+    %% Backend Services
+    class RealtimeService {
+        +emit(string eventKey, array payload, string channelKey) void
+        +bookingCreated(Booking booking) void
+        +bookingStatusChanged(Booking booking) void
+        +roomUpdated(Room room) void
+        +emitBookingsStats() void
+    }
+
+    %% Relations
+    Controller <|-- AuthController
+    Controller <|-- RoomController
+    Controller <|-- BookingController
+
+    BookingController --> RealtimeService : dependency
+    BookingController --> Booking : dependency
+    BookingController --> Room : dependency
+    RoomController --> Room : dependency
+    AuthController --> User : dependency
+
+    Booking "many" --> "1" User : belongsTo
+    Booking "many" --> "1" Room : belongsTo
+    Room "1" --> "many" Booking : hasMany
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Entity Relationship Diagram (ERD) -->
+        <section class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm space-y-6 page-break">
+            <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-100 text-teal-700 text-sm font-bold">4</span>
+                Entity Relationship Diagram (ERD)
+            </h2>
+            <p class="text-sm text-slate-500">
+                Skema basis data relasional lengkap beserta foreign key dan kardinalitas relasinya:
+            </p>
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex justify-center overflow-x-auto">
+                <div class="mermaid w-full max-w-3xl">
+erDiagram
+    users {
+        bigint id PK
+        string name
+        string email UK
+        timestamp email_verified_at
+        string password
+        string role
+        string phone
+        text address
+        string remember_token
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    rooms {
+        bigint id PK
+        string name
+        string type
+        decimal price
+        string status
+        text description
+        string image
+        json facilities
+        integer floor
+        string size
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    bookings {
+        bigint id PK
+        bigint user_id FK
+        bigint room_id FK
+        date check_in
+        date check_out
+        integer duration_months
+        decimal total_price
+        string status
+        text notes
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    personal_access_tokens {
+        bigint id PK
+        string tokenable_type
+        bigint tokenable_id
+        string name
+        string token UK
+        text abilities
+        timestamp last_used_at
+        timestamp expires_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    users ||--o{ bookings : "creates"
+    rooms ||--o{ bookings : "booked_in"
+    users ||--o{ personal_access_tokens : "has"
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Penjelasan Komponen & Hubungan Sistem -->
+        <section class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm space-y-6 page-break">
+            <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-100 text-teal-700 text-sm font-bold">5</span>
+                Penjelasan Komponen & Hubungan Sistem
+            </h2>
+            <div class="space-y-6 text-slate-600 text-sm leading-relaxed">
+                <div>
+                    <h3 class="text-base font-bold text-slate-900 mb-2">A. Komponen Sistem</h3>
+                    <ul class="list-decimal pl-5 space-y-2">
+                        <li><strong>Frontend (React SPA)</strong>: Terintegrasi dengan React Query untuk caching API state, menggunakan browser routing custom berbasis HTML5, serta mempertahankan konektivitas real-time lewat <code>SocketContext</code>.</li>
+                        <li><strong>Backend (Laravel REST API)</strong>: Menyediakan persistensi data utama, otentikasi berbasis Sanctum Token, serta proteksi otorisasi peran via middleware <code>admin</code>.</li>
+                        <li><strong>Realtime-Server (Node.js + Socket.IO)</strong>: Bertindak sebagai broker penyalur event real-time ke saluran <code>public</code>, <code>admin</code>, dan user privat. Riwayat chat disimpan secara lokal ke berkas <code>messages.json</code>.</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-base font-bold text-slate-900 mb-2">B. Alur Data Utama</h3>
+                    <div class="space-y-3">
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <strong class="text-slate-800">1. Alur Autentikasi & WebSocket:</strong><br>
+                            User login via API &rarr; Laravel mengembalikan JWT/Sanctum Token &rarr; Token disimpan di <code>localStorage</code> &rarr; WebSocket client melakukan handshake dengan mengirim token &rarr; Node.js server memverifikasi token dengan memanggil endpoint API Laravel <code>GET /me</code> &rarr; Pengguna sukses terhubung ke channel WebSocket yang sesuai.
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <strong class="text-slate-800">2. Alur Pembuatan Booking Baru:</strong><br>
+                            Tenant mengisi form &rarr; <code>POST /api/bookings</code> ke Laravel &rarr; Validasi status kamar &rarr; Total harga dihitung &rarr; Data disimpan dengan status <code>pending</code> &rarr; Status kamar berubah menjadi <code>booked</code> &rarr; Laravel memicu <code>RealtimeService</code> mengirim event via POST <code>/broadcast</code> ke Node.js server &rarr; Node.js membroadcast event ke admin & public &rarr; UI admin dan room terupdate instan secara real-time.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Asumsi dan Catatan Teknis -->
+        <section class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm space-y-4">
+            <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-100 text-teal-700 text-sm font-bold">6</span>
+                Asumsi & Rekomendasi
+            </h2>
+            <div class="prose max-w-none text-slate-600 text-sm space-y-2 leading-relaxed">
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Persistensi Obrolan:</strong> Node.js server menyimpan obrolan dalam format berkas JSON lokal. Sebaiknya bermigrasi ke database NoSQL (seperti MongoDB/Redis) atau relational database terpusat apabila ingin mengimplementasikan containerization (stateless container).</li>
+                    <li><strong>Sanctum Integration:</strong> Verifikasi token Socket.IO dilakukan dengan melakukan request callback HTTP internal (<code>/me</code>) ke Laravel. Teknik ini sangat praktis, namun pastikan jaringan internal terisolasi dan cepat agar tidak menambah beban latency handshake.</li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-8 mt-12 border-t border-slate-800 no-print">
+        <div class="max-w-6xl mx-auto px-6 text-center text-xs space-y-2">
+            <p>&copy; 2026 SIKOS. Hak Cipta Dilindungi.</p>
+            <p>Dianalisis secara otomatis berdasarkan source code riil proyek SIKOS.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

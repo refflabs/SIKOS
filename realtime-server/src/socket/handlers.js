@@ -3,6 +3,22 @@ import { getChatHistory, addMessage, getChatThreads } from './chatStore.js'
 
 const ALLOWED_CHANNELS = new Set([Channels.PUBLIC, Channels.ADMIN])
 
+/* ── Presence store: userId → { name, role, socketId, since } ── */
+const onlineUsers = new Map()
+
+function broadcastPresence(io, userId, online) {
+  const user = onlineUsers.get(userId)
+  const payload = {
+    userId,
+    name: user?.name,
+    role: user?.role,
+    online,
+    since: user?.since ?? null,
+  }
+  // Broadcast ke semua admin
+  io.to(Channels.ADMIN).emit(online ? Events.USER_ONLINE : Events.USER_OFFLINE, payload)
+}
+
 export function registerSocketHandlers(io, socket) {
   // Every client receives public room availability updates
   socket.join(Channels.PUBLIC)
@@ -38,6 +54,67 @@ export function registerSocketHandlers(io, socket) {
     if (typeof ack === 'function') {
       ack(response)
     }
+  })
+
+  /* ── Presence: user/admin goes online ── */
+  socket.on('presence:online', () => {
+    const user = socket.data.user
+    if (!user) return
+
+    onlineUsers.set(user.id, {
+      name: user.name,
+      role: user.role,
+      socketId: socket.id,
+      since: new Date().toISOString(),
+    })
+
+    broadcastPresence(io, user.id, true)
+
+    // Jika admin online → broadcast ke semua user yang punya room
+    if (user.role === 'admin') {
+      socket.broadcast.emit(Events.USER_ONLINE, { userId: user.id, role: 'admin', online: true })
+    }
+  })
+
+  /* ── Presence: user/admin goes offline ── */
+  socket.on('presence:offline', () => {
+    const user = socket.data.user
+    if (!user) return
+
+    onlineUsers.delete(user.id)
+    broadcastPresence(io, user.id, false)
+
+    if (user.role === 'admin') {
+      socket.broadcast.emit(Events.USER_OFFLINE, { userId: user.id, role: 'admin', online: false })
+    }
+  })
+
+  /* ── Get admin presence (untuk initial load di ChatWidget) ── */
+  socket.on('presence:get_admin', (data, ack) => {
+    // Cari user dengan role admin yang sedang online
+    let adminOnline = false
+    for (const [, info] of onlineUsers) {
+      if (info.role === 'admin') {
+        adminOnline = true
+        break
+      }
+    }
+    if (typeof ack === 'function') {
+      ack({ online: adminOnline })
+    }
+  })
+
+  /* ── Get all online users (Admin only) ── */
+  socket.on('presence:get_online_users', (data, ack) => {
+    if (socket.data.user?.role !== 'admin') {
+      if (typeof ack === 'function') ack({ error: 'Forbidden' })
+      return
+    }
+    const users = []
+    for (const [userId, info] of onlineUsers) {
+      users.push({ userId, ...info })
+    }
+    if (typeof ack === 'function') ack({ users })
   })
 
   // Handle chat message sending
@@ -135,6 +212,16 @@ export function registerSocketHandlers(io, socket) {
   })
 
   socket.on('disconnect', (reason) => {
+    // Auto-cleanup presence saat disconnect mendadak (jaringan putus, dll.)
+    const user = socket.data.user
+    if (user && onlineUsers.has(user.id)) {
+      onlineUsers.delete(user.id)
+      broadcastPresence(io, user.id, false)
+      if (user.role === 'admin') {
+        socket.broadcast.emit(Events.USER_OFFLINE, { userId: user.id, role: 'admin', online: false })
+      }
+    }
+
     if (process.env.NODE_ENV !== 'production') {
       console.log(`[realtime] Client disconnected (${socket.id}): ${reason}`)
     }

@@ -1,48 +1,85 @@
 import { User, Mail, Phone, ShieldCheck } from 'lucide-react'
+import { useTheme } from '../../context/ThemeContext'
 
 export function ProfileView({ user }) {
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
+
+  const D = isDark
+    ? { bg: '#120d08', card: '#1d1409', header: '#231808', border: '#3a2a18', text: '#E1DCC9', muted: '#8a7060', iconBg: '#2a1d0f', hover: 'rgba(176,186,153,0.06)' }
+    : { bg: '#F7F4EE', card: '#FDFCF9', header: '#f5f0e8', border: '#D8D0BE', text: '#1F150C', muted: '#7a6247', iconBg: '#EDE8DC', hover: '#f5f0e8' }
+
   if (!user) return null
 
   const infoFields = [
-    { icon: User, label: 'Nama Lengkap', value: user.name },
-    { icon: Mail, label: 'Alamat Email', value: user.email },
-    { icon: Phone, label: 'Nomor WhatsApp', value: user.phone || '—' },
-    { icon: ShieldCheck, label: 'Tipe Akun', value: user.role === 'admin' ? 'Admin / Pengelola' : 'Penghuni Kost' },
+    { icon: User,        label: 'Nama Lengkap',   value: user.name },
+    { icon: Mail,        label: 'Alamat Email',   value: user.email },
+    { icon: Phone,       label: 'Nomor WhatsApp', value: user.phone || '—' },
+    { icon: ShieldCheck, label: 'Tipe Akun',      value: user.role === 'admin' ? 'Admin / Pengelola' : 'Penghuni Kost' },
   ]
 
+  const initials = user.name ? user.name.slice(0, 2).toUpperCase() : 'US'
+
   return (
-    <div className="bg-white rounded-2xl border border-border overflow-hidden shadow-sm max-w-2xl">
-      <div className="px-6 py-5 border-b border-border bg-stone-50/50">
-        <h2 className="text-lg font-bold text-foreground">Profil Pengguna</h2>
-        <p className="text-xs text-muted-foreground mt-1">
+    <div className="rounded-3xl overflow-hidden max-w-2xl" style={{ background: D.card, border: `1px solid ${D.border}` }}>
+      {/* Header */}
+      <div className="px-6 py-5" style={{ borderBottom: `1px solid ${D.border}`, background: D.header }}>
+        <h2 className="text-lg font-bold" style={{ color: D.text }}>Profil Pengguna</h2>
+        <p className="text-xs mt-1" style={{ color: D.muted }}>
           Kelola informasi data diri dan detail keanggotaan Anda di Kost Pak RT.
         </p>
       </div>
 
       <div className="p-6">
-        <div className="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-border">
-          <div className="h-20 w-20 rounded-full bg-stone-900 text-white flex items-center justify-center font-bold text-2xl shadow-inner">
-            {user.name ? user.name.slice(0, 2).toUpperCase() : 'US'}
+        {/* Avatar row */}
+        <div
+          className="flex flex-col sm:flex-row items-center gap-6 pb-6"
+          style={{ borderBottom: `1px solid ${D.border}` }}
+        >
+          {/* Avatar circle */}
+          <div
+            className="h-20 w-20 rounded-2xl flex items-center justify-center font-black text-2xl shrink-0"
+            style={{
+              background: 'linear-gradient(135deg, #412D15, #2e1e0a)',
+              color: '#E1DCC9',
+              boxShadow: '0 4px 16px rgba(65,45,21,0.4)',
+              letterSpacing: '-0.02em',
+            }}
+          >
+            {initials}
           </div>
           <div className="text-center sm:text-left space-y-1">
-            <h3 className="text-xl font-bold text-foreground">{user.name}</h3>
-            <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
+            <h3 className="text-xl font-extrabold tracking-tight" style={{ color: D.text }}>{user.name}</h3>
+            <span
+              className="inline-block text-[11px] font-semibold uppercase tracking-widest px-3 py-1 rounded-full"
+              style={{ background: isDark ? 'rgba(176,186,153,0.12)' : 'rgba(176,186,153,0.2)', color: '#B0BA99' }}
+            >
               {user.role === 'admin' ? 'Pengelola Kost' : 'Penghuni'}
-            </p>
+            </span>
           </div>
         </div>
 
-        <div className="mt-6 space-y-4">
+        {/* Info fields */}
+        <div className="mt-5 space-y-2">
           {infoFields.map((field) => {
             const Icon = field.icon
             return (
-              <div key={field.label} className="flex items-start gap-4 p-3 rounded-xl hover:bg-stone-50/50 transition-colors">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-stone-100 border border-stone-200/50 text-stone-600">
+              <div
+                key={field.label}
+                className="flex items-center gap-4 p-3.5 rounded-2xl transition-colors duration-200"
+                style={{ background: 'transparent' }}
+                onMouseEnter={e => e.currentTarget.style.background = D.hover}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+                  style={{ background: D.iconBg, color: '#B0BA99' }}
+                >
                   <Icon className="h-4 w-4" />
                 </span>
-                <div className="space-y-0.5">
-                  <p className="text-xs text-muted-foreground">{field.label}</p>
-                  <p className="text-sm font-medium text-foreground">{field.value}</p>
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: D.muted }}>{field.label}</p>
+                  <p className="text-sm font-semibold mt-0.5" style={{ color: D.text }}>{field.value}</p>
                 </div>
               </div>
             )

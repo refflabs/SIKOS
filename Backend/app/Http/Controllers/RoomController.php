@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Room;
+use App\Http\Controllers\BookingController;
 use Illuminate\Http\Request;
 
 class RoomController extends Controller
@@ -10,6 +11,7 @@ class RoomController extends Controller
     // GET /api/rooms
     public function index(Request $request)
     {
+        BookingController::autoReleaseExpiredBookings();
         $query = Room::query();
 
         // Filter by status
@@ -92,4 +94,33 @@ class RoomController extends Controller
             'message' => 'Kamar berhasil dihapus',
         ]);
     }
+
+    // POST /api/rooms/upload-image
+    public function upload(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            
+            // Move file to public/uploads
+            $file->move(public_path('uploads'), $filename);
+
+            // Construct full URL using request's scheme and host
+            $url = $request->getSchemeAndHttpHost() . '/uploads/' . $filename;
+
+            return response()->json([
+                'message' => 'Gambar berhasil diupload',
+                'url'     => $url,
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'File tidak ditemukan',
+        ], 400);
+    }
 }
+

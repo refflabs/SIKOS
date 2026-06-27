@@ -22,18 +22,23 @@ const io = new Server(httpServer, {
   cors: {
     origin: config.corsOrigins,
     methods: ['GET', 'POST'],
+    credentials: true,
   },
   pingTimeout: 20000,
   pingInterval: 25000,
   connectionStateRecovery: {
     maxDisconnectionDuration: 2 * 60 * 1000,
-    skipMiddlewares: false,
+    skipMiddlewares: true,
   },
 })
 
 io.use(authMiddleware)
 
 io.on('connection', (socket) => {
+  const user = socket.data.user
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`[realtime] Client connected  (${socket.id}) user=${user ? `${user.name}[${user.role}]` : 'guest'}`)
+  }
   registerSocketHandlers(io, socket)
 })
 

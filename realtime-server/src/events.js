@@ -13,6 +13,8 @@ export const Events = {
   CHAT_GET_THREADS: 'chat:get_threads',
   CHAT_THREADS: 'chat:threads',
   CHAT_THREAD_UPDATED: 'chat:thread_updated',
+  USER_ONLINE: 'user:online',
+  USER_OFFLINE: 'user:offline',
 }
 
 export const Channels = {

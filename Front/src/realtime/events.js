@@ -13,6 +13,12 @@ export const RealtimeEvents = {
   CHAT_GET_THREADS: 'chat:get_threads',
   CHAT_THREADS: 'chat:threads',
   CHAT_THREAD_UPDATED: 'chat:thread_updated',
+  // Presence
+  USER_ONLINE: 'user:online',
+  USER_OFFLINE: 'user:offline',
+  // Read receipts
+  CHAT_MESSAGE_READ: 'chat:message_read',
+  CHAT_MARK_READ: 'chat:mark_read',
 }
 
 export const RealtimeChannels = {

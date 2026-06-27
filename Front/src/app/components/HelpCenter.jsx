@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { HelpCircle, ChevronDown, ChevronUp, MessageCircle, Mail, MapPin } from 'lucide-react'
+import { useTheme } from '../../context/ThemeContext'
 
 const FAQS = [
   {
@@ -12,7 +13,7 @@ const FAQS = [
   },
   {
     q: 'Bagaimana cara melaporkan kendala fasilitas kamar?',
-    a: 'Anda dapat melaporkan segala kerusakan atau keluhan fasilitas dengan langsung menghubungi pengelola via tombol WhatsApp di tab "My Booking" atau melalui info kontak di bawah.',
+    a: 'Anda dapat melaporkan segala kerusakan atau keluhan fasilitas dengan langsung menghubungi pengelola via tombol WhatsApp di tab "Booking Saya" atau melalui info kontak di bawah.',
   },
   {
     q: 'Apakah ada ketentuan khusus kost syariah?',
@@ -21,44 +22,53 @@ const FAQS = [
 ]
 
 export function HelpCenter() {
-  const [openIndex, setOpenIndex] = useState(null)
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
 
-  const toggleAccordion = (index) => {
-    setOpenIndex(openIndex === index ? null : index)
-  }
+  const D = isDark
+    ? { bg: '#120d08', card: '#1d1409', header: '#231808', border: '#3a2a18', text: '#E1DCC9', muted: '#8a7060', hover: '#2a1d0f' }
+    : { bg: '#F7F4EE', card: '#FDFCF9', header: '#f5f0e8', border: '#D8D0BE', text: '#1F150C', muted: '#7a6247', hover: '#f0ebe0' }
+
+  const [openIndex, setOpenIndex] = useState(null)
+  const toggle = (i) => setOpenIndex(openIndex === i ? null : i)
 
   return (
-    <div className="grid md:grid-cols-[1fr_320px] gap-8">
-      <div className="bg-white rounded-2xl border border-border overflow-hidden shadow-sm">
-        <div className="px-6 py-5 border-b border-border bg-stone-50/50">
-          <h2 className="text-lg font-bold text-foreground">Pusat Bantuan (FAQs)</h2>
-          <p className="text-xs text-muted-foreground mt-1">
+    <div className="grid md:grid-cols-[1fr_300px] gap-8">
+      {/* FAQ accordion */}
+      <div className="rounded-3xl overflow-hidden" style={{ background: D.card, border: `1px solid ${D.border}` }}>
+        <div className="px-6 py-5" style={{ borderBottom: `1px solid ${D.border}`, background: D.header }}>
+          <h2 className="text-lg font-bold" style={{ color: D.text }}>Pusat Bantuan (FAQs)</h2>
+          <p className="text-xs mt-1" style={{ color: D.muted }}>
             Jawaban dari pertanyaan yang paling sering ditanyakan oleh calon maupun penghuni kost.
           </p>
         </div>
 
-        <div className="divide-y divide-border px-6">
+        <div className="px-6" style={{ divideColor: D.border }}>
           {FAQS.map((faq, index) => {
             const isOpen = openIndex === index
             return (
-              <div key={faq.q} className="py-4">
+              <div key={faq.q} style={{ borderBottom: index < FAQS.length - 1 ? `1px solid ${D.border}` : 'none' }} className="py-4">
                 <button
                   type="button"
-                  onClick={() => toggleAccordion(index)}
-                  className="w-full flex items-center justify-between text-left font-medium text-sm text-foreground hover:text-teal-700 transition-colors py-1"
+                  onClick={() => toggle(index)}
+                  className="w-full flex items-center justify-between text-left text-sm py-1 cursor-pointer transition-colors duration-200"
+                  style={{ color: isOpen ? '#B0BA99' : D.text, fontWeight: isOpen ? '600' : '500' }}
+                  onMouseEnter={e => { if (!isOpen) e.currentTarget.style.color = '#B0BA99' }}
+                  onMouseLeave={e => { if (!isOpen) e.currentTarget.style.color = D.text }}
                 >
                   <span className="flex items-center gap-2.5">
-                    <HelpCircle className="h-4 w-4 text-muted-foreground/80 shrink-0" />
+                    <HelpCircle className="h-4 w-4 shrink-0" style={{ color: '#B0BA99' }} />
                     {faq.q}
                   </span>
-                  {isOpen ? (
-                    <ChevronUp className="h-4 w-4 text-muted-foreground shrink-0" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
-                  )}
+                  {isOpen
+                    ? <ChevronUp className="h-4 w-4 shrink-0" style={{ color: D.muted }} />
+                    : <ChevronDown className="h-4 w-4 shrink-0" style={{ color: D.muted }} />}
                 </button>
                 {isOpen && (
-                  <div className="mt-3 pl-6.5 text-xs text-muted-foreground leading-relaxed animate-fade-in">
+                  <div
+                    className="mt-3 pl-6 text-xs leading-relaxed"
+                    style={{ color: D.muted, animation: 'fadeIn 0.18s ease' }}
+                  >
                     {faq.a}
                   </div>
                 )}
@@ -68,47 +78,75 @@ export function HelpCenter() {
         </div>
       </div>
 
-      <div className="space-y-6">
-        <div className="bg-white rounded-2xl border border-border p-6 shadow-sm">
-          <h3 className="font-bold text-sm text-foreground mb-4">Kontak Pengelola</h3>
-          <div className="space-y-4">
+      {/* Contact card */}
+      <div>
+        <div className="rounded-3xl p-6" style={{ background: D.card, border: `1px solid ${D.border}` }}>
+          <h3 className="font-bold text-sm mb-5" style={{ color: D.text }}>Kontak Pengelola</h3>
+          <div className="space-y-5">
+
+            {/* WhatsApp */}
             <div className="flex items-start gap-3">
-              <MessageCircle className="h-5 w-5 text-[#25D366] shrink-0" />
-              <div className="space-y-0.5">
-                <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">WhatsApp</p>
+              <span
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+                style={{ background: 'rgba(37,211,102,0.12)', color: '#25D366' }}
+              >
+                <MessageCircle className="h-4 w-4" />
+              </span>
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: D.muted }}>WhatsApp</p>
                 <a
                   href="https://wa.me/6281234567890?text=Halo%20Pak%20RT,%20saya%20butuh%20bantuan%20terkait%20kost."
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs font-semibold hover:underline text-teal-700"
+                  className="text-xs font-semibold transition-colors duration-200"
+                  style={{ color: '#B0BA99' }}
+                  onMouseEnter={e => e.currentTarget.style.color = D.text}
+                  onMouseLeave={e => e.currentTarget.style.color = '#B0BA99'}
                 >
                   +62 812-3456-7890
                 </a>
               </div>
             </div>
 
+            {/* Email */}
             <div className="flex items-start gap-3">
-              <Mail className="h-5 w-5 text-indigo-500 shrink-0" />
-              <div className="space-y-0.5">
-                <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">Email</p>
+              <span
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+                style={{ background: isDark ? 'rgba(91,127,166,0.15)' : 'rgba(91,127,166,0.1)', color: '#5b7fa6' }}
+              >
+                <Mail className="h-4 w-4" />
+              </span>
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: D.muted }}>Email</p>
                 <a
                   href="mailto:support@kostpakrt.com"
-                  className="text-xs font-semibold hover:underline text-teal-700"
+                  className="text-xs font-semibold transition-colors duration-200"
+                  style={{ color: '#B0BA99' }}
+                  onMouseEnter={e => e.currentTarget.style.color = D.text}
+                  onMouseLeave={e => e.currentTarget.style.color = '#B0BA99'}
                 >
                   support@kostpakrt.com
                 </a>
               </div>
             </div>
 
+            {/* Alamat */}
             <div className="flex items-start gap-3">
-              <MapPin className="h-5 w-5 text-stone-500 shrink-0" />
-              <div className="space-y-0.5">
-                <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">Lokasi Kost</p>
-                <p className="text-xs text-foreground">
-                  Jakarta Selatan, Indonesia
+              <span
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+                style={{ background: isDark ? 'rgba(176,186,153,0.12)' : 'rgba(176,186,153,0.2)', color: '#B0BA99' }}
+              >
+                <MapPin className="h-4 w-4" />
+              </span>
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: D.muted }}>Lokasi Kost</p>
+                <p className="text-xs leading-relaxed" style={{ color: D.text }}>
+                  Jl. Letjend. S.Parman, Gg. Al-Khalish No.18A<br />
+                  Cinta Raja, Sail, Kota Pekanbaru, Riau 28127
                 </p>
               </div>
             </div>
+
           </div>
         </div>
       </div>

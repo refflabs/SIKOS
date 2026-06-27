@@ -18,12 +18,15 @@ class Booking extends Model
         'total_price',
         'notes',
         'duration_months',
+        'renewal_requested',
+        'renewal_months',
     ];
 
     protected $casts = [
-        'check_in'    => 'date',
-        'check_out'   => 'date',
-        'total_price' => 'decimal:2',
+        'check_in'          => 'date',
+        'check_out'         => 'date',
+        'total_price'       => 'decimal:2',
+        'renewal_requested' => 'boolean',
     ];
 
     public function user()

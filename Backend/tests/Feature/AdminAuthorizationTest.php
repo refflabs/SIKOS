@@ -47,7 +47,7 @@ test('regular user cannot update booking status', function () {
 
     Sanctum::actingAs($user);
 
-    $this->putJson("/api/bookings/{$booking->id}", ['status' => 'confirmed'])
+    $this->putJson("/api/bookings/{$booking->id}", ['status' => 'accepted'])
         ->assertForbidden();
 });
 
@@ -70,9 +70,9 @@ test('admin can update booking status', function () {
 
     Sanctum::actingAs($admin);
 
-    $this->putJson("/api/bookings/{$booking->id}", ['status' => 'confirmed'])
+    $this->putJson("/api/bookings/{$booking->id}", ['status' => 'accepted'])
         ->assertOk()
-        ->assertJsonPath('booking.status', 'confirmed');
+        ->assertJsonPath('booking.status', 'accepted');
 });
 
 test('regular user cannot create room', function () {
@@ -101,8 +101,8 @@ test('deleting booking keeps room booked when another active booking exists', fu
     $secondUser = User::factory()->create();
     $room = createRoom(['status' => 'booked']);
 
-    $bookingToDelete = createBooking($room, $firstUser, ['status' => 'cancelled']);
-    createBooking($room, $secondUser, ['status' => 'confirmed']);
+    $bookingToDelete = createBooking($room, $firstUser, ['status' => 'rejected']);
+    createBooking($room, $secondUser, ['status' => 'accepted']);
 
     Sanctum::actingAs($admin);
 
@@ -116,7 +116,7 @@ test('deleting last active booking marks room available', function () {
     $admin = createUser('admin');
     $user = createUser('user');
     $room = createRoom(['status' => 'booked']);
-    $booking = createBooking($room, $user, ['status' => 'confirmed']);
+    $booking = createBooking($room, $user, ['status' => 'accepted']);
 
     Sanctum::actingAs($admin);
 

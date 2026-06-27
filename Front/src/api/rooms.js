@@ -24,3 +24,15 @@ export const deleteRoom = async (id) => {
   const res = await api.delete(`/rooms/${id}`)
   return res.data
 }
+
+export const uploadRoomImage = async (file) => {
+  const formData = new FormData()
+  formData.append('image', file)
+  const res = await api.post('/rooms/upload-image', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  })
+  return res.data
+}
+
