@@ -8,7 +8,7 @@ function parseOrigins(value) {
 }
 
 const config = {
-  port: Number(process.env.SOCKET_PORT || 6001),
+  port: Number(process.env.PORT || process.env.SOCKET_PORT || 6001),
   socketSecret: process.env.SOCKET_SECRET || '',
   laravelApiUrl: (process.env.LARAVEL_API_URL || 'http://127.0.0.1:8000/api').replace(/\/$/, ''),
   corsOrigins: parseOrigins(process.env.CORS_ORIGIN),
