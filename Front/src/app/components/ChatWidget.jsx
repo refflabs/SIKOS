@@ -173,11 +173,23 @@ export function ChatWidget() {
       )
     }
 
+    const handleSessionDeleted = ({ userId }) => {
+      if (user && Number(userId) === user.id) {
+        setMessages([])
+      }
+    }
+
+    const handleAllDeleted = () => {
+      setMessages([])
+    }
+
     socket.on('connect', handleConnect)
     socket.on(RealtimeEvents.CHAT_MESSAGE_RECEIVED, handleNewMessage)
     socket.on(RealtimeEvents.USER_ONLINE, handleAdminOnline)
     socket.on(RealtimeEvents.USER_OFFLINE, handleAdminOffline)
     socket.on(RealtimeEvents.CHAT_MESSAGE_READ, handleMessageRead)
+    socket.on('chat:session_deleted', handleSessionDeleted)
+    socket.on('chat:all_deleted', handleAllDeleted)
 
     return () => {
       socket.off('connect', handleConnect)
@@ -185,6 +197,8 @@ export function ChatWidget() {
       socket.off(RealtimeEvents.USER_ONLINE, handleAdminOnline)
       socket.off(RealtimeEvents.USER_OFFLINE, handleAdminOffline)
       socket.off(RealtimeEvents.CHAT_MESSAGE_READ, handleMessageRead)
+      socket.off('chat:session_deleted', handleSessionDeleted)
+      socket.off('chat:all_deleted', handleAllDeleted)
     }
   }, [user, isOpen, connected])
 

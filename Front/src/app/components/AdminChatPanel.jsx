@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { MessageSquare, Send, Search, User, Sparkles } from 'lucide-react'
+import { MessageSquare, Send, Search, User, Sparkles, Trash2 } from 'lucide-react'
 import { Button } from './Button'
 import { getSocket } from '../../realtime/socketClient'
 import { RealtimeEvents } from '../../realtime/events'
@@ -13,6 +13,7 @@ export function AdminChatPanel() {
   const [messages, setMessages] = useState([])
   const [inputText, setInputText] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
+  const [onlineUserIds, setOnlineUserIds] = useState(new Set())
   const messagesEndRef = useRef(null)
 
   // Scroll to bottom
@@ -25,6 +26,54 @@ export function AdminChatPanel() {
       scrollToBottom()
     }
   }, [messages, selectedUserId])
+
+  // Track online users list
+  useEffect(() => {
+    const socket = getSocket()
+    if (!socket) return
+
+    const handleUserOnline = (payload) => {
+      if (payload?.userId) {
+        setOnlineUserIds((prev) => {
+          const next = new Set(prev)
+          next.add(Number(payload.userId))
+          return next
+        })
+      }
+    }
+
+    const handleUserOffline = (payload) => {
+      if (payload?.userId) {
+        setOnlineUserIds((prev) => {
+          const next = new Set(prev)
+          next.delete(Number(payload.userId))
+          return next
+        })
+      }
+    }
+
+    const initOnlineList = () => {
+      socket.emit('presence:get_online_users', {}, (res) => {
+        if (res && Array.isArray(res.users)) {
+          const ids = res.users.map((u) => Number(u.userId))
+          setOnlineUserIds(new Set(ids))
+        }
+      })
+    }
+
+    if (socket.connected) {
+      initOnlineList()
+    }
+    socket.on('connect', initOnlineList)
+    socket.on(RealtimeEvents.USER_ONLINE, handleUserOnline)
+    socket.on(RealtimeEvents.USER_OFFLINE, handleUserOffline)
+
+    return () => {
+      socket.off('connect', initOnlineList)
+      socket.off(RealtimeEvents.USER_ONLINE, handleUserOnline)
+      socket.off(RealtimeEvents.USER_OFFLINE, handleUserOffline)
+    }
+  }, [connected])
 
   // Initial load of threads & register listeners
   useEffect(() => {
@@ -64,13 +113,30 @@ export function AdminChatPanel() {
       }
     }
 
+    const handleSessionDeleted = ({ userId }) => {
+      if (selectedUserId === Number(userId)) {
+        setMessages([])
+      }
+    }
+
+    const handleAllDeleted = () => {
+      setMessages([])
+      setThreads([])
+      setSelectedUserId(null)
+      setSelectedUserName('')
+    }
+
     socket.on(RealtimeEvents.CHAT_THREAD_UPDATED, handleThreadsUpdate)
     socket.on(RealtimeEvents.CHAT_MESSAGE_RECEIVED, handleNewMessage)
+    socket.on('chat:session_deleted', handleSessionDeleted)
+    socket.on('chat:all_deleted', handleAllDeleted)
 
     return () => {
       socket.off('connect', doFetch)
       socket.off(RealtimeEvents.CHAT_THREAD_UPDATED, handleThreadsUpdate)
       socket.off(RealtimeEvents.CHAT_MESSAGE_RECEIVED, handleNewMessage)
+      socket.off('chat:session_deleted', handleSessionDeleted)
+      socket.off('chat:all_deleted', handleAllDeleted)
     }
   }, [selectedUserId])
 
@@ -90,6 +156,36 @@ export function AdminChatPanel() {
       }
     })
   }, [selectedUserId])
+
+  const handleDeleteSession = () => {
+    if (!selectedUserId) return
+    if (!window.confirm(`Apakah Anda yakin ingin menghapus seluruh sesi obrolan dengan ${selectedUserName}? Tindakan ini tidak dapat dibatalkan.`)) {
+      return
+    }
+    const socket = getSocket()
+    if (!socket) return
+    socket.emit('chat:delete_session', { userId: selectedUserId }, (res) => {
+      if (res?.ok) {
+        setMessages([])
+      }
+    })
+  }
+
+  const handleDeleteAllChats = () => {
+    if (!window.confirm("Apakah Anda yakin ingin menghapus seluruh riwayat chat dari semua user? Tindakan ini tidak dapat dibatalkan.")) {
+      return
+    }
+    const socket = getSocket()
+    if (!socket) return
+    socket.emit('chat:delete_all', {}, (res) => {
+      if (res?.ok) {
+        setMessages([])
+        setThreads([])
+        setSelectedUserId(null)
+        setSelectedUserName('')
+      }
+    })
+  }
 
   const handleSendMessage = (e) => {
     e.preventDefault()
@@ -156,7 +252,16 @@ export function AdminChatPanel() {
       {/* Left Pane: Threads Sidebar */}
       <div className="border-r border-border flex flex-col h-full bg-stone-50/30 min-h-0">
         <div className="p-4.5 border-b border-border bg-white">
-          <h3 className="font-bold text-xs uppercase tracking-wider text-muted-foreground mb-3">Pesan Masuk</h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-bold text-xs uppercase tracking-wider text-muted-foreground">Pesan Masuk</h3>
+            <button
+              type="button"
+              onClick={handleDeleteAllChats}
+              className="text-[10px] text-destructive hover:underline font-semibold cursor-pointer"
+            >
+              Hapus Semua Chat
+            </button>
+          </div>
           <div className="relative">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground/60" />
             <input
@@ -177,6 +282,7 @@ export function AdminChatPanel() {
           ) : (
             filteredThreads.map((thread) => {
               const isSelected = selectedUserId === thread.userId
+              const isUserOnline = onlineUserIds.has(Number(thread.userId))
               return (
                 <button
                   key={thread.userId}
@@ -191,15 +297,22 @@ export function AdminChatPanel() {
                       : 'hover:bg-surface-warm/40 bg-white'
                   }`}
                 >
-                  <span
-                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-extrabold shadow-sm ${
-                      isSelected
-                        ? 'bg-white/15 text-white'
-                        : 'bg-[#EDE8DC] text-[#412D15]'
-                    }`}
-                  >
-                    {getInitials(thread.userName)}
-                  </span>
+                  <div className="relative shrink-0">
+                    <span
+                      className={`flex h-9 w-9 items-center justify-center rounded-xl text-xs font-extrabold shadow-sm ${
+                        isSelected
+                          ? 'bg-white/15 text-white'
+                          : 'bg-[#EDE8DC] text-[#412D15]'
+                      }`}
+                    >
+                      {getInitials(thread.userName)}
+                    </span>
+                    <span
+                      className={`absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white ${
+                        isUserOnline ? 'bg-emerald-500' : 'bg-stone-300'
+                      }`}
+                    />
+                  </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-baseline mb-0.5">
                       <span className="font-bold text-xs truncate pr-1">
@@ -241,12 +354,32 @@ export function AdminChatPanel() {
                 <div>
                   <h4 className="font-bold text-sm text-foreground">{selectedUserName}</h4>
                   <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[10px] text-muted-foreground font-medium">Aktif</span>
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        onlineUserIds.has(Number(selectedUserId))
+                          ? 'bg-emerald-500 animate-pulse'
+                          : 'bg-stone-400'
+                      }`}
+                    />
+                    <span className="text-[10px] text-muted-foreground font-medium">
+                      {onlineUserIds.has(Number(selectedUserId)) ? 'Online' : 'Offline'}
+                    </span>
                   </div>
                 </div>
               </div>
-              <span className="text-xs text-muted-foreground font-medium bg-stone-100 border border-stone-200/50 px-2 py-0.5 rounded-md">User ID: #{selectedUserId}</span>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={handleDeleteSession}
+                  className="flex items-center gap-1 px-2.5 py-1.5 bg-destructive/10 text-destructive hover:bg-destructive hover:text-white text-[10px] font-bold rounded-lg cursor-pointer transition-colors"
+                >
+                  <Trash2 className="h-3 w-3" />
+                  Hapus Sesi Chat
+                </button>
+                <span className="text-xs text-muted-foreground font-medium bg-stone-100 border border-stone-200/50 px-2 py-0.5 rounded-md">
+                  User ID: #{selectedUserId}
+                </span>
+              </div>
             </div>
 
             {/* Conversation Messages */}

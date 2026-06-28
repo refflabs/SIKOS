@@ -22,6 +22,7 @@ import { formatPrice } from '../../api/roomUtils'
 import { DashboardSkeleton } from '../../components/skeletons/DashboardSkeleton'
 import { QueryError } from '../../components/QueryError'
 import { useSocket } from '../../context/SocketContext'
+import { getSocket } from '../../realtime/socketClient'
 import { AdminChatPanel } from '../components/AdminChatPanel'
 import { toast } from 'sonner'
 import { uploadRoomImage } from '../../api/rooms'
@@ -176,6 +177,56 @@ export function DashboardPage({ search = '' }) {
   const roomsQuery = useRoomsQuery()
   const bookingsQuery = useBookingsQuery()
   const usersQuery = useUsersQuery()
+
+  // Track online users list
+  const [onlineUserIds, setOnlineUserIds] = useState(new Set())
+
+  useEffect(() => {
+    const socket = getSocket()
+    if (!socket) return
+
+    const handleUserOnline = (payload) => {
+      if (payload?.userId) {
+        setOnlineUserIds((prev) => {
+          const next = new Set(prev)
+          next.add(Number(payload.userId))
+          return next
+        })
+      }
+    }
+
+    const handleUserOffline = (payload) => {
+      if (payload?.userId) {
+        setOnlineUserIds((prev) => {
+          const next = new Set(prev)
+          next.delete(Number(payload.userId))
+          return next
+        })
+      }
+    }
+
+    const initOnlineList = () => {
+      socket.emit('presence:get_online_users', {}, (res) => {
+        if (res && Array.isArray(res.users)) {
+          const ids = res.users.map((u) => Number(u.userId))
+          setOnlineUserIds(new Set(ids))
+        }
+      })
+    }
+
+    if (socket.connected) {
+      initOnlineList()
+    }
+    socket.on('connect', initOnlineList)
+    socket.on('user:online', handleUserOnline)
+    socket.on('user:offline', handleUserOffline)
+
+    return () => {
+      socket.off('connect', initOnlineList)
+      socket.off('user:online', handleUserOnline)
+      socket.off('user:offline', handleUserOffline)
+    }
+  }, [connected])
 
   // Room mutations
   const createRoomMutation = useCreateRoomMutation()
@@ -547,6 +598,7 @@ export function DashboardPage({ search = '' }) {
                     <tr className="bg-stone-50 border-b border-border text-xs font-bold text-[#412D15] uppercase tracking-wider">
                       <th className="p-4 pl-6">Nama / Email</th>
                       <th className="p-4">WhatsApp / Telp</th>
+                      <th className="p-4">Status</th>
                       <th className="p-4">Alamat KTP / Asal</th>
                       <th className="p-4 pr-6 text-right">Aksi</th>
                     </tr>
@@ -561,6 +613,18 @@ export function DashboardPage({ search = '' }) {
                           </div>
                         </td>
                         <td className="p-4 font-semibold text-foreground">{usr.phone || '-'}</td>
+                        <td className="p-4">
+                          <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            onlineUserIds.has(usr.id)
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                              : 'bg-stone-50 text-stone-500 border border-stone-200'
+                          }`}>
+                            <span className={`h-1.5 w-1.5 rounded-full ${
+                              onlineUserIds.has(usr.id) ? 'bg-emerald-500 animate-pulse' : 'bg-stone-400'
+                            }`} />
+                            {onlineUserIds.has(usr.id) ? 'Online' : 'Offline'}
+                          </span>
+                        </td>
                         <td className="p-4 max-w-[200px] truncate" title={usr.address}>{usr.address || '-'}</td>
                         <td className="p-4 pr-6 text-right space-x-2">
                           <button
