@@ -79,7 +79,7 @@ function Pagination({ currentPage, totalItems, itemsPerPage, onPageChange }) {
 export function DashboardPage({ search = '' }) {
   const tab = new URLSearchParams(search).get('tab') || 'overview'
   const { user } = useAuth()
-  const { refreshSubscriptions } = useSocket()
+  const { refreshSubscriptions, connected } = useSocket()
   const [viewingReceipt, setViewingReceipt] = useState(null)
 
   // State for filtering
