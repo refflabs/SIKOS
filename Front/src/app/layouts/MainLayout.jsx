@@ -58,17 +58,11 @@ export function MainLayout({ children }) {
         <nav
           className="pointer-events-auto w-full max-w-5xl flex items-center justify-between gap-4 px-5 py-3 rounded-2xl transition-all duration-300"
           style={{
-            background: isDark
-              ? (scrolled ? 'rgba(26,16,6,0.97)' : 'rgba(26,16,6,0.92)')
-              : (scrolled ? 'rgba(253,252,249,0.97)' : 'rgba(253,252,249,0.92)'),
+            background: scrolled ? 'rgba(248,247,242,0.97)' : 'rgba(248,247,242,0.92)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
-            boxShadow: isDark
-              ? (scrolled ? '0 8px 40px rgba(0,0,0,0.28), 0 1.5px 0 rgba(176,186,153,0.18) inset' : '0 4px 24px rgba(0,0,0,0.18)')
-              : (scrolled ? '0 8px 40px rgba(31,21,12,0.12), 0 1.5px 0 rgba(65,45,21,0.08) inset' : '0 4px 24px rgba(31,21,12,0.08)'),
-            border: isDark
-              ? '1px solid rgba(176,186,153,0.18)'
-              : '1px solid rgba(65,45,21,0.12)',
+            boxShadow: scrolled ? '0 8px 40px rgba(47,58,52,0.12), 0 1.5px 0 rgba(107,143,113,0.08) inset' : '0 4px 24px rgba(47,58,52,0.08)',
+            border: '1px solid rgba(107,143,113,0.12)',
           }}
         >
           {/* Logo */}
