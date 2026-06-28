@@ -110,15 +110,41 @@ export function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+
+    // Client-side disposable email check
+    const disposableDomains = [
+      'mailinator.com', 'yopmail.com', '10minutemail.com', 'temp-mail.org', 
+      'guerrillamail.com', 'sharklasers.com', 'dispostable.com', 'getairmail.com', 
+      'maildrop.cc', 'mintemail.com', 'throwawaymail.com', 'tempmail.com', 
+      'emailondash.com', 'generator.email', 'tempr.email', 'mailnesia.com', 'mailcatch.com'
+    ]
+    const emailParts = form.email.split('@')
+    const domain = emailParts[1]?.toLowerCase()
+    if (disposableDomains.includes(domain)) {
+      setError('Email menggunakan domain temporary/disposable yang tidak diizinkan.')
+      return
+    }
+
+    // Client-side phone number validation
+    const phoneRegex = /^\+?[0-9]{9,15}$/
+    if (!phoneRegex.test(form.phone)) {
+      setError('Format nomor HP tidak valid. Hanya menerima angka dan format internasional (contoh: 08xxxxx atau +628xxxxx) dengan panjang 9-15 digit.')
+      return
+    }
+
     if (form.password !== form.password_confirmation) {
       setError('Password dan konfirmasi password tidak cocok.')
       return
     }
     setLoading(true)
     try {
-      await register({ name: form.name, email: form.email, phone: form.phone, password: form.password, password_confirmation: form.password_confirmation })
+      const res = await register({ name: form.name, email: form.email, phone: form.phone, password: form.password, password_confirmation: form.password_confirmation })
+      sessionStorage.setItem('sikos_verify_email', form.email)
+      if (res?._debug_otp) {
+        sessionStorage.setItem('sikos_verify_debug_otp', res._debug_otp)
+      }
       setSuccess(true)
-      setTimeout(() => { window.location.href = '/' }, 1500)
+      setTimeout(() => { window.location.href = '/verify' }, 1500)
     } catch (err) {
       setError(
         err.response?.data?.message ||

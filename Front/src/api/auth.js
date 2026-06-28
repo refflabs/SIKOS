@@ -26,3 +26,13 @@ export const getStoredUser = () => {
     return null
   }
 }
+
+export const verifyOTP = async (email, otp) => {
+  const res = await api.post('/verify', { email, otp })
+  return res.data
+}
+
+export const resendOTP = async (email) => {
+  const res = await api.post('/verify/resend', { email })
+  return res.data
+}

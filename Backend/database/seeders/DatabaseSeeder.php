@@ -13,19 +13,21 @@ class DatabaseSeeder extends Seeder
     {
         // Buat admin
         $admin = User::create([
-            'name'     => 'Admin Kost',
-            'email'    => 'admin@kost.com',
-            'password' => Hash::make('password'),
-            'phone'    => '081234567890',
+            'name'              => 'Admin Kost',
+            'email'             => 'admin@kost.com',
+            'password'          => Hash::make('password'),
+            'phone'             => '081234567890',
+            'email_verified_at' => now(),
         ]);
         $admin->forceFill(['role' => 'admin'])->save();
 
         // Buat user contoh
         User::create([
-            'name'     => 'Budi Santoso',
-            'email'    => 'budi@example.com',
-            'password' => Hash::make('password'),
-            'phone'    => '089876543210',
+            'name'              => 'Budi Santoso',
+            'email'             => 'budi@example.com',
+            'password'          => Hash::make('password'),
+            'phone'             => '089876543210',
+            'email_verified_at' => now(),
         ]);
 
         // Buat 2 Tipe Kamar

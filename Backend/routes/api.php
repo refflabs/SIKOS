@@ -13,8 +13,10 @@ use App\Http\Controllers\UserController;
 */
 
 // Public routes
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login',    [AuthController::class, 'login']);
+Route::post('/register',      [AuthController::class, 'register']);
+Route::post('/login',         [AuthController::class, 'login']);
+Route::post('/verify',        [AuthController::class, 'verify']);
+Route::post('/verify/resend', [AuthController::class, 'resendOtp']);
 Route::get('/ping', function () { return ['ping' => 'pong']; });
 
 // Rooms - public (bisa dilihat tanpa login)

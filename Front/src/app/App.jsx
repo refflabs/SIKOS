@@ -27,6 +27,9 @@ const RegisterPage = lazy(() =>
 const DashboardPage = lazy(() =>
   import("./pages/DashboardPage").then((m) => ({ default: m.DashboardPage })),
 );
+const VerificationPage = lazy(() =>
+  import("./pages/VerificationPage").then((m) => ({ default: m.VerificationPage })),
+);
 
 function parseRoute() {
   const { pathname, search } = window.location;
@@ -95,6 +98,12 @@ export default function App() {
         return (
           <AuthLayout>
             <RegisterPage />
+          </AuthLayout>
+        );
+      case "/verify":
+        return (
+          <AuthLayout>
+            <VerificationPage />
           </AuthLayout>
         );
       case "/dashboard":

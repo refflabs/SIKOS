@@ -117,6 +117,14 @@ export function LoginPage() {
 
       window.location.href = userRole === 'admin' ? '/dashboard' : '/'
     } catch (err) {
+      if (err.response?.status === 403 && err.response?.data?.unverified) {
+        sessionStorage.setItem('sikos_verify_email', err.response.data.email)
+        if (err.response.data._debug_otp) {
+          sessionStorage.setItem('sikos_verify_debug_otp', err.response.data._debug_otp)
+        }
+        window.location.href = '/verify'
+        return
+      }
       setError(
         err.response?.data?.message ||
         err.response?.data?.errors?.email?.[0] ||
