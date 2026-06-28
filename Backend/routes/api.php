@@ -15,35 +15,7 @@ use App\Http\Controllers\UserController;
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login',    [AuthController::class, 'login']);
-Route::get('/ping', function () {
-    try {
-        $db = Illuminate\Support\Facades\DB::select('select version()');
-        $tables = Illuminate\Support\Facades\DB::select("select table_name from information_schema.tables where table_schema = 'public'");
-        return [
-            'ping' => 'pong',
-            'db' => $db,
-            'tables' => $tables,
-            'env' => [
-                'DB_CONNECTION' => env('DB_CONNECTION'),
-                'DB_HOST' => env('DB_HOST'),
-                'DB_PORT' => env('DB_PORT'),
-                'DB_DATABASE' => env('DB_DATABASE'),
-            ]
-        ];
-    } catch (\Throwable $e) {
-        return [
-            'ping' => 'pong',
-            'db_error' => $e->getMessage(),
-            'db_trace' => $e->getTraceAsString(),
-            'env' => [
-                'DB_CONNECTION' => env('DB_CONNECTION'),
-                'DB_HOST' => env('DB_HOST'),
-                'DB_PORT' => env('DB_PORT'),
-                'DB_DATABASE' => env('DB_DATABASE'),
-            ]
-        ];
-    }
-});
+Route::get('/ping', function () { return ['ping' => 'pong']; });
 
 // Rooms - public (bisa dilihat tanpa login)
 Route::get('/rooms',      [RoomController::class, 'index']);
