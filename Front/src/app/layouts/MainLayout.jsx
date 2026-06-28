@@ -28,6 +28,7 @@ export function MainLayout({ children }) {
     } else {
       links.push(
         { name: 'Booking Saya', href: '/?tab=bookings' },
+        { name: 'Histori Pembayaran', href: '/?tab=payments' },
         { name: 'Bantuan', href: '/?tab=help' },
         { name: 'Profil', href: '/?tab=profile' }
       )

@@ -7,6 +7,7 @@ import { QueryError } from '../../components/QueryError'
 import { useAuth } from '../../context/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
 import { BookingHistory } from '../components/BookingHistory'
+import { PaymentHistory } from '../components/PaymentHistory'
 import { ProfileView } from '../components/ProfileView'
 import { HelpCenter } from '../components/HelpCenter'
 
@@ -82,6 +83,7 @@ export function LandingPage({ search = '' }) {
     const renderTabContent = () => {
       switch (activeTab) {
         case 'bookings': return <BookingHistory user={user} />
+        case 'payments': return <PaymentHistory user={user} />
         case 'profile':  return <ProfileView user={user} />
         case 'help':     return <HelpCenter />
         default:         return null
@@ -89,6 +91,7 @@ export function LandingPage({ search = '' }) {
     }
     const tabTitle =
       activeTab === 'bookings' ? 'Histori Booking'
+      : activeTab === 'payments' ? 'Histori Pembayaran'
       : activeTab === 'profile' ? 'Profil Saya'
       : 'Pusat Bantuan'
 
