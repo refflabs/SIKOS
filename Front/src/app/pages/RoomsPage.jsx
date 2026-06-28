@@ -10,9 +10,7 @@ export function RoomsPage() {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
-  const D = isDark
-    ? { bg: '#120d08', card: '#1d1409', border: '#3a2a18', text: '#E1DCC9', muted: '#8a7060', input: '#2a1d0f' }
-    : { bg: '#F7F4EE', card: '#FDFCF9', border: '#D8D0BE', text: '#1F150C', muted: '#7a6247', input: '#F7F4EE' }
+  const D = { bg: '#F7F4E8', card: '#FDFCF9', border: '#D8D0BE', text: '#3A342E', muted: '#7a6247', input: '#F7F4E8' }
 
   const [searchTerm, setSearchTerm] = useState(() => {
     if (typeof window !== 'undefined') {

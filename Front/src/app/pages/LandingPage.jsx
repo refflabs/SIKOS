@@ -56,17 +56,7 @@ export function LandingPage({ search = '' }) {
   const isDark = theme === 'dark'
 
   // Dynamic palette based on theme
-  const C = isDark ? {
-    beige:  '#E1DCC9',
-    mocca:  '#B0BA99',        // sage becomes primary in dark
-    sage:   '#B0BA99',
-    coffee: '#E1DCC9',
-    bg:     '#120d08',
-    card:   '#1d1409',
-    muted:  '#8a7060',
-    border: '#3a2a18',
-    btnText: '#120d08',
-  } : {
+  const C = {
     beige:  '#E8E6BC',
     mocca:  '#CFA16D',
     sage:   '#D8DEAF',
@@ -120,9 +110,7 @@ export function LandingPage({ search = '' }) {
       ═══════════════════════════════════════════ */}
       <section
         className="relative overflow-hidden"
-        style={{ background: isDark
-          ? `linear-gradient(160deg, #1d1409 0%, #120d08 55%, #1a1f14 100%)`
-          : `linear-gradient(160deg, ${C.beige} 0%, ${C.bg} 55%, #f0f2ec 100%)` }}
+        style={{ background: `linear-gradient(160deg, ${C.beige} 0%, ${C.bg} 55%, #f4f6e6 100%)` }}
       >
         {/* Decorative blobs */}
         <div

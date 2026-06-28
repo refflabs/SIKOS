@@ -13,15 +13,11 @@ export function AuthLayout({ children }) {
   const isDark = theme === 'dark'
 
   // Right panel tokens — light vs dark
-  const R = isDark
-    ? { pageBg: '#120d08', cardBg: '#1d1409', cardBorder: '#3a2a18', cardShadow: '0 4px 24px rgba(0,0,0,0.4)' }
-    : { pageBg: '#F7F4EE',  cardBg: '#FDFCF9', cardBorder: '#D8D0BE', cardShadow: '0 4px 24px rgba(31,21,12,0.08)' }
+  const R = { pageBg: '#F7F4E8', cardBg: '#FDFCF9', cardBorder: '#D8D0BE', cardShadow: '0 4px 24px rgba(31,21,12,0.08)' }
 
-  const backBtn = isDark
-    ? { color: '#8a7060', bg: 'rgba(176,186,153,0.08)', border: 'rgba(176,186,153,0.15)', hoverBg: 'rgba(176,186,153,0.15)', hoverColor: '#E1DCC9' }
-    : { color: '#7a6247',  bg: 'rgba(65,45,21,0.06)',   border: 'rgba(65,45,21,0.12)',    hoverBg: 'rgba(65,45,21,0.12)',    hoverColor: '#412D15' }
+  const backBtn = { color: '#7a6247', bg: 'rgba(207,161,109,0.06)', border: 'rgba(207,161,109,0.12)', hoverBg: 'rgba(207,161,109,0.12)', hoverColor: '#3A342E' }
 
-  const footerColor = isDark ? '#5a4030' : '#b8a898'
+  const footerColor = '#b8a898'
 
   return (
     <div

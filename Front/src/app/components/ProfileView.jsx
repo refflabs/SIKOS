@@ -5,9 +5,7 @@ export function ProfileView({ user }) {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
-  const D = isDark
-    ? { bg: '#120d08', card: '#1d1409', header: '#231808', border: '#3a2a18', text: '#E1DCC9', muted: '#8a7060', iconBg: '#2a1d0f', hover: 'rgba(176,186,153,0.06)' }
-    : { bg: '#F7F4EE', card: '#FDFCF9', header: '#f5f0e8', border: '#D8D0BE', text: '#1F150C', muted: '#7a6247', iconBg: '#EDE8DC', hover: '#f5f0e8' }
+  const D = { bg: '#F7F4E8', card: '#FDFCF9', header: '#f5f0e8', border: '#D8D0BE', text: '#3A342E', muted: '#7a6247', iconBg: '#E8E6BC', hover: '#f5f0e8' }
 
   if (!user) return null
 

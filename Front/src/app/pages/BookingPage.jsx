@@ -27,9 +27,7 @@ export function BookingPage({ search = '' }) {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
-  const D = isDark
-    ? { bg: '#120d08', card: '#1d1409', cardHover: '#231808', border: '#3a2a18', text: '#E1DCC9', muted: '#8a7060', sub: '#5a4030' }
-    : { bg: '#F7F4EE', card: '#FDFCF9', cardHover: '#f5f0e8', border: '#D8D0BE', text: '#1F150C', muted: '#7a6247', sub: '#b8a898' }
+  const D = { bg: '#F7F4E8', card: '#FDFCF9', cardHover: '#f5f0e8', border: '#D8D0BE', text: '#3A342E', muted: '#7a6247', sub: '#b8a898' }
 
   const [message, setMessage] = useState({ type: '', text: '' })
 
@@ -114,14 +112,12 @@ export function BookingPage({ search = '' }) {
       <div
         className="border-b"
         style={{
-          background: isDark
-            ? 'linear-gradient(160deg, #1a1006 0%, #120d08 100%)'
-            : 'linear-gradient(160deg, #F5EFE6 0%, #F7F4EE 100%)',
+          background: 'linear-gradient(160deg, #F5EFE6 0%, #F7F4E8 100%)',
           borderColor: D.border
         }}
       >
         <div className="container-app py-8 md:py-10 max-w-5xl">
-          <p className="text-xs uppercase tracking-widest font-semibold mb-2" style={{ color: isDark ? '#B0BA99' : '#7a6247' }}>Reservasi</p>
+          <p className="text-xs uppercase tracking-widest font-semibold mb-2" style={{ color: '#CFA16D' }}>Reservasi</p>
           <h1 className="text-2xl sm:text-3xl font-extrabold mb-2" style={{ color: D.text }}>Form Booking</h1>
           <p className="text-sm" style={{ color: D.muted }}>Lengkapi data — proses cepat & aman.</p>
         </div>
@@ -162,7 +158,7 @@ export function BookingPage({ search = '' }) {
                   onChange={handleChange}
                   className="input-field outline-none"
                   style={{
-                    background: isDark ? '#120d08' : '#F7F4EE',
+                    background: '#F7F4E8',
                     color: D.text,
                     borderColor: D.border
                   }}
@@ -186,7 +182,7 @@ export function BookingPage({ search = '' }) {
                     onChange={handleChange}
                     className="input-field outline-none"
                     style={{
-                      background: isDark ? '#120d08' : '#F7F4EE',
+                      background: '#F7F4E8',
                       color: D.text,
                       borderColor: D.border
                     }}
@@ -201,7 +197,7 @@ export function BookingPage({ search = '' }) {
                     onChange={handleChange}
                     className="input-field outline-none"
                     style={{
-                      background: isDark ? '#120d08' : '#F7F4EE',
+                      background: '#F7F4E8',
                       color: D.text,
                       borderColor: D.border
                     }}
@@ -222,7 +218,7 @@ export function BookingPage({ search = '' }) {
                   rows={3}
                   className="input-field resize-none outline-none"
                   style={{
-                    background: isDark ? '#120d08' : '#F7F4EE',
+                    background: '#F7F4E8',
                     color: D.text,
                     borderColor: D.border
                   }}

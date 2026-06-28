@@ -49,7 +49,7 @@ export function MainLayout({ children }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: isDark ? '#120d08' : '#F7F4EE' }}>
+    <div className="min-h-screen flex flex-col" style={{ background: '#F7F4E8' }}>
 
       {/* ───── FLOATING NAVBAR ───── */}
       <header

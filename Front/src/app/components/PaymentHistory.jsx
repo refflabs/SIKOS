@@ -11,9 +11,7 @@ export function PaymentHistory({ user }) {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
-  const D = isDark
-    ? { bg: '#120d08', card: '#1d1409', cardHover: '#231808', border: '#3a2a18', text: '#E1DCC9', muted: '#8a7060', sub: '#5a4030' }
-    : { bg: '#F7F4E8', card: '#FDFCF9', cardHover: '#f5f0e8', border: '#D8D0BE', text: '#3A342E', muted: '#7a6247', sub: '#b8a898' }
+  const D = { bg: '#F7F4E8', card: '#FDFCF9', cardHover: '#f5f0e8', border: '#D8D0BE', text: '#3A342E', muted: '#7a6247', sub: '#b8a898' }
 
   const { data, isLoading, isError, refetch } = useBookingsQuery()
   const bookings = Array.isArray(data) ? data : []
