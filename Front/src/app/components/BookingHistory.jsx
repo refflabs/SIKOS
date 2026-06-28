@@ -15,7 +15,7 @@ export function BookingHistory({ user }) {
 
   const D = isDark
     ? { bg: '#120d08', card: '#1d1409', cardHover: '#231808', border: '#3a2a18', text: '#E1DCC9', muted: '#8a7060', sub: '#5a4030' }
-    : { bg: '#F7F4EE', card: '#FDFCF9', cardHover: '#f5f0e8', border: '#D8D0BE', text: '#1F150C', muted: '#7a6247', sub: '#b8a898' }
+    : { bg: '#F7F4E8', card: '#FDFCF9', cardHover: '#f5f0e8', border: '#D8D0BE', text: '#3A342E', muted: '#7a6247', sub: '#b8a898' }
 
   const { data, isLoading, isError, refetch } = useBookingsQuery()
   const bookings = Array.isArray(data) ? data : []
@@ -173,22 +173,22 @@ function BookingHistoryItem({ booking: b, D, waMessage, isFirst, refetch }) {
 
         <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs" style={{ color: D.muted }}>
           <span className="flex items-center gap-1.5">
-            <CalendarDays className="h-4 w-4 shrink-0" style={{ color: '#B0BA99' }} />
+            <CalendarDays className="h-4 w-4 shrink-0" style={{ color: '#CFA16D' }} />
             Mulai: {b.check_in ? String(b.check_in).slice(0, 10) : '—'}
           </span>
           <span className="flex items-center gap-1.5">
-            <CalendarDays className="h-4 w-4 shrink-0" style={{ color: '#B0BA99' }} />
+            <CalendarDays className="h-4 w-4 shrink-0" style={{ color: '#CFA16D' }} />
             Selesai: {b.check_out ? String(b.check_out).slice(0, 10) : '—'}
           </span>
           <span className="flex items-center gap-1.5">
-            <Clock className="h-4 w-4 shrink-0" style={{ color: '#B0BA99' }} />
+            <Clock className="h-4 w-4 shrink-0" style={{ color: '#CFA16D' }} />
             Durasi: {b.duration_months || 1} Bulan
           </span>
         </div>
 
         <div className="text-sm font-semibold pt-1" style={{ color: D.text }}>
           Total Biaya:{' '}
-          <span style={{ color: '#B0BA99' }}>{formatPrice(totalPrice)}</span>
+          <span style={{ color: '#CFA16D' }}>{formatPrice(totalPrice)}</span>
         </div>
 
         {/* Form Perpanjang */}
@@ -252,8 +252,8 @@ function BookingHistoryItem({ booking: b, D, waMessage, isFirst, refetch }) {
               <label
                 className="inline-flex items-center justify-center gap-1.5 rounded-2xl px-4 py-2.5 text-xs font-bold transition-all duration-200 text-white cursor-pointer shadow-sm active:scale-95"
                 style={{
-                  background: isDark ? 'linear-gradient(135deg,#B0BA99,#8a9478)' : 'linear-gradient(135deg,#412D15,#2e1e0a)',
-                  color: isDark ? '#1F150C' : '#E1DCC9'
+                  background: 'linear-gradient(135deg,#CFA16D,#b08451)',
+                  color: '#3A342E'
                 }}
               >
                 <span>Upload Bukti Bayar</span>

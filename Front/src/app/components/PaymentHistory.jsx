@@ -13,7 +13,7 @@ export function PaymentHistory({ user }) {
 
   const D = isDark
     ? { bg: '#120d08', card: '#1d1409', cardHover: '#231808', border: '#3a2a18', text: '#E1DCC9', muted: '#8a7060', sub: '#5a4030' }
-    : { bg: '#F7F4EE', card: '#FDFCF9', cardHover: '#f5f0e8', border: '#D8D0BE', text: '#1F150C', muted: '#7a6247', sub: '#b8a898' }
+    : { bg: '#F7F4E8', card: '#FDFCF9', cardHover: '#f5f0e8', border: '#D8D0BE', text: '#3A342E', muted: '#7a6247', sub: '#b8a898' }
 
   const { data, isLoading, isError, refetch } = useBookingsQuery()
   const bookings = Array.isArray(data) ? data : []
@@ -43,7 +43,7 @@ export function PaymentHistory({ user }) {
       {/* Header */}
       <div className="px-6 py-5" style={{ borderBottom: `1px solid ${D.border}`, background: isDark ? '#231808' : '#f5f0e8' }}>
         <h2 className="text-lg font-bold flex items-center gap-2" style={{ color: D.text }}>
-          <CreditCard className="h-5 w-5 text-[#B0BA99]" />
+          <CreditCard className="h-5 w-5 text-[#CFA16D]" />
           Histori Pembayaran Anda
         </h2>
         <p className="text-xs mt-1" style={{ color: D.muted }}>
@@ -104,11 +104,11 @@ export function PaymentHistory({ user }) {
                     </td>
                     <td className="p-4">
                       <span className="flex items-center gap-1">
-                        <CalendarDays className="h-3.5 w-3.5 text-[#B0BA99]" />
+                        <CalendarDays className="h-3.5 w-3.5 text-[#CFA16D]" />
                         {b.check_in ? String(b.check_in).slice(0, 10) : '—'} s/d {b.check_out ? String(b.check_out).slice(0, 10) : '—'}
                       </span>
                     </td>
-                    <td className="p-4 font-semibold" style={{ color: '#B0BA99' }}>
+                    <td className="p-4 font-semibold" style={{ color: '#CFA16D' }}>
                       {formatPrice(totalPrice)}
                     </td>
                     <td className="p-4">
@@ -117,7 +117,7 @@ export function PaymentHistory({ user }) {
                           href={b.payment_receipt}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 font-semibold text-[#B0BA99] hover:underline"
+                          className="inline-flex items-center gap-1.5 font-semibold text-[#CFA16D] hover:underline"
                         >
                           Lihat Bukti Bayar
                           <ExternalLink className="h-3 w-3" />

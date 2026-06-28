@@ -67,15 +67,15 @@ export function LandingPage({ search = '' }) {
     border: '#3a2a18',
     btnText: '#120d08',
   } : {
-    beige:  '#E1DCC9',
-    mocca:  '#412D15',
-    sage:   '#B0BA99',
-    coffee: '#1F150C',
-    bg:     '#F7F4EE',
+    beige:  '#E8E6BC',
+    mocca:  '#CFA16D',
+    sage:   '#D8DEAF',
+    coffee: '#3A342E',
+    bg:     '#F7F4E8',
     card:   '#FDFCF9',
     muted:  '#7a6247',
     border: '#D8D0BE',
-    btnText: '#E1DCC9',
+    btnText: '#3A342E',
   }
 
   /* ── Tab views ── */

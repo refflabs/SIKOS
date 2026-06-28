@@ -4,49 +4,49 @@
   --font-size: 16px;
 
   /* Brand — Mocca Brown */
-  --brand: #412D15;
-  --brand-hover: #2e1e0a;
-  --brand-foreground: #E1DCC9;
+  --brand: #CFA16D;
+  --brand-hover: #b08451;
+  --brand-foreground: #3A342E;
 
   --primary: var(--brand);
   --primary-dark: var(--brand-hover);
   --primary-foreground: var(--brand-foreground);
 
   /* Accents */
-  --sage: #B0BA99;
-  --sage-soft: #f0f2ec;
-  --mocca: #412D15;
-  --mocca-soft: #f5efe6;
+  --sage: #D8DEAF;
+  --sage-soft: #f4f6e6;
+  --mocca: #CFA16D;
+  --mocca-soft: #faf6eb;
 
   /* Warm neutrals — Beige/Coffee */
-  --background: #F7F4EE;
-  --foreground: #1F150C;
+  --background: #F7F4E8;
+  --foreground: #3A342E;
   --card: #FDFCF9;
-  --card-foreground: #1F150C;
+  --card-foreground: #3A342E;
 
-  --secondary: #EDE8DC;
-  --secondary-foreground: #412D15;
-  --muted: #EDE8DC;
+  --secondary: #E8E6BC;
+  --secondary-foreground: #3A342E;
+  --muted: #E8E6BC;
   --muted-foreground: #7a6247;
 
   --border: #D8D0BE;
   --input: #D8D0BE;
   --input-background: #FDFCF9;
-  --ring: #B0BA99;
+  --ring: #D8DEAF;
 
   --destructive: #c0392b;
-  --success: #4a7c59;
+  --success: #4ade80;
   --warning: #c07d3a;
   --info: #5b7fa6;
 
   --radius: 0.75rem;
 
   /* Section surfaces */
-  --surface-warm: #F7F4EE;
-  --surface-beige: #E1DCC9;
-  --surface-sage: #f0f2ec;
-  --surface-mocca: #f5efe6;
-  --surface-stone: #EDE8DC;
+  --surface-warm: #F7F4E8;
+  --surface-beige: #E8E6BC;
+  --surface-sage: #f4f6e6;
+  --surface-mocca: #faf6eb;
+  --surface-stone: #E8E6BC;
 }
 
 @theme inline {
