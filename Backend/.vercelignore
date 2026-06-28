@@ -1,6 +1,6 @@
 vendor/
+.env
+.env.*
 node_modules/
-.env*
-.vercel/
-*.log
-bootstrap/cache/*.php
+tests/
+phpunit.xml

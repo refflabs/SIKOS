@@ -91,9 +91,8 @@ export function RoomsPage() {
                 onBlur={e => e.currentTarget.style.borderColor = D.border}
               >
                 <option value="all">Semua tipe</option>
-                <option value="single">Single</option>
-                <option value="double">Double</option>
-                <option value="suite">Suite</option>
+                <option value="kosongan">Kosongan</option>
+                <option value="fasilitas">Fasilitas (Isian)</option>
               </select>
               <select
                 value={selectedStatus}

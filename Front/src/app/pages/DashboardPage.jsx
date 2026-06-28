@@ -92,7 +92,7 @@ export function DashboardPage({ search = '' }) {
 
   // Form fields for room
   const [formRoomName, setFormRoomName] = useState('')
-  const [formRoomType, setFormRoomType] = useState('single')
+  const [formRoomType, setFormRoomType] = useState('kosongan')
   const [formRoomPrice, setFormRoomPrice] = useState(0)
   const [formRoomFloor, setFormRoomFloor] = useState(1)
   const [formRoomSize, setFormRoomSize] = useState('3x4 m')
@@ -274,7 +274,7 @@ export function DashboardPage({ search = '' }) {
     setModalMode('add')
     setSelectedRoom(null)
     setFormRoomName('')
-    setFormRoomType('single')
+    setFormRoomType('kosongan')
     setFormRoomPrice(800000)
     setFormRoomFloor(1)
     setFormRoomSize('3x4 m')
@@ -288,7 +288,7 @@ export function DashboardPage({ search = '' }) {
     setModalMode('edit')
     setSelectedRoom(room)
     setFormRoomName(room.name || '')
-    setFormRoomType(room.type || 'single')
+    setFormRoomType(room.type || 'kosongan')
     setFormRoomPrice(room.price || 0)
     setFormRoomFloor(room.floor || 1)
     setFormRoomSize(room.size || '3x4 m')
@@ -1106,9 +1106,8 @@ export function DashboardPage({ search = '' }) {
                     onChange={(e) => setFormRoomType(e.target.value)}
                     className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-stone-50/50"
                   >
-                    <option value="single">Single</option>
-                    <option value="double">Double</option>
-                    <option value="suite">Suite</option>
+                    <option value="kosongan">Kosongan</option>
+                    <option value="fasilitas">Fasilitas (Isian)</option>
                   </select>
                 </div>
 
