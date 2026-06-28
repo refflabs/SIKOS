@@ -9,7 +9,7 @@ import {
 } from '../../hooks/queries'
 import { useAuth } from '../../context/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
-import { formatPrice, roomImage } from '../../api/roomUtils'
+import { formatPrice, roomImage, roomFacilities } from '../../api/roomUtils'
 import { QueryError } from '../../components/QueryError'
 
 function BookingFormSkeleton() {
@@ -246,7 +246,20 @@ export function BookingPage({ search = '' }) {
                 <>
                   <LazyImage src={roomImage(room)} alt={room.name} wrapperClassName="aspect-[16/10] w-full" />
                   <div className="p-6">
-                    <h3 className="font-bold text-lg mb-4" style={{ color: D.text }}>{room.name}</h3>
+                    <h3 className="font-bold text-base mb-1" style={{ color: D.text }}>{room.name}</h3>
+                    <p className="text-[11px] leading-relaxed mb-3" style={{ color: D.muted }}>{room.description}</p>
+                    <div className="flex flex-wrap gap-1 mb-4">
+                      {room.size && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-full font-medium" style={{ background: isDark ? '#2a1a0e' : '#F2EDE4', color: D.text }}>
+                          {room.size}
+                        </span>
+                      )}
+                      {roomFacilities(room).map((f) => (
+                        <span key={f} className="text-[10px] px-2 py-0.5 rounded-full font-medium" style={{ background: isDark ? '#2a1a0e' : '#F2EDE4', color: D.text }}>
+                          {f}
+                        </span>
+                      ))}
+                    </div>
                     <div className="space-y-2 text-sm border-t pt-4" style={{ borderColor: D.border }}>
                       <div className="flex justify-between" style={{ color: D.muted }}>
                         <span>Harga/bulan</span>

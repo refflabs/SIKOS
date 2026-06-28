@@ -32,7 +32,6 @@ export function RoomsPage() {
   const filtered = rooms.filter((room) =>
     room.name?.toLowerCase().includes(searchTerm.toLowerCase()),
   )
-  const [featured, ...rest] = filtered
 
   const inputStyle = {
     background: D.input,
@@ -125,18 +124,8 @@ export function RoomsPage() {
             <p className="text-sm" style={{ color: D.muted }}>Tidak ada kamar yang cocok dengan pencarian Anda.</p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featured && (
-              <div className="md:col-span-2 lg:row-span-2">
-                <div
-                  className="h-full rounded-3xl p-4"
-                  style={{ background: D.card, border: `1px solid ${D.border}`, boxShadow: isDark ? '0 2px 12px rgba(0,0,0,0.3)' : '0 2px 12px rgba(31,21,12,0.06)' }}
-                >
-                  <ListingCard room={featured} featured ctaStyle="primary" />
-                </div>
-              </div>
-            )}
-            {rest.map((room) => (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filtered.map((room) => (
               <div
                 key={room.id}
                 className="rounded-3xl p-3 transition-all duration-300"
