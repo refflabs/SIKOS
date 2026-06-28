@@ -32,4 +32,3 @@ Backend/storage/framework/cache/
 
 .vercel
 .env*
-.agent/
