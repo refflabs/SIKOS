@@ -14,7 +14,7 @@ export const roomFacilities = (room) => {
 }
 
 export const isRoomAvailable = (room) =>
-  room?.status === 'available'
+  room?.stock > 0
 
 export const statusLabel = (status) => {
   if (status === 'available') return 'Tersedia'

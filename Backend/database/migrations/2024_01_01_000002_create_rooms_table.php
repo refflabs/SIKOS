@@ -13,6 +13,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('type'); // single, double, suite
             $table->decimal('price', 10, 2); // harga per bulan
+            $table->integer('capacity')->default(0);
+            $table->integer('stock')->default(0);
             $table->string('status')->default('available'); // available, booked, maintenance
             $table->text('description')->nullable();
             $table->string('image')->nullable();

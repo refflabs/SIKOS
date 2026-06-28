@@ -62,8 +62,8 @@ export function RoomDetailPage({ search = '' }) {
           <div className="rounded-xl overflow-hidden aspect-[16/10] mb-6">
             <LazyImage src={roomImage(room)} alt={room.name} wrapperClassName="h-full w-full" />
           </div>
-          <Badge variant={room.status} className="mb-3">
-            {statusLabel(room.status)}
+          <Badge variant={room.stock > 0 ? 'available' : 'booked'} className="mb-3">
+            {room.stock > 0 ? 'Tersedia' : 'Habis'}
           </Badge>
           <h1 className="text-hero text-2xl sm:text-3xl mb-3">{room.name}</h1>
           <p className="text-subtitle">{room.description}</p>
@@ -80,7 +80,10 @@ export function RoomDetailPage({ search = '' }) {
         <div className="lg:sticky lg:top-24 h-fit">
           <div className="rounded-2xl border border-border bg-white p-6 shadow-md">
             <p className="text-label mb-2">Harga sewa</p>
-            <p className="text-price-lg mb-6">{formatPrice(room.price)} / bulan</p>
+            <p className="text-price-lg mb-4">{formatPrice(room.price)} / bulan</p>
+            <p className="text-xs font-semibold mb-6" style={{ color: room.stock > 0 ? '#412D15' : '#C86B4F' }}>
+              Stok Ketersediaan: {room.stock} Kamar
+            </p>
             {isRoomAvailable(room) ? (
               <a href={`/booking?room=${room.id}`}>
                 <Button variant="primary" size="lg" className="w-full">

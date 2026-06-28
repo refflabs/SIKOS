@@ -51,7 +51,13 @@ class RoomController extends Controller
             'floor'       => 'nullable|integer',
             'size'        => 'nullable|string',
             'facilities'  => 'nullable|array',
+            'capacity'    => 'nullable|integer',
+            'stock'       => 'nullable|integer',
         ]);
+
+        if (!isset($validated['stock']) && isset($validated['capacity'])) {
+            $validated['stock'] = $validated['capacity'];
+        }
 
         $room = Room::create($validated);
 
@@ -75,9 +81,14 @@ class RoomController extends Controller
             'floor'       => 'nullable|integer',
             'size'        => 'nullable|string',
             'facilities'  => 'nullable|array',
+            'capacity'    => 'nullable|integer',
+            'stock'       => 'nullable|integer',
         ]);
 
         $room->update($validated);
+
+        // Sync availability
+        (new BookingController)->syncRoomAvailability($room);
 
         return response()->json([
             'message' => 'Kamar berhasil diupdate',

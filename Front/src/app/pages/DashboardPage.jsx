@@ -99,6 +99,8 @@ export function DashboardPage({ search = '' }) {
   const [formRoomStatus, setFormRoomStatus] = useState('available')
   const [formRoomDescription, setFormRoomDescription] = useState('')
   const [formRoomImage, setFormRoomImage] = useState('')
+  const [formRoomCapacity, setFormRoomCapacity] = useState(10)
+  const [formRoomStock, setFormRoomStock] = useState(10)
 
   // State for managing users
   const [userSearch, setUserSearch] = useState('')
@@ -260,12 +262,16 @@ export function DashboardPage({ search = '' }) {
   const bookings = Array.isArray(bookingsQuery.data) ? bookingsQuery.data : []
 
   const stats = useMemo(
-    () => ({
-      total: rooms.length,
-      available: rooms.filter((r) => r.status === 'available').length,
-      booked: rooms.filter((r) => r.status === 'booked' || r.status === 'occupied').length,
-      pendingBookings: bookings.filter((b) => b.status === 'pending').length,
-    }),
+    () => {
+      const totalCapacity = rooms.reduce((sum, r) => sum + (Number(r.capacity) || 0), 0)
+      const totalStock = rooms.reduce((sum, r) => sum + (Number(r.stock) ?? 0), 0)
+      return {
+        total: totalCapacity,
+        available: totalStock,
+        booked: Math.max(0, totalCapacity - totalStock),
+        pendingBookings: bookings.filter((b) => b.status === 'pending').length,
+      }
+    },
     [rooms, bookings],
   )
 
@@ -275,12 +281,14 @@ export function DashboardPage({ search = '' }) {
     setSelectedRoom(null)
     setFormRoomName('')
     setFormRoomType('kosongan')
-    setFormRoomPrice(800000)
+    setFormRoomPrice(500000)
     setFormRoomFloor(1)
     setFormRoomSize('3x4 m')
     setFormRoomStatus('available')
     setFormRoomDescription('')
     setFormRoomImage('')
+    setFormRoomCapacity(10)
+    setFormRoomStock(10)
     setIsModalOpen(true)
   }
 
@@ -295,6 +303,8 @@ export function DashboardPage({ search = '' }) {
     setFormRoomStatus(room.status || 'available')
     setFormRoomDescription(room.description || '')
     setFormRoomImage(room.image || '')
+    setFormRoomCapacity(room.capacity || 10)
+    setFormRoomStock(room.stock || 10)
     setIsModalOpen(true)
   }
 
@@ -314,6 +324,8 @@ export function DashboardPage({ search = '' }) {
       status: formRoomStatus,
       description: formRoomDescription,
       image: formRoomImage,
+      capacity: Number(formRoomCapacity),
+      stock: Number(formRoomStock),
     }
 
     if (modalMode === 'add') {
@@ -902,7 +914,7 @@ export function DashboardPage({ search = '' }) {
                         </div>
                         <div className="space-y-1.5 text-xs text-muted-foreground">
                           <p><span className="font-semibold text-foreground">Tipe:</span> <span className="capitalize">{r.type}</span></p>
-                          <p><span className="font-semibold text-foreground">Lantai:</span> {r.floor || 1} &bull; <span className="font-semibold text-foreground">Ukuran:</span> {r.size || '3x4 m'}</p>
+                          <p><span className="font-semibold text-foreground">Kapasitas:</span> {r.capacity || 0} &bull; <span className="font-semibold text-foreground">Tersedia:</span> {r.stock ?? 0} &bull; <span className="font-semibold text-foreground">Ukuran:</span> {r.size || '3x4 m'}</p>
                         </div>
                       </div>
                     </div>
@@ -1124,13 +1136,25 @@ export function DashboardPage({ search = '' }) {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-foreground mb-1">Lantai</label>
+                  <label className="block text-xs font-semibold text-foreground mb-1">Kapasitas (Total)</label>
                   <input
                     type="number"
-                    value={formRoomFloor}
-                    onChange={(e) => setFormRoomFloor(Number(e.target.value))}
+                    value={formRoomCapacity}
+                    onChange={(e) => setFormRoomCapacity(Number(e.target.value))}
                     required
                     min="1"
+                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-stone-50/50"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-foreground mb-1">Stok (Tersedia)</label>
+                  <input
+                    type="number"
+                    value={formRoomStock}
+                    onChange={(e) => setFormRoomStock(Number(e.target.value))}
+                    required
+                    min="0"
                     className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-stone-50/50"
                   />
                 </div>

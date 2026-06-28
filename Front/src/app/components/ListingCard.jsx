@@ -82,7 +82,7 @@ export function ListingCard({
         />
         {/* Status badge */}
         <div className="absolute top-3 left-3 z-10">
-          <Badge variant={room.status}>{statusLabel(room.status)}</Badge>
+          <Badge variant={room.stock > 0 ? 'available' : 'booked'}>{room.stock > 0 ? 'Tersedia' : 'Habis'}</Badge>
         </div>
         {/* Rating pill */}
         <div
@@ -118,9 +118,11 @@ export function ListingCard({
         </a>
 
         <p className="text-xs flex items-center gap-1" style={{ color: C.muted }}>
-          <MapPin className="h-3 w-3 shrink-0" style={{ color: '#B0BA99' }} />
-          {room.type ? `${room.type}` : ''}
+          <span className="capitalize font-semibold">{room.type === 'kosongan' ? 'Kosongan' : 'Fasilitas (Isian)'}</span>
           {room.size ? ` · ${room.size}` : ''}
+        </p>
+        <p className="text-xs font-semibold mt-0.5" style={{ color: room.stock > 0 ? (isDark ? '#B0BA99' : '#412D15') : '#C86B4F' }}>
+          Tersedia: {room.stock} Kamar
         </p>
 
         {/* Facility badges */}

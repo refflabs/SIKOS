@@ -53,8 +53,8 @@ class BookingController extends Controller
 
         $room = Room::findOrFail($request->room_id);
 
-        if ($room->status !== 'available') {
-            return response()->json(['message' => 'Kamar tidak tersedia'], 422);
+        if ($room->stock <= 0) {
+            return response()->json(['message' => 'Stok kamar tipe ini habis'], 422);
         }
 
         $checkIn   = \Carbon\Carbon::parse($request->check_in);
@@ -72,8 +72,9 @@ class BookingController extends Controller
             'notes'           => $request->notes,
         ]);
 
-        // Update status kamar jadi booked
-        $room->update(['status' => 'booked']);
+        // Decrement stock
+        $room->decrement('stock');
+        $room->update(['status' => $room->stock > 0 ? 'available' : 'booked']);
         $room->refresh();
 
         $realtime = app(RealtimeService::class);
@@ -182,13 +183,9 @@ class BookingController extends Controller
         $booking->refresh();
 
         if ($roomChanged) {
-            $targetRoom->update(['status' => 'booked']);
             $this->syncRoomAvailability($oldRoom);
             $this->syncRoomAvailability($targetRoom);
-            
-            app(RealtimeService::class)->roomUpdated($oldRoom->fresh());
-            app(RealtimeService::class)->roomUpdated($targetRoom->fresh());
-        } elseif ($booking->status === 'rejected' || $booking->status === 'ended') {
+        } else {
             $this->syncRoomAvailability($booking->room);
         }
 
@@ -242,19 +239,20 @@ class BookingController extends Controller
         ]);
     }
 
-    private function syncRoomAvailability(Room $room): void
+    public function syncRoomAvailability(Room $room): void
     {
-        $hasActiveBookings = $room->bookings()
+        $activeBookings = $room->bookings()
             ->whereIn('status', ['pending', 'accepted'])
-            ->exists();
+            ->count();
 
-        $newStatus = $hasActiveBookings ? 'booked' : 'available';
+        $newStock = max(0, $room->capacity - $activeBookings);
+        $newStatus = $newStock > 0 ? 'available' : 'booked';
 
-        if ($room->status === $newStatus) {
-            return;
-        }
+        $room->update([
+            'stock'  => $newStock,
+            'status' => $newStatus
+        ]);
 
-        $room->update(['status' => $newStatus]);
         app(RealtimeService::class)->roomUpdated($room->fresh());
     }
 
@@ -281,13 +279,8 @@ class BookingController extends Controller
             
             $room = $booking->room;
             if ($room) {
-                $hasActiveBookings = $room->bookings()
-                    ->whereIn('status', ['pending', 'accepted'])
-                    ->exists();
-                $newStatus = $hasActiveBookings ? 'booked' : 'available';
-                $room->update(['status' => $newStatus]);
-                
-                app(RealtimeService::class)->roomUpdated($room->fresh());
+                $controller = new self();
+                $controller->syncRoomAvailability($room);
             }
             
             app(RealtimeService::class)->bookingStatusChanged($booking->fresh(['user', 'room']));
