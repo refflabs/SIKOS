@@ -62,10 +62,10 @@ export function RoomsPage() {
         </p>
       </div>
 
-      {/* Sticky search bar */}
+      {/* Search bar */}
       <div
-        className="sticky top-14 sm:top-16 z-20 backdrop-blur-md"
-        style={{ background: isDark ? 'rgba(18,13,8,0.96)' : 'rgba(247,244,238,0.96)', borderBottom: `1px solid ${D.border}`, borderTop: `1px solid ${D.border}` }}
+        className="relative z-10"
+        style={{ background: isDark ? 'rgba(18,13,8,0.3)' : 'rgba(247,244,238,0.3)', borderBottom: `1px solid ${D.border}` }}
       >
         <div className="container-app py-3">
           <div className="flex flex-col sm:flex-row gap-3">
