@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useMemo, useState } from 'react'
 import { Building2, CalendarDays, DoorOpen, Inbox, Save, Sparkles, Phone, MapPin, Eye, Bell, Settings, Shield, MessageSquare, ArrowRight, Pencil, Plus, Trash2, Upload, Users } from 'lucide-react'
 import { AdminLayout } from '../layouts/AdminLayout'
 import { StatCard } from '../components/StatCard'
@@ -41,7 +41,7 @@ function Pagination({ currentPage, totalItems, itemsPerPage, onPageChange }) {
           type="button"
           disabled={currentPage === 1}
           onClick={() => onPageChange(currentPage - 1)}
-          className="px-3 py-1.5 rounded-lg border border-border text-xs font-semibold hover:bg-stone-50 disabled:opacity-30 disabled:hover:bg-white transition-colors cursor-pointer disabled:cursor-not-allowed"
+          className="px-3 py-1.5 rounded-lg border border-border text-xs font-semibold hover:bg-secondary disabled:opacity-30 disabled:hover:bg-white transition-colors cursor-pointer disabled:cursor-not-allowed"
         >
           Sebelumnya
         </button>
@@ -56,7 +56,7 @@ function Pagination({ currentPage, totalItems, itemsPerPage, onPageChange }) {
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 isCurrent 
                   ? 'bg-primary text-white shadow-sm'
-                  : 'border border-border hover:bg-stone-50 text-foreground'
+                  : 'border border-border hover:bg-secondary text-foreground'
               }`}
             >
               {page}
@@ -67,7 +67,7 @@ function Pagination({ currentPage, totalItems, itemsPerPage, onPageChange }) {
           type="button"
           disabled={currentPage === totalPages}
           onClick={() => onPageChange(currentPage + 1)}
-          className="px-3 py-1.5 rounded-lg border border-border text-xs font-semibold hover:bg-stone-50 disabled:opacity-30 disabled:hover:bg-white transition-colors cursor-pointer disabled:cursor-not-allowed"
+          className="px-3 py-1.5 rounded-lg border border-border text-xs font-semibold hover:bg-secondary disabled:opacity-30 disabled:hover:bg-white transition-colors cursor-pointer disabled:cursor-not-allowed"
         >
           Selanjutnya
         </button>
@@ -595,7 +595,7 @@ export function DashboardPage({ search = '' }) {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-stone-50 border-b border-border text-xs font-bold text-[#412D15] uppercase tracking-wider">
+                    <tr className="bg-secondary border-b border-border text-xs font-bold text-[#2f3a34] uppercase tracking-wider">
                       <th className="p-4 pl-6">Nama / Email</th>
                       <th className="p-4">WhatsApp / Telp</th>
                       <th className="p-4">Status</th>
@@ -617,7 +617,7 @@ export function DashboardPage({ search = '' }) {
                           <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold ${
                             onlineUserIds.has(usr.id)
                               ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                              : 'bg-stone-50 text-stone-500 border border-stone-200'
+                              : 'bg-secondary text-stone-500 border border-stone-200'
                           }`}>
                             <span className={`h-1.5 w-1.5 rounded-full ${
                               onlineUserIds.has(usr.id) ? 'bg-emerald-500 animate-pulse' : 'bg-stone-400'
@@ -630,7 +630,7 @@ export function DashboardPage({ search = '' }) {
                           <button
                             type="button"
                             onClick={() => handleOpenUserEditModal(usr)}
-                            className="inline-flex items-center justify-center px-3 py-1.5 bg-[#EDE8DC] hover:bg-primary hover:text-white text-primary font-bold rounded-lg cursor-pointer shadow-sm active:scale-95 transition-all"
+                            className="inline-flex items-center justify-center px-3 py-1.5 bg-[#d9e2d3] hover:bg-primary hover:text-white text-primary font-bold rounded-lg cursor-pointer shadow-sm active:scale-95 transition-all"
                           >
                             Edit
                           </button>
@@ -661,7 +661,7 @@ export function DashboardPage({ search = '' }) {
         <AdminChatPanel />
       ) : activeTab === 'settings' ? (
         <div className="max-w-3xl bg-white rounded-3xl border border-border shadow-sm overflow-hidden">
-          <div className="px-6 py-5 border-b border-border bg-stone-50/50 flex items-center justify-between">
+          <div className="px-6 py-5 border-b border-border bg-secondary/50 flex items-center justify-between">
             <div>
               <h2 className="font-bold text-base text-primary">Pengaturan Kost & Sistem</h2>
               <p className="text-xs text-muted-foreground mt-0.5">Atur profil hunian dan notifikasi realtime.</p>
@@ -680,7 +680,7 @@ export function DashboardPage({ search = '' }) {
                     value={kostName}
                     onChange={(e) => setKostName(e.target.value)}
                     required
-                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-stone-50/50"
+                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-secondary/50"
                   />
                 </div>
                 <div>
@@ -690,7 +690,7 @@ export function DashboardPage({ search = '' }) {
                     value={kostPhone}
                     onChange={(e) => setKostPhone(e.target.value)}
                     required
-                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-stone-50/50"
+                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-secondary/50"
                   />
                 </div>
                 <div className="sm:col-span-2">
@@ -700,7 +700,7 @@ export function DashboardPage({ search = '' }) {
                     value={kostAddress}
                     onChange={(e) => setKostAddress(e.target.value)}
                     required
-                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-stone-50/50"
+                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-secondary/50"
                   />
                 </div>
               </div>
@@ -796,7 +796,7 @@ export function DashboardPage({ search = '' }) {
                     className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 hover:bg-surface-warm/30 transition-colors duration-200"
                   >
                     <div className="flex items-start gap-4">
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#412D15]/10 to-[#B0BA99]/35 text-[#412D15] font-extrabold text-sm shadow-inner">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#2f3a34]/10 to-[#6b8f71]/35 text-[#2f3a34] font-extrabold text-sm shadow-inner">
                         {(b.user?.name || 'P').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                       </span>
                       <div>
@@ -819,7 +819,7 @@ export function DashboardPage({ search = '' }) {
                     <div className="flex items-center justify-between sm:justify-end gap-5 pl-14 sm:pl-0">
                       <div className="text-right">
                         <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Total Bayar</p>
-                        <p className="text-sm font-extrabold text-[#412D15]">{formatPrice(b.total_price)}</p>
+                        <p className="text-sm font-extrabold text-[#2f3a34]">{formatPrice(b.total_price)}</p>
                       </div>
                       <div className="flex items-center gap-3">
                         <Badge variant={b.status === 'confirmed' || b.status === 'accepted' ? 'available' : b.status === 'pending' ? 'maintenance' : 'default'}>
@@ -884,7 +884,7 @@ export function DashboardPage({ search = '' }) {
                           <button
                             type="button"
                             onClick={() => handleOpenBookingEditModal(b)}
-                            className="inline-flex items-center justify-center px-2.5 py-1.5 bg-[#EDE8DC] hover:bg-primary hover:text-white text-primary font-bold rounded-lg cursor-pointer shadow-sm active:scale-95 transition-all text-[11px]"
+                            className="inline-flex items-center justify-center px-2.5 py-1.5 bg-[#d9e2d3] hover:bg-primary hover:text-white text-primary font-bold rounded-lg cursor-pointer shadow-sm active:scale-95 transition-all text-[11px]"
                           >
                             Edit
                           </button>
@@ -961,7 +961,7 @@ export function DashboardPage({ search = '' }) {
                   >
                     <div>
                       {/* Room Image */}
-                      <div className="aspect-[16/10] overflow-hidden bg-[#EDE8DC] relative">
+                      <div className="aspect-[16/10] overflow-hidden bg-[#d9e2d3] relative">
                         <img 
                           src={r.image || 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800&q=80'} 
                           alt={r.name}
@@ -982,7 +982,7 @@ export function DashboardPage({ search = '' }) {
                         </div>
                       </div>
                     </div>
-                    <div className="px-5 py-3.5 bg-stone-50 border-t border-border flex items-center justify-between">
+                    <div className="px-5 py-3.5 bg-secondary border-t border-border flex items-center justify-between">
                       <div>
                         <span className="text-[9px] text-muted-foreground uppercase tracking-wide font-semibold block">Harga Bulanan</span>
                         <span className="text-sm font-extrabold text-primary">{formatPrice(r.price)}</span>
@@ -990,7 +990,7 @@ export function DashboardPage({ search = '' }) {
                       <button
                         type="button"
                         onClick={() => handleOpenEditModal(r)}
-                        className="px-3.5 py-2 rounded-xl text-[10px] font-bold bg-[#EDE8DC] text-[#412D15] hover:bg-primary hover:text-white transition-all cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95"
+                        className="px-3.5 py-2 rounded-xl text-[10px] font-bold bg-[#d9e2d3] text-[#2f3a34] hover:bg-primary hover:text-white transition-all cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95"
                       >
                         <Pencil className="h-3 w-3" />
                         Edit Kamar
@@ -1011,7 +1011,7 @@ export function DashboardPage({ search = '' }) {
       ) : (
         <>
           <div className="mb-8">
-            <p className="text-xs font-bold uppercase tracking-wider text-[#B0BA99] mb-1 flex items-center gap-1.5">
+            <p className="text-xs font-bold uppercase tracking-wider text-[#6b8f71] mb-1 flex items-center gap-1.5">
               <Sparkles className="h-3.5 w-3.5 text-amber-500 animate-pulse" />
               Sistem Aktif
             </p>
@@ -1030,9 +1030,9 @@ export function DashboardPage({ search = '' }) {
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 bg-white rounded-2xl border border-border overflow-hidden shadow-sm flex flex-col justify-between">
               <div>
-                <div className="px-5 py-4 border-b border-border bg-stone-50/50 flex items-center justify-between">
-                  <h3 className="font-bold text-sm text-[#412D15] flex items-center gap-2">
-                    <CalendarDays className="h-4 w-4 text-[#B0BA99]" />
+                <div className="px-5 py-4 border-b border-border bg-secondary/50 flex items-center justify-between">
+                  <h3 className="font-bold text-sm text-[#2f3a34] flex items-center gap-2">
+                    <CalendarDays className="h-4 w-4 text-[#6b8f71]" />
                     Pemesanan Kamar Terbaru
                   </h3>
                   <span className="text-[9px] bg-primary/10 text-primary font-bold px-2 py-0.5 rounded-full">{bookings.length} total</span>
@@ -1074,7 +1074,7 @@ export function DashboardPage({ search = '' }) {
                               Bukti
                             </button>
                           )}
-                          <span className="text-xs font-bold text-[#412D15]">{formatPrice(b.total_price)}</span>
+                          <span className="text-xs font-bold text-[#2f3a34]">{formatPrice(b.total_price)}</span>
                           <Badge variant={b.status === 'confirmed' || b.status === 'accepted' ? 'available' : b.status === 'pending' ? 'maintenance' : 'default'}>
                             {b.status === 'confirmed' || b.status === 'accepted' ? 'disetujui' 
                              : b.status === 'pending' ? 'menunggu' 
@@ -1087,7 +1087,7 @@ export function DashboardPage({ search = '' }) {
                   </div>
                 )}
               </div>
-              <div className="p-4.5 border-t border-border bg-stone-50/40 flex justify-center">
+              <div className="p-4.5 border-t border-border bg-secondary/40 flex justify-center">
                 <a 
                   href="/dashboard?tab=bookings" 
                   className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-extrabold text-primary border border-primary/20 bg-white hover:bg-primary hover:text-primary-foreground hover:border-primary shadow-sm hover:shadow transition-all duration-300 cursor-pointer group"
@@ -1119,7 +1119,7 @@ export function DashboardPage({ search = '' }) {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-b from-[#2e1e0a] to-[#1F150C] rounded-2xl p-5 text-[#EDE8DC] shadow-sm relative overflow-hidden">
+              <div className="bg-gradient-to-b from-[#27312b] to-[#1f2722] rounded-2xl p-5 text-[#d9e2d3] shadow-sm relative overflow-hidden">
                 <div className="absolute right-0 top-0 translate-x-3 -translate-y-3 opacity-10">
                   <Building2 className="h-32 w-32" />
                 </div>
@@ -1146,9 +1146,9 @@ export function DashboardPage({ search = '' }) {
       )}
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1F150C]/60 backdrop-blur-sm transition-opacity">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1f2722]/60 backdrop-blur-sm transition-opacity">
           <div className="bg-white rounded-3xl border border-border max-w-md w-full shadow-2xl overflow-hidden transform transition-all duration-300 scale-100">
-            <div className="px-6 py-4.5 border-b border-border bg-stone-50/50 flex items-center justify-between">
+            <div className="px-6 py-4.5 border-b border-border bg-secondary/50 flex items-center justify-between">
               <h3 className="font-bold text-base text-primary">
                 {modalMode === 'add' ? 'Tambah Kamar Baru' : 'Edit Info Kamar'}
               </h3>
@@ -1171,7 +1171,7 @@ export function DashboardPage({ search = '' }) {
                     onChange={(e) => setFormRoomName(e.target.value)}
                     placeholder="Contoh: Kamar A3"
                     required
-                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-stone-50/50"
+                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-secondary/50"
                   />
                 </div>
                 
@@ -1180,7 +1180,7 @@ export function DashboardPage({ search = '' }) {
                   <select
                     value={formRoomType}
                     onChange={(e) => setFormRoomType(e.target.value)}
-                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-stone-50/50"
+                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-secondary/50"
                   >
                     <option value="kosongan">Kosongan</option>
                     <option value="fasilitas">Fasilitas (Isian)</option>
@@ -1195,7 +1195,7 @@ export function DashboardPage({ search = '' }) {
                     onChange={(e) => setFormRoomPrice(Number(e.target.value))}
                     required
                     min="0"
-                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-stone-50/50"
+                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-secondary/50"
                   />
                 </div>
 
@@ -1207,7 +1207,7 @@ export function DashboardPage({ search = '' }) {
                     onChange={(e) => setFormRoomCapacity(Number(e.target.value))}
                     required
                     min="1"
-                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-stone-50/50"
+                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-secondary/50"
                   />
                 </div>
 
@@ -1219,7 +1219,7 @@ export function DashboardPage({ search = '' }) {
                     onChange={(e) => setFormRoomStock(Number(e.target.value))}
                     required
                     min="0"
-                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-stone-50/50"
+                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-secondary/50"
                   />
                 </div>
 
@@ -1231,7 +1231,7 @@ export function DashboardPage({ search = '' }) {
                     onChange={(e) => setFormRoomSize(e.target.value)}
                     placeholder="Contoh: 3x4 m"
                     required
-                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-stone-50/50"
+                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-secondary/50"
                   />
                 </div>
 
@@ -1240,7 +1240,7 @@ export function DashboardPage({ search = '' }) {
                   <select
                     value={formRoomStatus}
                     onChange={(e) => setFormRoomStatus(e.target.value)}
-                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-stone-50/50"
+                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-secondary/50"
                   >
                     <option value="available">Tersedia (Kosong)</option>
                     <option value="booked">Booked (Dipesan)</option>
@@ -1253,7 +1253,7 @@ export function DashboardPage({ search = '' }) {
                   <label className="block text-xs font-semibold text-foreground mb-1">Gambar Kamar</label>
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
-                      <label className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-border/80 bg-stone-50 hover:bg-stone-100 hover:border-primary/40 cursor-pointer transition-all text-xs font-semibold text-muted-foreground hover:text-foreground">
+                      <label className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-border/80 bg-secondary hover:bg-stone-100 hover:border-primary/40 cursor-pointer transition-all text-xs font-semibold text-muted-foreground hover:text-foreground">
                         <Upload className="h-4 w-4" />
                         {isUploading ? 'Mengunggah...' : 'Pilih & Upload File'}
                         <input
@@ -1283,7 +1283,7 @@ export function DashboardPage({ search = '' }) {
                       value={formRoomImage}
                       onChange={(e) => setFormRoomImage(e.target.value)}
                       placeholder="Contoh: https://images.unsplash.com/..."
-                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-stone-50/50"
+                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-secondary/50"
                     />
                   </div>
                 </div>
@@ -1295,7 +1295,7 @@ export function DashboardPage({ search = '' }) {
                     onChange={(e) => setFormRoomDescription(e.target.value)}
                     placeholder="Deskripsi fasilitas kamar..."
                     rows="3"
-                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-stone-50/50 resize-none"
+                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-secondary/50 resize-none"
                   />
                 </div>
               </div>
@@ -1318,7 +1318,7 @@ export function DashboardPage({ search = '' }) {
                   <button
                     type="button"
                     onClick={handleCloseModal}
-                    className="px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer bg-white border border-border text-foreground hover:bg-stone-50 transition-colors"
+                    className="px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer bg-white border border-border text-foreground hover:bg-secondary transition-colors"
                   >
                     Batal
                   </button>
@@ -1337,9 +1337,9 @@ export function DashboardPage({ search = '' }) {
 
         {/* Modal Edit User */}
         {isUserModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1F150C]/60 backdrop-blur-sm transition-opacity">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1f2722]/60 backdrop-blur-sm transition-opacity">
             <div className="bg-white rounded-3xl border border-border max-w-md w-full shadow-2xl overflow-hidden transform transition-all duration-300 scale-100 animate-in">
-              <div className="px-6 py-4.5 border-b border-border bg-stone-50/50 flex items-center justify-between">
+              <div className="px-6 py-4.5 border-b border-border bg-secondary/50 flex items-center justify-between">
                 <h3 className="font-bold text-base text-primary">Edit Profil Pengguna</h3>
                 <button 
                   type="button" 
@@ -1359,7 +1359,7 @@ export function DashboardPage({ search = '' }) {
                       value={formUserName}
                       onChange={(e) => setFormUserName(e.target.value)}
                       required
-                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-stone-50/50"
+                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-secondary/50"
                     />
                   </div>
 
@@ -1370,7 +1370,7 @@ export function DashboardPage({ search = '' }) {
                       value={formUserEmail}
                       onChange={(e) => setFormUserEmail(e.target.value)}
                       required
-                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-stone-50/50"
+                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-secondary/50"
                     />
                   </div>
 
@@ -1381,7 +1381,7 @@ export function DashboardPage({ search = '' }) {
                       value={formUserPhone}
                       onChange={(e) => setFormUserPhone(e.target.value)}
                       placeholder="Contoh: 08123456789"
-                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-stone-50/50"
+                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-secondary/50"
                     />
                   </div>
 
@@ -1391,7 +1391,7 @@ export function DashboardPage({ search = '' }) {
                       type="text"
                       value={formUserAddress}
                       onChange={(e) => setFormUserAddress(e.target.value)}
-                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-stone-50/50"
+                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-secondary/50"
                     />
                   </div>
 
@@ -1402,7 +1402,7 @@ export function DashboardPage({ search = '' }) {
                       value={formUserPassword}
                       onChange={(e) => setFormUserPassword(e.target.value)}
                       placeholder="Kosongkan jika tidak ingin diubah"
-                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-stone-50/50"
+                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-secondary/50"
                     />
                   </div>
                 </div>
@@ -1411,7 +1411,7 @@ export function DashboardPage({ search = '' }) {
                   <button
                     type="button"
                     onClick={handleCloseUserModal}
-                    className="px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer bg-white border border-border text-foreground hover:bg-stone-50 transition-colors"
+                    className="px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer bg-white border border-border text-foreground hover:bg-secondary transition-colors"
                   >
                     Batal
                   </button>
@@ -1429,9 +1429,9 @@ export function DashboardPage({ search = '' }) {
 
         {/* Modal Edit Booking */}
         {isBookingModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1F150C]/60 backdrop-blur-sm transition-opacity">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1f2722]/60 backdrop-blur-sm transition-opacity">
             <div className="bg-white rounded-3xl border border-border max-w-md w-full shadow-2xl overflow-hidden transform transition-all duration-300 scale-100 animate-in">
-              <div className="px-6 py-4.5 border-b border-border bg-stone-50/50 flex items-center justify-between">
+              <div className="px-6 py-4.5 border-b border-border bg-secondary/50 flex items-center justify-between">
                 <h3 className="font-bold text-base text-primary">Edit Detail Pemesanan</h3>
                 <button 
                   type="button" 
@@ -1462,7 +1462,7 @@ export function DashboardPage({ search = '' }) {
                       value={formBookingRoomId}
                       onChange={(e) => setFormBookingRoomId(e.target.value)}
                       required
-                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-stone-50/50"
+                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-secondary/50"
                     >
                       {selectedBooking?.room && (
                         <option value={selectedBooking.room.id}>
@@ -1488,7 +1488,7 @@ export function DashboardPage({ search = '' }) {
                       value={formBookingCheckIn}
                       onChange={(e) => setFormBookingCheckIn(e.target.value)}
                       required
-                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-stone-50/50"
+                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-secondary/50"
                     />
                   </div>
 
@@ -1501,7 +1501,7 @@ export function DashboardPage({ search = '' }) {
                       value={formBookingDuration}
                       onChange={(e) => setFormBookingDuration(e.target.value)}
                       required
-                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-stone-50/50"
+                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-secondary/50"
                     />
                   </div>
 
@@ -1513,7 +1513,7 @@ export function DashboardPage({ search = '' }) {
                       onChange={(e) => setFormBookingNotes(e.target.value)}
                       placeholder="Catatan tambahan..."
                       rows="3"
-                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-stone-50/50 resize-none"
+                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-secondary/50 resize-none"
                     />
                   </div>
                 </div>
@@ -1522,7 +1522,7 @@ export function DashboardPage({ search = '' }) {
                   <button
                     type="button"
                     onClick={handleCloseBookingModal}
-                    className="px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer bg-white border border-border text-foreground hover:bg-stone-50 transition-colors"
+                    className="px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer bg-white border border-border text-foreground hover:bg-secondary transition-colors"
                   >
                     Batal
                   </button>
@@ -1544,7 +1544,7 @@ export function DashboardPage({ search = '' }) {
             onClick={() => setViewingReceipt(null)}
           >
             <div
-              className="bg-[#FDFCF9] dark:bg-[#1d1409] rounded-2xl max-w-2xl w-full p-6 border border-border/40 dark:border-[#3a2a18] shadow-2xl relative"
+              className="bg-[#f8f7f2] dark:bg-[#1f2722] rounded-2xl max-w-2xl w-full p-6 border border-border/40 dark:border-[#323e37] shadow-2xl relative"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-center mb-4">
@@ -1558,7 +1558,7 @@ export function DashboardPage({ search = '' }) {
                   Tutup
                 </button>
               </div>
-              <div className="flex justify-center bg-stone-50 dark:bg-stone-900 rounded-xl p-2 border border-border/20 overflow-hidden max-h-[60vh]">
+              <div className="flex justify-center bg-secondary dark:bg-stone-900 rounded-xl p-2 border border-border/20 overflow-hidden max-h-[60vh]">
                 <img
                   src={viewingReceipt}
                   alt="Bukti Transfer"
@@ -1571,3 +1571,5 @@ export function DashboardPage({ search = '' }) {
       </AdminLayout>
     )
   }
+
+

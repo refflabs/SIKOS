@@ -58,11 +58,13 @@ export function MainLayout({ children }) {
         <nav
           className="pointer-events-auto w-full max-w-5xl flex items-center justify-between gap-4 px-5 py-3 rounded-2xl transition-all duration-300"
           style={{
-            background: scrolled ? 'rgba(248,247,242,0.97)' : 'rgba(248,247,242,0.92)',
+            background: isDark
+              ? (scrolled ? 'rgba(39,49,43,0.97)' : 'rgba(39,49,43,0.92)')
+              : (scrolled ? 'rgba(248,247,242,0.97)' : 'rgba(248,247,242,0.92)'),
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             boxShadow: scrolled ? '0 8px 40px rgba(47,58,52,0.12), 0 1.5px 0 rgba(107,143,113,0.08) inset' : '0 4px 24px rgba(47,58,52,0.08)',
-            border: '1px solid rgba(107,143,113,0.12)',
+            border: isDark ? '1px solid rgba(107,143,113,0.22)' : '1px solid rgba(107,143,113,0.12)',
           }}
         >
           {/* Logo */}
@@ -74,7 +76,7 @@ export function MainLayout({ children }) {
               <Building2 className="h-4 w-4 text-white" />
             </span>
             <span className="hidden sm:block">
-              <span className="block text-sm font-bold leading-none" style={{ color: '#2f3a34' }}>Kost Pak RT</span>
+              <span className="block text-sm font-bold leading-none" style={{ color: isDark ? '#f8f7f2' : '#2f3a34' }}>Kost Pak RT</span>
               <span className="block text-[10px] mt-0.5" style={{ color: '#6b8f71' }}>Sewa kost syariah</span>
             </span>
           </a>
@@ -87,12 +89,12 @@ export function MainLayout({ children }) {
                 href={item.href}
                 className="relative px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200"
                 style={{
-                  color: isActive(item) ? '#6b8f71' : '#2f3a34',
-                  background: isActive(item) ? 'rgba(107,143,113,0.1)' : 'transparent',
+                  color: isActive(item) ? '#6b8f71' : (isDark ? '#f8f7f2' : '#2f3a34'),
+                  background: isActive(item) ? 'rgba(107,143,113,0.12)' : 'transparent',
                   fontWeight: isActive(item) ? '600' : '500',
                 }}
-                onMouseEnter={e => { if (!isActive(item)) e.currentTarget.style.color = '#6b8f71' }}
-                onMouseLeave={e => { if (!isActive(item)) e.currentTarget.style.color = '#2f3a34' }}
+                onMouseEnter={e => { if (!isActive(item)) { e.currentTarget.style.color = '#6b8f71' } }}
+                onMouseLeave={e => { if (!isActive(item)) { e.currentTarget.style.color = isDark ? '#f8f7f2' : '#2f3a34' } }}
               >
                 {item.name}
               </a>
@@ -106,12 +108,12 @@ export function MainLayout({ children }) {
               onClick={toggleTheme}
               className="flex items-center justify-center h-9 w-9 rounded-xl transition-all duration-200 cursor-pointer"
               style={{
-                color: '#2f3a34',
+                color: isDark ? '#f8f7f2' : '#2f3a34',
                 background: 'rgba(107,143,113,0.06)',
-                border: '1px solid rgba(107,143,113,0.12)',
+                border: isDark ? '1px solid rgba(107,143,113,0.22)' : '1px solid rgba(107,143,113,0.12)',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(107,143,113,0.12)'; e.currentTarget.style.color = '#6b8f71' }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(107,143,113,0.06)'; e.currentTarget.style.color = '#2f3a34' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(107,143,113,0.14)'; e.currentTarget.style.color = '#6b8f71' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(107,143,113,0.06)'; e.currentTarget.style.color = isDark ? '#f8f7f2' : '#2f3a34' }}
               aria-label={isDark ? 'Aktifkan mode terang' : 'Aktifkan mode gelap'}
               title={isDark ? 'Mode Terang' : 'Mode Gelap'}
             >

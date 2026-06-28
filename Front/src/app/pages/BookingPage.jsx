@@ -27,7 +27,9 @@ export function BookingPage({ search = '' }) {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
-  const D = { bg: '#F7F4E8', card: '#FDFCF9', cardHover: '#f5f0e8', border: '#D8D0BE', text: '#3A342E', muted: '#7a6247', sub: '#b8a898' }
+  const D = isDark
+    ? { bg: '#1f2722', card: '#27312b', cardHover: '#323e37', border: '#323e37', text: '#f8f7f2', muted: '#9cb5a4', sub: '#c79a63' }
+    : { bg: '#f8f7f2', card: '#ffffff', cardHover: '#f0f4ee', border: '#d9e2d3', text: '#2f3a34', muted: '#2f3a34', sub: '#c79a63' }
 
   const [message, setMessage] = useState({ type: '', text: '' })
 
@@ -112,12 +114,14 @@ export function BookingPage({ search = '' }) {
       <div
         className="border-b"
         style={{
-          background: 'linear-gradient(160deg, #F5EFE6 0%, #F7F4E8 100%)',
+          background: isDark
+            ? 'linear-gradient(160deg, #27312b 0%, #1f2722 100%)'
+            : 'linear-gradient(160deg, #f0f4ee 0%, #f8f7f2 100%)',
           borderColor: D.border
         }}
       >
         <div className="container-app py-8 md:py-10 max-w-5xl">
-          <p className="text-xs uppercase tracking-widest font-semibold mb-2" style={{ color: '#CFA16D' }}>Reservasi</p>
+          <p className="text-xs uppercase tracking-widest font-semibold mb-2" style={{ color: '#c79a63' }}>Reservasi</p>
           <h1 className="text-2xl sm:text-3xl font-extrabold mb-2" style={{ color: D.text }}>Form Booking</h1>
           <p className="text-sm" style={{ color: D.muted }}>Lengkapi data — proses cepat & aman.</p>
         </div>

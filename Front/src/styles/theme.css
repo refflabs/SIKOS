@@ -109,35 +109,35 @@
   }
 
 
-  /* ─── DARK MODE (Identical to Light Theme color palette) ─── */
+  /* ─── DARK MODE (Forest Dark Theme) ─── */
   html.dark {
-    --background: #f8f7f2;
-    --foreground: #2f3a34;
-    --card: #ffffff;
-    --card-foreground: #2f3a34;
+    --background: #1f2722;
+    --foreground: #f8f7f2;
+    --card: #27312b;
+    --card-foreground: #f8f7f2;
 
-    --secondary: #d9e2d3;
-    --secondary-foreground: #2f3a34;
-    --muted: #d9e2d3;
-    --muted-foreground: #2f3a34;
+    --secondary: #323e37;
+    --secondary-foreground: #f8f7f2;
+    --muted: #323e37;
+    --muted-foreground: #9cb5a4;
 
-    --border: #d9e2d3;
-    --input: #d9e2d3;
-    --input-background: #ffffff;
+    --border: #323e37;
+    --input: #323e37;
+    --input-background: #27312b;
     --ring: #6b8f71;
 
     --brand: #6b8f71;
-    --brand-hover: #56745c;
-    --brand-foreground: #2f3a34;
+    --brand-hover: #88ad8e;
+    --brand-foreground: #ffffff;
     --primary: var(--brand);
     --primary-dark: var(--brand-hover);
     --primary-foreground: var(--brand-foreground);
 
-    --surface-warm: #f8f7f2;
-    --surface-beige: #d9e2d3;
-    --surface-sage: #f0f4ee;
-    --surface-mocca: #faf8f5;
-    --surface-stone: #d9e2d3;
+    --surface-warm: #1f2722;
+    --surface-beige: #27312b;
+    --surface-sage: #27312b;
+    --surface-mocca: #27312b;
+    --surface-stone: #27312b;
   }
 }
 

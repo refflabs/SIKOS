@@ -10,7 +10,9 @@ export function RoomsPage() {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
-  const D = { bg: '#f8f7f2', card: '#ffffff', border: '#d9e2d3', text: '#2f3a34', muted: '#2f3a34', input: '#f8f7f2' }
+  const D = isDark
+    ? { bg: '#1f2722', card: '#27312b', border: '#323e37', text: '#f8f7f2', muted: '#9cb5a4', input: '#27312b' }
+    : { bg: '#f8f7f2', card: '#ffffff', border: '#d9e2d3', text: '#2f3a34', muted: '#2f3a34', input: '#f8f7f2' }
 
   const [searchTerm, setSearchTerm] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -63,7 +65,7 @@ export function RoomsPage() {
       {/* Search bar */}
       <div
         className="relative z-10"
-        style={{ background: 'rgba(248,247,242,0.3)', borderBottom: `1px solid ${D.border}` }}
+        style={{ background: isDark ? 'rgba(39,49,43,0.3)' : 'rgba(248,247,242,0.3)', borderBottom: `1px solid ${D.border}` }}
       >
         <div className="container-app py-3">
           <div className="flex flex-col sm:flex-row gap-3">

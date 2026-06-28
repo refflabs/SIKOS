@@ -56,17 +56,29 @@ export function LandingPage({ search = '' }) {
   const isDark = theme === 'dark'
 
   // Dynamic palette based on theme
-  const C = {
-    beige:  '#d9e2d3',
-    mocca:  '#c79a63',
-    sage:   '#6b8f71',
-    coffee: '#2f3a34',
-    bg:     '#f8f7f2',
-    card:   '#ffffff',
-    muted:  '#2f3a34',
-    border: '#d9e2d3',
-    btnText: '#ffffff',
-  }
+  const C = isDark
+    ? {
+        beige:   '#323e37',
+        mocca:   '#c79a63',
+        sage:    '#6b8f71',
+        coffee:  '#f8f7f2',
+        bg:      '#1f2722',
+        card:    '#27312b',
+        muted:   '#9cb5a4',
+        border:  '#323e37',
+        btnText: '#ffffff',
+      }
+    : {
+        beige:   '#d9e2d3',
+        mocca:   '#c79a63',
+        sage:    '#6b8f71',
+        coffee:  '#2f3a34',
+        bg:      '#f8f7f2',
+        card:    '#ffffff',
+        muted:   '#2f3a34',
+        border:  '#d9e2d3',
+        btnText: '#ffffff',
+      }
 
   /* ── Tab views ── */
   if (user && activeTab) {

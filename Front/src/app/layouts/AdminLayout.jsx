@@ -11,6 +11,7 @@ import {
 import { Button } from '../components/Button'
 import { useAuth } from '../../context/AuthContext'
 import { useSocket } from '../../context/SocketContext'
+import { useTheme } from '../../context/ThemeContext'
 
 const NAV = [
   { name: 'Overview', href: '/dashboard', icon: LayoutDashboard, id: 'overview' },
@@ -24,6 +25,12 @@ const NAV = [
 export function AdminLayout({ children, activeTab = 'overview' }) {
   const { user, logout } = useAuth()
   const { connected, refreshSubscriptions } = useSocket()
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
+
+  const S = isDark
+    ? { sidebar: '#27312b', border: '#323e37', text: '#f8f7f2', muted: '#9cb5a4', active: '#323e37', hover: '#2a3630', header: '#1f2722' }
+    : { sidebar: '#faf8f5', border: '#d9e2d3', text: '#2f3a34', muted: '#6b8f71', active: '#d9e2d3', hover: 'rgba(217,226,211,0.3)', header: '#ffffff' }
 
   useEffect(() => {
     refreshSubscriptions()
@@ -37,20 +44,26 @@ export function AdminLayout({ children, activeTab = 'overview' }) {
   return (
     <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
-      <aside className="hidden md:flex w-64 flex-col border-r border-[#d9e2d3] bg-[#faf8f5] fixed inset-y-0 left-0 z-40 text-[#2f3a34] shadow-md">
-        <div className="p-6 border-b border-[#d9e2d3]/60">
+      <aside
+        className="hidden md:flex w-64 flex-col border-r fixed inset-y-0 left-0 z-40 shadow-md transition-colors duration-300"
+        style={{ background: S.sidebar, borderColor: S.border, color: S.text }}
+      >
+        <div className="p-6" style={{ borderBottom: `1px solid ${S.border}` }}>
           <a href="/" className="flex items-center gap-3 transition-transform hover:scale-[1.02] cursor-pointer">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#6b8f71] text-white text-xs font-extrabold shadow-inner">
               RT
             </span>
             <div>
-              <span className="text-sm font-bold tracking-wide text-[#2f3a34] block">Kost Pak RT</span>
-              <span className="text-[10px] text-[#6b8f71] font-semibold tracking-wider uppercase block">Pengelola</span>
+              <span className="text-sm font-bold tracking-wide block" style={{ color: S.text }}>Kost Pak RT</span>
+              <span className="text-[10px] font-semibold tracking-wider uppercase block" style={{ color: '#6b8f71' }}>Pengelola</span>
             </div>
           </a>
           
           {/* Connection status with pulsing dot */}
-          <div className="mt-5 flex items-center gap-2.5 text-xs text-[#2f3a34]/80 bg-[#d9e2d3]/30 border border-[#d9e2d3]/40 rounded-2xl px-3 py-2">
+          <div
+            className="mt-5 flex items-center gap-2.5 text-xs rounded-2xl px-3 py-2"
+            style={{ background: `${S.active}60`, border: `1px solid ${S.border}`, color: S.text }}
+          >
             <span className="relative flex h-2 w-2">
               {connected && (
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -77,13 +90,17 @@ export function AdminLayout({ children, activeTab = 'overview' }) {
               <a
                 key={item.id}
                 href={item.href}
-                className={`flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-medium transition-all duration-300 cursor-pointer ${
-                  isActive
-                    ? 'bg-[#d9e2d3] text-[#2f3a34] font-bold translate-x-1.5'
-                    : 'text-[#2f3a34]/80 hover:bg-[#d9e2d3]/30 hover:text-[#2f3a34] hover:translate-x-1'
-                }`}
+                className="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-medium transition-all duration-300 cursor-pointer"
+                style={{
+                  background: isActive ? S.active : 'transparent',
+                  color: isActive ? S.text : `${S.text}cc`,
+                  fontWeight: isActive ? '700' : '500',
+                  transform: isActive ? 'translateX(6px)' : undefined,
+                }}
+                onMouseEnter={e => { if (!isActive) { e.currentTarget.style.background = S.hover; e.currentTarget.style.transform = 'translateX(4px)' } }}
+                onMouseLeave={e => { if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.transform = 'none' } }}
               >
-                <Icon className={`h-4.5 w-4.5 transition-transform duration-300 ${isActive ? 'scale-110 text-[#6b8f71]' : 'group-hover:scale-110'}`} />
+                <Icon className="h-4 w-4" style={{ color: isActive ? '#6b8f71' : S.muted }} />
                 {item.name}
               </a>
             )
@@ -91,23 +108,27 @@ export function AdminLayout({ children, activeTab = 'overview' }) {
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-[#d9e2d3]/60 bg-[#d9e2d3]/10">
-          <p className="text-xs text-[#2f3a34]/60 truncate mb-3 px-2 font-medium">{user?.email}</p>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="w-full border-[#d9e2d3] text-[#2f3a34] hover:bg-[#d9e2d3]/20 rounded-xl py-2 cursor-pointer transition-all duration-200 active:scale-95" 
+        <div className="p-4" style={{ borderTop: `1px solid ${S.border}`, background: `${S.active}20` }}>
+          <p className="text-xs truncate mb-3 px-2 font-medium" style={{ color: `${S.text}99` }}>{user?.email}</p>
+          <button
+            className="w-full flex items-center justify-center gap-2 rounded-xl py-2 px-4 text-sm font-semibold transition-all duration-200 active:scale-95 cursor-pointer border"
+            style={{ borderColor: S.border, color: S.text, background: 'transparent' }}
+            onMouseEnter={e => { e.currentTarget.style.background = S.hover }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
             onClick={handleLogout}
           >
-            <LogOut className="h-4 w-4 mr-1.5" />
+            <LogOut className="h-4 w-4" />
             Keluar
-          </Button>
+          </button>
         </div>
       </aside>
 
       {/* Main Content Area */}
       <div className="flex-1 md:ml-64 flex flex-col min-w-0">
-        <header className="sticky top-0 z-30 h-16 border-b border-border bg-white/70 backdrop-blur-md flex items-center justify-between px-6">
+        <header
+          className="sticky top-0 z-30 h-16 border-b flex items-center justify-between px-6 backdrop-blur-md transition-colors duration-300"
+          style={{ background: isDark ? 'rgba(39,49,43,0.85)' : 'rgba(255,255,255,0.85)', borderColor: S.border }}
+        >
           <h1 className="text-sm font-bold md:hidden text-primary">Admin</h1>
           <p className="text-sm font-bold hidden md:block text-muted-foreground/80 tracking-wide uppercase text-[10px]">
             Dashboard Admin &bull; <span className="text-primary font-semibold">{activeTab}</span>
@@ -134,4 +155,5 @@ export function AdminLayout({ children, activeTab = 'overview' }) {
     </div>
   )
 }
+
 
