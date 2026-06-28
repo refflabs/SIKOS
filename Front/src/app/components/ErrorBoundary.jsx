@@ -13,6 +13,13 @@ export class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error("ErrorBoundary caught an error", error, errorInfo)
+    const isChunkError = /Failed to fetch dynamically imported module|Loading chunk|error loading/i.test(
+      error?.message || ""
+    )
+    if (isChunkError) {
+      console.warn("Chunk loading error detected! Reloading page to fetch latest version...")
+      window.location.reload()
+    }
   }
 
   render() {
