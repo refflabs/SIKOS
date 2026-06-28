@@ -147,15 +147,6 @@ export function VerificationPage() {
         </p>
       </div>
 
-      {/* Debug notice for local testing/demo */}
-      {debugOtp && (
-        <div className="mb-5 p-4 rounded-2xl text-xs"
-          style={{ background: 'rgba(176,186,153,0.12)', border: '1px solid rgba(176,186,153,0.3)', color: isDark ? '#E1DCC9' : '#412D15' }}>
-          <p className="font-bold mb-1">🛠️ MODE TESTING/DEMO:</p>
-          <p>Email log dialihkan ke file log Laravel. Silakan gunakan OTP ini untuk verifikasi cepat: <span className="font-mono text-sm font-extrabold tracking-widest bg-stone-800 text-yellow-300 px-2 py-0.5 rounded ml-1">{debugOtp}</span></p>
-        </div>
-      )}
-
       {/* Messages */}
       {error && (
         <div className="mb-5 px-4 py-3 rounded-2xl text-xs font-medium flex items-center gap-2"
