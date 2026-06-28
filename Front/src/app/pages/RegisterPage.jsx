@@ -4,34 +4,40 @@ import { useAuth } from '../../context/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
 
 // ── InputField mengambil token T dari parent ──
-function InputField({ id, name, type = 'text', value, onChange, placeholder, required, autoComplete, icon: Icon, label, minLength, T }) {
+function InputField({ id, name, type = 'text', value, onChange, placeholder, required, autoComplete, icon: Icon, label, minLength, error, T }) {
   const [focused, setFocused] = useState(false)
+  const isDark = T.errorText === '#e08070' // Determine theme based on errorText color token
+  const errColor = error ? T.errorText : null
+
   return (
     <div>
-      <label htmlFor={id} className="block text-xs font-semibold mb-1.5" style={{ color: T.label }}>
+      <label htmlFor={id} className="block text-xs font-semibold mb-1.5" style={{ color: error ? T.errorText : T.label }}>
         {label}
       </label>
       <div className="relative">
         {Icon && (
           <Icon
             className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4"
-            style={{ color: focused ? T.inputFocusBorder : T.iconColor, transition: 'color 0.2s' }}
+            style={{ color: error ? T.errorText : (focused ? T.inputFocusBorder : T.iconColor), transition: 'color 0.2s' }}
           />
         )}
         <input
           id={id} name={name} type={type} value={value} onChange={onChange}
           placeholder={placeholder} required={required} autoComplete={autoComplete} minLength={minLength}
-          onFocus={e => { setFocused(true); e.currentTarget.style.borderColor = T.inputFocusBorder; e.currentTarget.style.background = T.inputBgFocus }}
-          onBlur={e => { setFocused(false); e.currentTarget.style.borderColor = T.inputBorder; e.currentTarget.style.background = T.inputBg }}
+          onFocus={e => { setFocused(true); e.currentTarget.style.borderColor = error ? T.errorText : T.inputFocusBorder; e.currentTarget.style.background = T.inputBgFocus }}
+          onBlur={e => { setFocused(false); e.currentTarget.style.borderColor = error ? T.errorText : T.inputBorder; e.currentTarget.style.background = T.inputBg }}
           className="w-full text-sm rounded-2xl py-3 pr-4 transition-all duration-200 focus:outline-none"
           style={{
             paddingLeft: Icon ? '2.75rem' : '1rem',
             background: T.inputBg,
-            border: `1.5px solid ${T.inputBorder}`,
+            border: `1.5px solid ${error ? T.errorText : T.inputBorder}`,
             color: T.inputText,
           }}
         />
       </div>
+      {error && (
+        <p className="text-[10px] mt-1 font-semibold" style={{ color: T.errorText }}>{error}</p>
+      )}
     </div>
   )
 }
@@ -99,19 +105,75 @@ export function RegisterPage() {
   }
 
   const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', password_confirmation: '' })
+  const [errors, setErrors] = useState({ name: '', email: '', phone: '', password: '', password_confirmation: '' })
   const [showPass, setShowPass] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
 
-  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value })
+  const handleChange = e => {
+    const { name, value } = e.target
+    setForm(prev => ({ ...prev, [name]: value }))
+
+    // Realtime validations
+    if (name === 'name') {
+      const nameRegex = /^[a-zA-Z\s]*$/
+      if (!nameRegex.test(value)) {
+        setErrors(prev => ({ ...prev, name: 'Nama lengkap hanya boleh berisi huruf alfabet dan spasi.' }))
+      } else {
+        setErrors(prev => ({ ...prev, name: '' }))
+      }
+    }
+
+    if (name === 'phone') {
+      const phoneRegex = /^\+?[0-9]*$/
+      if (!phoneRegex.test(value)) {
+        setErrors(prev => ({ ...prev, phone: 'Nomor WhatsApp hanya boleh berisi angka (opsional diawali \'+\').' }))
+      } else {
+        setErrors(prev => ({ ...prev, phone: '' }))
+      }
+    }
+
+    if (name === 'password') {
+      let passError = ''
+      if (value.length < 8) {
+        passError = 'Password wajib minimal 8 karakter.'
+      } else if (!/[A-Z]/.test(value)) {
+        passError = 'Password harus mengandung minimal satu huruf besar.'
+      } else if (!/[a-z]/.test(value)) {
+        passError = 'Password harus mengandung minimal satu huruf kecil.'
+      } else if (!/[!@#$%^&*(),.?":{}|<>_\-\[\]\\\/~\-+=]/.test(value)) {
+        passError = 'Password harus mengandung minimal satu simbol/spesial karakter.'
+      }
+      setErrors(prev => ({ ...prev, password: passError }))
+    }
+
+    if (name === 'password_confirmation') {
+      if (form.password && value !== form.password) {
+        setErrors(prev => ({ ...prev, password_confirmation: 'Konfirmasi password tidak cocok.' }))
+      } else {
+        setErrors(prev => ({ ...prev, password_confirmation: '' }))
+      }
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    
+    // Clear all general errors
+    setErrors({ name: '', email: '', phone: '', password: '', password_confirmation: '' })
 
-    // Client-side disposable email check
+    // Name check
+    const nameRegex = /^[a-zA-Z\s]+$/
+    if (!nameRegex.test(form.name)) {
+      setErrors(prev => ({ ...prev, name: 'Nama lengkap hanya boleh mengandung huruf alfabet dan spasi.' }))
+      setError('Nama Lengkap tidak valid.')
+      return
+    }
+
+    // Disposable email check
     const disposableDomains = [
       'mailinator.com', 'yopmail.com', '10minutemail.com', 'temp-mail.org', 
       'guerrillamail.com', 'sharklasers.com', 'dispostable.com', 'getairmail.com', 
@@ -121,21 +183,44 @@ export function RegisterPage() {
     const emailParts = form.email.split('@')
     const domain = emailParts[1]?.toLowerCase()
     if (disposableDomains.includes(domain)) {
-      setError('Email menggunakan domain temporary/disposable yang tidak diizinkan.')
+      setErrors(prev => ({ ...prev, email: 'Email menggunakan domain temporary/disposable yang tidak diizinkan.' }))
+      setError('Email domain tidak diizinkan.')
       return
     }
 
-    // Client-side phone number validation
+    // Phone WhatsApp Check
     const phoneRegex = /^\+?[0-9]{9,15}$/
     if (!phoneRegex.test(form.phone)) {
-      setError('Format nomor HP tidak valid. Hanya menerima angka dan format internasional (contoh: 08xxxxx atau +628xxxxx) dengan panjang 9-15 digit.')
+      setErrors(prev => ({ ...prev, phone: 'Nomor WhatsApp hanya boleh berisi angka (opsional diawali "+") dengan panjang 9-15 digit.' }))
+      setError('Nomor WhatsApp tidak valid.')
+      return
+    }
+
+    // Password strength check
+    const password = form.password
+    let passError = ''
+    if (password.length < 8) {
+      passError = 'Password wajib minimal 8 karakter.'
+    } else if (!/[A-Z]/.test(password)) {
+      passError = 'Password harus mengandung minimal satu huruf besar.'
+    } else if (!/[a-z]/.test(password)) {
+      passError = 'Password harus mengandung minimal satu huruf kecil.'
+    } else if (!/[!@#$%^&*(),.?":{}|<>_\-\[\]\\\/~\-+=]/.test(password)) {
+      passError = 'Password harus mengandung minimal satu simbol/spesial karakter.'
+    }
+    
+    if (passError) {
+      setErrors(prev => ({ ...prev, password: passError }))
+      setError(passError)
       return
     }
 
     if (form.password !== form.password_confirmation) {
+      setErrors(prev => ({ ...prev, password_confirmation: 'Konfirmasi password tidak cocok.' }))
       setError('Password dan konfirmasi password tidak cocok.')
       return
     }
+
     setLoading(true)
     try {
       const res = await register({ name: form.name, email: form.email, phone: form.phone, password: form.password, password_confirmation: form.password_confirmation })
@@ -148,7 +233,9 @@ export function RegisterPage() {
     } catch (err) {
       setError(
         err.response?.data?.message ||
+        err.response?.data?.errors?.name?.[0] ||
         err.response?.data?.errors?.email?.[0] ||
+        err.response?.data?.errors?.phone?.[0] ||
         err.response?.data?.errors?.password?.[0] ||
         'Pendaftaran gagal. Periksa kembali data Anda.'
       )
@@ -211,24 +298,24 @@ export function RegisterPage() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Fields pakai komponen InputField dengan token T */}
-        <InputField id="reg-name"  name="name"  label="Nama Lengkap"    value={form.name}  onChange={handleChange} placeholder="Nama lengkap Anda"  required autoComplete="name"  icon={User}  T={T} />
-        <InputField id="reg-email" name="email" type="email" label="Email" value={form.email} onChange={handleChange} placeholder="email@contoh.com"   required autoComplete="email" icon={Mail}  T={T} />
-        <InputField id="reg-phone" name="phone" type="tel"   label="Nomor WhatsApp" value={form.phone} onChange={handleChange} placeholder="08xxxxxxxxxx" autoComplete="tel"   icon={Phone} T={T} />
+        <InputField id="reg-name"  name="name"  label="Nama Lengkap"    value={form.name}  onChange={handleChange} placeholder="Nama lengkap Anda"  required autoComplete="name"  icon={User} error={errors.name} T={T} />
+        <InputField id="reg-email" name="email" type="email" label="Email" value={form.email} onChange={handleChange} placeholder="email@contoh.com"   required autoComplete="email" icon={Mail} error={errors.email} T={T} />
+        <InputField id="reg-phone" name="phone" type="tel"   label="Nomor WhatsApp" value={form.phone} onChange={handleChange} placeholder="08xxxxxxxxxx" autoComplete="tel"   icon={Phone} error={errors.phone} T={T} />
 
         {/* Password row */}
         <div className="grid grid-cols-2 gap-3">
           {/* Password */}
           <div>
-            <label htmlFor="reg-password" className="block text-xs font-semibold mb-1.5" style={{ color: T.label }}>Password</label>
+            <label htmlFor="reg-password" className="block text-xs font-semibold mb-1.5" style={{ color: errors.password ? T.errorText : T.label }}>Password</label>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: T.iconColor }} />
+              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: errors.password ? T.errorText : T.iconColor }} />
               <input
                 id="reg-password" name="password" type={showPass ? 'text' : 'password'}
                 value={form.password} onChange={handleChange}
                 placeholder="Min. 8 karakter" required minLength={8} autoComplete="new-password"
-                style={passInputStyle}
-                onFocus={e => { e.currentTarget.style.borderColor = T.inputFocusBorder; e.currentTarget.style.background = T.inputBgFocus }}
-                onBlur={e => { e.currentTarget.style.borderColor = T.inputBorder; e.currentTarget.style.background = T.inputBg }}
+                style={{ ...passInputStyle, border: `1.5px solid ${errors.password ? T.errorText : T.inputBorder}` }}
+                onFocus={e => { e.currentTarget.style.borderColor = errors.password ? T.errorText : T.inputFocusBorder; e.currentTarget.style.background = T.inputBgFocus }}
+                onBlur={e => { e.currentTarget.style.borderColor = errors.password ? T.errorText : T.inputBorder; e.currentTarget.style.background = T.inputBg }}
               />
               <button type="button" tabIndex={-1}
                 onClick={() => setShowPass(v => !v)}
@@ -240,20 +327,23 @@ export function RegisterPage() {
                 {showPass ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
               </button>
             </div>
+            {errors.password && (
+              <p className="text-[10px] mt-1 font-semibold" style={{ color: T.errorText }}>{errors.password}</p>
+            )}
           </div>
 
           {/* Confirm */}
           <div>
-            <label htmlFor="reg-pass-confirm" className="block text-xs font-semibold mb-1.5" style={{ color: T.label }}>Ulangi</label>
+            <label htmlFor="reg-pass-confirm" className="block text-xs font-semibold mb-1.5" style={{ color: errors.password_confirmation ? T.errorText : T.label }}>Ulangi</label>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: T.iconColor }} />
+              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: errors.password_confirmation ? T.errorText : T.iconColor }} />
               <input
                 id="reg-pass-confirm" name="password_confirmation" type={showConfirm ? 'text' : 'password'}
                 value={form.password_confirmation} onChange={handleChange}
                 placeholder="Ulangi password" required minLength={8} autoComplete="new-password"
-                style={passInputStyle}
-                onFocus={e => { e.currentTarget.style.borderColor = T.inputFocusBorder; e.currentTarget.style.background = T.inputBgFocus }}
-                onBlur={e => { e.currentTarget.style.borderColor = T.inputBorder; e.currentTarget.style.background = T.inputBg }}
+                style={{ ...passInputStyle, border: `1.5px solid ${errors.password_confirmation ? T.errorText : T.inputBorder}` }}
+                onFocus={e => { e.currentTarget.style.borderColor = errors.password_confirmation ? T.errorText : T.inputFocusBorder; e.currentTarget.style.background = T.inputBgFocus }}
+                onBlur={e => { e.currentTarget.style.borderColor = errors.password_confirmation ? T.errorText : T.inputBorder; e.currentTarget.style.background = T.inputBg }}
               />
               <button type="button" tabIndex={-1}
                 onClick={() => setShowConfirm(v => !v)}
@@ -265,6 +355,9 @@ export function RegisterPage() {
                 {showConfirm ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
               </button>
             </div>
+            {errors.password_confirmation && (
+              <p className="text-[10px] mt-1 font-semibold" style={{ color: T.errorText }}>{errors.password_confirmation}</p>
+            )}
           </div>
         </div>
 

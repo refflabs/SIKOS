@@ -25,7 +25,7 @@ api.interceptors.response.use(
       localStorage.removeItem('token')
       localStorage.removeItem('user')
       const path = window.location.pathname
-      if (path !== '/login' && path !== '/') {
+      if (path !== '/login' && path !== '/register' && path !== '/verify' && path !== '/') {
         window.location.href = '/login'
       }
     }

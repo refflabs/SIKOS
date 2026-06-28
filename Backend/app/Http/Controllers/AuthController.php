@@ -8,18 +8,20 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
     public function register(Request $request)
     {
         $request->validate([
-            'name'     => 'required|string|max:255',
+            'name'     => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]+$/'],
             'email'    => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => ['required', 'string', 'confirmed', Password::min(8)->mixedCase()->symbols()],
             'phone'    => ['required', 'string', 'regex:/^\+?[0-9]{9,15}$/'],
         ], [
-            'phone.regex' => 'Format nomor HP tidak valid. Hanya menerima angka dan format internasional (contoh: 08xxxxx atau +628xxxxx).',
+            'name.regex'  => 'Nama lengkap hanya boleh mengandung huruf dan spasi.',
+            'phone.regex' => 'Format nomor HP tidak valid. Hanya menerima angka (contoh: 08xxxxx atau +62xxxxx) dengan panjang 9-15 digit.',
         ]);
 
         $disposableDomains = [
