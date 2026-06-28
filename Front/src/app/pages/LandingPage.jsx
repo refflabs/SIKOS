@@ -64,6 +64,7 @@ export function LandingPage({ search = '' }) {
     card:   '#1d1409',
     muted:  '#8a7060',
     border: '#3a2a18',
+    btnText: '#120d08',
   } : {
     beige:  '#E1DCC9',
     mocca:  '#412D15',
@@ -73,6 +74,7 @@ export function LandingPage({ search = '' }) {
     card:   '#FDFCF9',
     muted:  '#7a6247',
     border: '#D8D0BE',
+    btnText: '#E1DCC9',
   }
 
   /* ── Tab views ── */
@@ -194,7 +196,7 @@ export function LandingPage({ search = '' }) {
                       border: `1.5px solid ${C.mocca}`,
                       background: 'transparent',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = C.mocca; e.currentTarget.style.color = C.beige }}
+                    onMouseEnter={e => { e.currentTarget.style.background = C.mocca; e.currentTarget.style.color = C.btnText }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = C.mocca }}
                   >
                     Daftar Gratis <ArrowRight className="h-4 w-4" />
@@ -359,8 +361,21 @@ export function LandingPage({ search = '' }) {
               <p className="text-sm mb-4" style={{ color: C.muted }}>Maaf, saat ini seluruh kamar sedang terisi penuh.</p>
               <a href="https://wa.me/6281234567890?text=Halo%20Pak%20RT,%20apakah%20ada%20daftar%20tunggu%20untuk%20kamar%20kost?">
                 <button
-                  className="px-6 py-3 rounded-2xl text-sm font-bold transition-all duration-200"
-                  style={{ background: C.mocca, color: C.beige, boxShadow: '0 4px 16px rgba(65,45,21,0.3)' }}
+                  className="px-6 py-3 rounded-2xl text-sm font-bold transition-all duration-300 cursor-pointer hover:opacity-95 active:scale-95"
+                  style={{
+                    background: C.mocca,
+                    color: C.btnText,
+                    boxShadow: '0 4px 16px rgba(65,45,21,0.25)',
+                    transform: 'translateY(0)',
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.transform = 'translateY(-2px)'
+                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(65,45,21,0.35)'
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.transform = 'translateY(0)'
+                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(65,45,21,0.25)'
+                  }}
                 >
                   Hubungi Waiting List
                 </button>

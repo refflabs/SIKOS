@@ -4,6 +4,7 @@ import { AuthLayout } from "./layouts/AuthLayout";
 import { LoadingSpinner } from "./components/LoadingSpinner";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { RenewalReminder } from "./components/RenewalReminder";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 const LandingPage = lazy(() =>
   import("./pages/LandingPage").then((m) => ({ default: m.LandingPage })),
@@ -99,7 +100,9 @@ export default function App() {
       case "/dashboard":
         return (
           <ProtectedRoute requireAdmin>
-            <DashboardPage search={search} />
+            <ErrorBoundary>
+              <DashboardPage search={search} />
+            </ErrorBoundary>
           </ProtectedRoute>
         );
       default:

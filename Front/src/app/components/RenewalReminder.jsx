@@ -6,8 +6,10 @@ import {
   useUpdateBookingStatusMutation 
 } from '../../hooks/queries'
 import { toast } from 'sonner'
+import { useAuth } from '../../context/AuthContext'
 
 export function RenewalReminder() {
+  const { user } = useAuth()
   const { data: bookings } = useBookingsQuery()
   const requestRenewalMutation = useRequestBookingRenewalMutation()
   const updateBookingStatusMutation = useUpdateBookingStatusMutation()
@@ -19,9 +21,13 @@ export function RenewalReminder() {
   const [step, setStep] = useState('prompt') // 'prompt' | 'input' | 'success'
 
   useEffect(() => {
-    if (!Array.isArray(bookings)) return
+    if (!user || user.role === 'admin' || !Array.isArray(bookings)) {
+      setActiveReminder(null)
+      return
+    }
 
     const qualifyingBooking = bookings.find((b) => {
+      if (Number(b.user_id) !== Number(user.id)) return false
       if (b.status !== 'accepted' || b.renewal_requested) return false
       if (sessionStorage.getItem(`sikos_declined_renewal_${b.id}`)) return false
 

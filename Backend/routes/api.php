@@ -15,6 +15,7 @@ use App\Http\Controllers\UserController;
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login',    [AuthController::class, 'login']);
+Route::get('/ping', function () { return ['ping' => 'pong']; });
 
 // Rooms - public (bisa dilihat tanpa login)
 Route::get('/rooms',      [RoomController::class, 'index']);
@@ -33,6 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/bookings',     [BookingController::class, 'store']);
     Route::put('/bookings/{id}', [BookingController::class, 'update']);
     Route::post('/bookings/{id}/renew', [BookingController::class, 'requestRenewal']);
+    Route::post('/bookings/{id}/payment-receipt', [BookingController::class, 'uploadPaymentReceipt']);
 
     Route::middleware('admin')->group(function () {
         Route::delete('/bookings/{id}', [BookingController::class, 'destroy']);

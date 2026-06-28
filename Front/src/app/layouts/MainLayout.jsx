@@ -190,7 +190,7 @@ export function MainLayout({ children }) {
           </div>
 
           {/* Mobile hamburger */}
-          <div className="lg:hidden flex items-center gap-2">
+          <div className="lg:hidden flex items-center gap-3">
             <button
               onClick={toggleTheme}
               className="flex items-center justify-center h-9 w-9 rounded-xl transition-all duration-200 cursor-pointer"
@@ -205,15 +205,16 @@ export function MainLayout({ children }) {
             </button>
             <button
               type="button"
-              className="p-2 rounded-xl transition-colors cursor-pointer"
+              className="flex items-center justify-center h-9 w-9 rounded-xl transition-all duration-200 cursor-pointer"
               style={{
                 color: isDark ? '#B0BA99' : '#412D15',
                 background: isDark ? 'rgba(176,186,153,0.08)' : 'rgba(65,45,21,0.06)',
+                border: isDark ? '1px solid rgba(176,186,153,0.15)' : '1px solid rgba(65,45,21,0.12)',
               }}
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Menu"
             >
-              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
           </div>
         </nav>

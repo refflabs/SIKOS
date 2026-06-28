@@ -69,6 +69,7 @@ export function BookingHistory({ user }) {
                 D={D} 
                 waMessage={waMessage} 
                 isFirst={i === 0} 
+                refetch={refetch}
               />
             )
           })}
@@ -78,10 +79,54 @@ export function BookingHistory({ user }) {
   )
 }
 
-function BookingHistoryItem({ booking: b, D, waMessage, isFirst }) {
+function BookingHistoryItem({ booking: b, D, waMessage, isFirst, refetch }) {
   const [isRenewing, setIsRenewing] = useState(false)
   const [renewMonths, setRenewMonths] = useState(1)
+  const [isUploading, setIsUploading] = useState(false)
   const requestRenewalMutation = useRequestBookingRenewalMutation()
+
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setIsUploading(true)
+    const uploadToast = toast.loading('Mengunggah bukti transfer...')
+
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = async () => {
+      try {
+        const base64Image = reader.result
+        const token = localStorage.getItem('token')
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/bookings/${b.id}/payment-receipt`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ image: base64Image }),
+        })
+
+        if (!response.ok) {
+          throw new Error('Gagal mengunggah')
+        }
+
+        toast.success('Bukti transfer berhasil diunggah!', { id: uploadToast })
+        if (typeof refetch === 'function') refetch()
+      } catch (err) {
+        toast.error('Gagal mengunggah bukti transfer.', { id: uploadToast })
+      } finally {
+        setIsUploading(false)
+      }
+    }
+    reader.onerror = () => {
+      toast.error('Gagal membaca file gambar.', { id: uploadToast })
+      setIsUploading(false)
+    }
+  }
 
   const totalPrice = b.room ? Number(b.room.price) * Number(b.duration_months || 1) : 0
   const statusLabel =
@@ -177,7 +222,53 @@ function BookingHistoryItem({ booking: b, D, waMessage, isFirst }) {
         )}
       </div>
 
-      <div className="flex sm:items-center gap-3">
+      <div className="flex flex-wrap sm:items-center gap-3">
+        {/* Bukti Transfer Upload / Status */}
+        {b.status === 'pending' && (
+          <div className="flex items-center gap-2 flex-wrap">
+            {b.payment_receipt ? (
+              <>
+                <a
+                  href={b.payment_receipt}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-1.5 rounded-2xl px-4 py-2.5 text-xs font-semibold transition-all duration-200 border cursor-pointer"
+                  style={{ borderColor: D.border, color: D.text, background: isDark ? 'rgba(176,186,153,0.06)' : 'rgba(65,45,21,0.04)' }}
+                >
+                  Lihat Bukti Bayar
+                </a>
+                <label className="inline-flex items-center justify-center gap-1.5 rounded-2xl px-4 py-2.5 text-xs font-semibold transition-all duration-200 text-stone-700 bg-stone-100 hover:bg-stone-200 cursor-pointer">
+                  <span>Ganti Bukti</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    disabled={isUploading}
+                    className="hidden"
+                  />
+                </label>
+              </>
+            ) : (
+              <label
+                className="inline-flex items-center justify-center gap-1.5 rounded-2xl px-4 py-2.5 text-xs font-bold transition-all duration-200 text-white cursor-pointer shadow-sm active:scale-95"
+                style={{
+                  background: isDark ? 'linear-gradient(135deg,#B0BA99,#8a9478)' : 'linear-gradient(135deg,#412D15,#2e1e0a)',
+                  color: isDark ? '#1F150C' : '#E1DCC9'
+                }}
+              >
+                <span>Upload Bukti Bayar</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  disabled={isUploading}
+                  className="hidden"
+                />
+              </label>
+            )}
+          </div>
+        )}
+
         {/* Tombol Perpanjang */}
         {b.status === 'accepted' && !b.renewal_requested && !isRenewing && (
           <button
@@ -193,10 +284,18 @@ function BookingHistoryItem({ booking: b, D, waMessage, isFirst }) {
           href={`https://wa.me/6281234567890?text=${encodeURIComponent(waMessage)}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-xs font-semibold transition-all duration-200"
-          style={{ background: '#25D366', color: '#fff', boxShadow: '0 2px 8px rgba(37,211,102,0.25)' }}
-          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(37,211,102,0.35)' }}
-          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(37,211,102,0.25)' }}
+          className="inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-xs font-semibold transition-all duration-200 border"
+          style={{
+            background: isDark ? 'rgba(37,211,102,0.1)' : 'rgba(37,211,102,0.06)',
+            color: isDark ? '#4ade80' : '#15803d',
+            borderColor: isDark ? 'rgba(74,222,128,0.25)' : 'rgba(21,128,61,0.25)'
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.background = isDark ? 'rgba(37,211,102,0.18)' : 'rgba(37,211,102,0.12)'
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.background = isDark ? 'rgba(37,211,102,0.1)' : 'rgba(37,211,102,0.06)'
+          }}
         >
           Hubungi Pak RT
         </a>

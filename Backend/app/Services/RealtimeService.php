@@ -35,8 +35,7 @@ class RealtimeService
         ];
 
         try {
-            $response = Http::timeout(3)
-                ->retry(2, 100)
+            $response = Http::timeout(1)
                 ->withHeaders(['X-Socket-Secret' => $secret])
                 ->post(rtrim($url, '/') . '/broadcast', [
                     'event' => $event,

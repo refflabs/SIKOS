@@ -260,6 +260,18 @@ class BookingController extends Controller
 
     public static function autoReleaseExpiredBookings()
     {
+        // Throttle check to once every 10 minutes to prevent slow page loads from duplicate concurrent runs
+        $cacheKey = 'sikos_last_auto_release';
+        try {
+            $lastChecked = cache($cacheKey);
+            if ($lastChecked && now()->diffInMinutes($lastChecked) < 10) {
+                return;
+            }
+            cache([$cacheKey => now()], now()->addMinutes(15));
+        } catch (\Throwable $e) {
+            // Fallback silently if cache is unavailable
+        }
+
         $expiredBookings = Booking::where('status', 'accepted')
             ->where('check_out', '<=', now()->subDays(3)->toDateString())
             ->get();
@@ -280,5 +292,26 @@ class BookingController extends Controller
             
             app(RealtimeService::class)->bookingStatusChanged($booking->fresh(['user', 'room']));
         }
+    }
+
+    public function uploadPaymentReceipt(Request $request, $id)
+    {
+        $request->validate([
+            'image' => 'required|string',
+        ]);
+
+        $booking = Booking::findOrFail($id);
+
+        $booking->update([
+            'payment_receipt' => $request->image
+        ]);
+
+        // Broadcast real-time update
+        app(RealtimeService::class)->bookingStatusChanged($booking->fresh(['user', 'room']));
+
+        return response()->json([
+            'message' => 'Bukti pembayaran berhasil diunggah',
+            'booking' => $booking,
+        ]);
     }
 }

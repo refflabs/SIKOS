@@ -1,4 +1,4 @@
-import { MapPin, Star } from 'lucide-react'
+import { MapPin, Star, ArrowRight } from 'lucide-react'
 import { Badge } from './Badge'
 import { LazyImage } from '../../components/LazyImage'
 import { useTheme } from '../../context/ThemeContext'
@@ -142,40 +142,45 @@ export function ListingCard({
         {showCta && (
           <div className="mt-3 mt-auto">
             {available ? (
-              <a href={`/booking?room=${room.id}`}>
-                <button
-                  className="w-full py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer"
-                  style={
-                    ctaStyle === 'primary'
-                      ? { background: C.ctaPrimBg, color: C.ctaPrimColor, boxShadow: isDark ? '0 2px 10px rgba(176,186,153,0.18)' : '0 2px 10px rgba(65,45,21,0.25)' }
-                      : { background: C.btnBg, color: C.btnColor, border: `1.5px solid ${C.btnBorder}` }
+              <a
+                href={`/booking?room=${room.id}`}
+                className="w-full py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer flex items-center justify-center gap-1.5"
+                style={
+                  ctaStyle === 'primary'
+                    ? { background: C.ctaPrimBg, color: C.ctaPrimColor, boxShadow: isDark ? '0 2px 10px rgba(176,186,153,0.18)' : '0 2px 10px rgba(65,45,21,0.25)' }
+                    : { background: C.btnBg, color: C.btnColor, border: `1.5px solid ${C.btnBorder}`, textDecoration: 'none' }
+                }
+                onMouseEnter={e => {
+                  if (ctaStyle !== 'primary') {
+                    e.currentTarget.style.background = C.btnHoverBg
+                    e.currentTarget.style.color = C.btnHoverColor
+                    e.currentTarget.style.borderColor = C.btnHoverBorder
                   }
-                  onMouseEnter={e => {
-                    if (ctaStyle !== 'primary') {
-                      e.currentTarget.style.background = C.btnHoverBg
-                      e.currentTarget.style.color = C.btnHoverColor
-                      e.currentTarget.style.border = `1.5px solid ${C.btnHoverBorder}`
-                    }
-                  }}
-                  onMouseLeave={e => {
-                    if (ctaStyle !== 'primary') {
-                      e.currentTarget.style.background = C.btnBg
-                      e.currentTarget.style.color = C.btnColor
-                      e.currentTarget.style.border = `1.5px solid ${C.btnBorder}`
-                    }
-                  }}
-                >
-                  {ctaStyle === 'primary' ? 'Booking Sekarang' : 'Lihat & Booking →'}
-                </button>
+                }}
+                onMouseLeave={e => {
+                  if (ctaStyle !== 'primary') {
+                    e.currentTarget.style.background = C.btnBg
+                    e.currentTarget.style.color = C.btnColor
+                    e.currentTarget.style.borderColor = C.btnBorder
+                  }
+                }}
+              >
+                {ctaStyle === 'primary' ? (
+                  'Booking Sekarang'
+                ) : (
+                  <>
+                    <span>Lihat & Booking</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </>
+                )}
               </a>
             ) : (
-              <button
-                disabled
-                className="w-full py-2.5 rounded-xl text-xs font-semibold opacity-40 cursor-not-allowed"
+              <div
+                className="w-full py-2.5 rounded-xl text-xs font-semibold opacity-40 cursor-not-allowed text-center"
                 style={{ background: C.border, color: C.muted }}
               >
                 Tidak Tersedia
-              </button>
+              </div>
             )}
           </div>
         )}

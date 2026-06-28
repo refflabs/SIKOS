@@ -8,6 +8,7 @@ import {
   useCreateBookingMutation,
 } from '../../hooks/queries'
 import { useAuth } from '../../context/AuthContext'
+import { useTheme } from '../../context/ThemeContext'
 import { formatPrice, roomImage } from '../../api/roomUtils'
 import { QueryError } from '../../components/QueryError'
 
@@ -23,6 +24,13 @@ function BookingFormSkeleton() {
 export function BookingPage({ search = '' }) {
   const preselectedRoom = new URLSearchParams(search).get('room')
   const { isAuthenticated, isLoading: authLoading } = useAuth()
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
+
+  const D = isDark
+    ? { bg: '#120d08', card: '#1d1409', cardHover: '#231808', border: '#3a2a18', text: '#E1DCC9', muted: '#8a7060', sub: '#5a4030' }
+    : { bg: '#F7F4EE', card: '#FDFCF9', cardHover: '#f5f0e8', border: '#D8D0BE', text: '#1F150C', muted: '#7a6247', sub: '#b8a898' }
+
   const [message, setMessage] = useState({ type: '', text: '' })
 
   const [form, setForm] = useState({
@@ -103,11 +111,19 @@ export function BookingPage({ search = '' }) {
 
   return (
     <div className="pb-20">
-      <div className="bg-surface-teal border-b border-border">
+      <div
+        className="border-b"
+        style={{
+          background: isDark
+            ? 'linear-gradient(160deg, #1a1006 0%, #120d08 100%)'
+            : 'linear-gradient(160deg, #F5EFE6 0%, #F7F4EE 100%)',
+          borderColor: D.border
+        }}
+      >
         <div className="container-app py-8 md:py-10 max-w-5xl">
-          <p className="text-label text-teal-800/70 mb-2">Reservasi</p>
-          <h1 className="text-hero text-2xl sm:text-3xl mb-2">Form Booking</h1>
-          <p className="text-subtitle text-sm">Lengkapi data — proses cepat & aman.</p>
+          <p className="text-xs uppercase tracking-widest font-semibold mb-2" style={{ color: isDark ? '#B0BA99' : '#7a6247' }}>Reservasi</p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold mb-2" style={{ color: D.text }}>Form Booking</h1>
+          <p className="text-sm" style={{ color: D.muted }}>Lengkapi data — proses cepat & aman.</p>
         </div>
       </div>
 
@@ -132,13 +148,28 @@ export function BookingPage({ search = '' }) {
           <div className="grid lg:grid-cols-[1fr_340px] gap-8">
             <form
               onSubmit={handleSubmit}
-              className="bg-white rounded-2xl border border-border p-6 md:p-8 space-y-6 shadow-sm"
+              className="rounded-2xl p-6 md:p-8 space-y-6 shadow-sm border"
+              style={{
+                background: D.card,
+                borderColor: D.border
+              }}
             >
               <div>
-                <label className="text-label block mb-2">Kamar</label>
-                <select name="room_id" value={form.room_id} onChange={handleChange} className="input-field" required>
+                <label className="text-xs uppercase tracking-wider font-bold block mb-2" style={{ color: D.text }}>Kamar</label>
+                <select
+                  name="room_id"
+                  value={form.room_id}
+                  onChange={handleChange}
+                  className="input-field outline-none"
+                  style={{
+                    background: isDark ? '#120d08' : '#F7F4EE',
+                    color: D.text,
+                    borderColor: D.border
+                  }}
+                  required
+                >
                   {rooms.map((r) => (
-                    <option key={r.id} value={r.id}>
+                    <option key={r.id} value={r.id} style={{ background: D.card, color: D.text }}>
                       {r.name} — {formatPrice(r.price)}/bln
                     </option>
                   ))}
@@ -147,22 +178,55 @@ export function BookingPage({ search = '' }) {
 
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-label block mb-2">Tanggal mulai</label>
-                  <input type="date" name="check_in" value={form.check_in} onChange={handleChange} className="input-field" required />
+                  <label className="text-xs uppercase tracking-wider font-bold block mb-2" style={{ color: D.text }}>Tanggal mulai</label>
+                  <input
+                    type="date"
+                    name="check_in"
+                    value={form.check_in}
+                    onChange={handleChange}
+                    className="input-field outline-none"
+                    style={{
+                      background: isDark ? '#120d08' : '#F7F4EE',
+                      color: D.text,
+                      borderColor: D.border
+                    }}
+                    required
+                  />
                 </div>
                 <div>
-                  <label className="text-label block mb-2">Durasi</label>
-                  <select name="duration_months" value={form.duration_months} onChange={handleChange} className="input-field">
+                  <label className="text-xs uppercase tracking-wider font-bold block mb-2" style={{ color: D.text }}>Durasi</label>
+                  <select
+                    name="duration_months"
+                    value={form.duration_months}
+                    onChange={handleChange}
+                    className="input-field outline-none"
+                    style={{
+                      background: isDark ? '#120d08' : '#F7F4EE',
+                      color: D.text,
+                      borderColor: D.border
+                    }}
+                  >
                     {[1, 3, 6, 12].map((m) => (
-                      <option key={m} value={m}>{m} bulan</option>
+                      <option key={m} value={m} style={{ background: D.card, color: D.text }}>{m} bulan</option>
                     ))}
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="text-label block mb-2">Catatan</label>
-                <textarea name="notes" value={form.notes} onChange={handleChange} rows={3} className="input-field resize-none" />
+                <label className="text-xs uppercase tracking-wider font-bold block mb-2" style={{ color: D.text }}>Catatan</label>
+                <textarea
+                  name="notes"
+                  value={form.notes}
+                  onChange={handleChange}
+                  rows={3}
+                  className="input-field resize-none outline-none"
+                  style={{
+                    background: isDark ? '#120d08' : '#F7F4EE',
+                    color: D.text,
+                    borderColor: D.border
+                  }}
+                />
               </div>
 
               <Button type="submit" variant="primary" size="lg" className="w-full" disabled={createBooking.isPending || message.type === 'success'}>
@@ -171,30 +235,36 @@ export function BookingPage({ search = '' }) {
               </Button>
             </form>
 
-            <div className="lg:sticky lg:top-24 h-fit rounded-2xl border border-border bg-white overflow-hidden shadow-md">
+            <div
+              className="lg:sticky lg:top-24 h-fit rounded-2xl overflow-hidden shadow-md border"
+              style={{
+                background: D.card,
+                borderColor: D.border
+              }}
+            >
               {room ? (
                 <>
                   <LazyImage src={roomImage(room)} alt={room.name} wrapperClassName="aspect-[16/10] w-full" />
                   <div className="p-6">
-                    <h3 className="font-semibold mb-4">{room.name}</h3>
-                    <div className="space-y-2 text-sm border-t border-border pt-4">
-                      <div className="flex justify-between text-muted-foreground">
+                    <h3 className="font-bold text-lg mb-4" style={{ color: D.text }}>{room.name}</h3>
+                    <div className="space-y-2 text-sm border-t pt-4" style={{ borderColor: D.border }}>
+                      <div className="flex justify-between" style={{ color: D.muted }}>
                         <span>Harga/bulan</span>
                         <span>{formatPrice(room.price)}</span>
                       </div>
-                      <div className="flex justify-between text-muted-foreground">
+                      <div className="flex justify-between" style={{ color: D.muted }}>
                         <span>Durasi</span>
                         <span>{form.duration_months} bln</span>
                       </div>
-                      <div className="flex justify-between font-bold pt-3 border-t border-border">
+                      <div className="flex justify-between font-extrabold pt-3 border-t" style={{ color: D.text, borderColor: D.border }}>
                         <span>Total</span>
-                        <span>{formatPrice(total)}</span>
+                        <span style={{ color: isDark ? '#B0BA99' : '#412D15' }}>{formatPrice(total)}</span>
                       </div>
                     </div>
                   </div>
                 </>
               ) : (
-                <p className="p-8 text-subtitle text-sm text-center">Pilih kamar</p>
+                <p className="p-8 text-sm text-center" style={{ color: D.muted }}>Pilih kamar</p>
               )}
             </div>
           </div>

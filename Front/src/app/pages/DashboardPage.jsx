@@ -79,6 +79,7 @@ export function DashboardPage({ search = '' }) {
   const tab = new URLSearchParams(search).get('tab') || 'overview'
   const { user } = useAuth()
   const { refreshSubscriptions } = useSocket()
+  const [viewingReceipt, setViewingReceipt] = useState(null)
 
   // State for filtering
   const [roomFilter, setRoomFilter] = useState('all')
@@ -751,6 +752,22 @@ export function DashboardPage({ search = '' }) {
                            : b.status === 'rejected' ? 'ditolak' 
                            : b.status}
                         </Badge>
+                        {b.payment_receipt ? (
+                          <button
+                            type="button"
+                            onClick={() => setViewingReceipt(b.payment_receipt)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white font-bold rounded-xl cursor-pointer shadow-sm text-xs border border-blue-200/40 transition-colors"
+                          >
+                            <Eye className="h-3.5 w-3.5" />
+                            Bukti Bayar
+                          </button>
+                        ) : (
+                          b.status === 'pending' && (
+                            <span className="text-[10px] text-amber-700 font-semibold italic bg-amber-50 border border-amber-200/30 px-2.5 py-1 rounded-lg">
+                              Belum Upload Bukti
+                            </span>
+                          )
+                        )}
                         {b.status === 'pending' && (
                           <div className="flex items-center gap-2 ml-1">
                             <button
@@ -970,7 +987,17 @@ export function DashboardPage({ search = '' }) {
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-4">
+                         <div className="flex items-center gap-4">
+                          {b.payment_receipt && (
+                            <button
+                              type="button"
+                              onClick={() => setViewingReceipt(b.payment_receipt)}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white font-bold rounded-lg cursor-pointer shadow-sm text-[10px] border border-blue-200/40 transition-colors"
+                            >
+                              <Eye className="h-3 w-3" />
+                              Bukti
+                            </button>
+                          )}
                           <span className="text-xs font-bold text-[#412D15]">{formatPrice(b.total_price)}</span>
                           <Badge variant={b.status === 'confirmed' || b.status === 'accepted' ? 'available' : b.status === 'pending' ? 'maintenance' : 'default'}>
                             {b.status === 'confirmed' || b.status === 'accepted' ? 'disetujui' 
@@ -1420,6 +1447,37 @@ export function DashboardPage({ search = '' }) {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {viewingReceipt && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+            onClick={() => setViewingReceipt(null)}
+          >
+            <div
+              className="bg-[#FDFCF9] dark:bg-[#1d1409] rounded-2xl max-w-2xl w-full p-6 border border-border/40 dark:border-[#3a2a18] shadow-2xl relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-bold text-base text-foreground">
+                  Bukti Transfer Pembayaran
+                </h3>
+                <button
+                  onClick={() => setViewingReceipt(null)}
+                  className="text-xs font-bold px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 cursor-pointer text-foreground border border-border/10"
+                >
+                  Tutup
+                </button>
+              </div>
+              <div className="flex justify-center bg-stone-50 dark:bg-stone-900 rounded-xl p-2 border border-border/20 overflow-hidden max-h-[60vh]">
+                <img
+                  src={viewingReceipt}
+                  alt="Bukti Transfer"
+                  className="max-w-full max-h-full object-contain rounded-lg shadow-sm"
+                />
+              </div>
             </div>
           </div>
         )}

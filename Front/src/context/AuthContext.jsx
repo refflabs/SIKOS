@@ -4,6 +4,7 @@ import {
   register as apiRegister,
   logout as apiLogout,
   getMe,
+  getStoredUser,
 } from '../api/auth'
 
 /**
@@ -48,7 +49,7 @@ function persistAuth(token, user) {
 }
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(() => getStoredUser())
   const [token, setToken] = useState(() => localStorage.getItem('token'))
   const [isLoading, setIsLoading] = useState(() => Boolean(localStorage.getItem('token')))
 
@@ -68,13 +69,15 @@ export function AuthProvider({ children }) {
         setUser(userData)
         setToken(storedToken)
       })
-      .catch(() => {
+      .catch((err) => {
         if (cancelled) return
-        // Token invalid — clear everything
-        persistAuth(null, null)
-        setUser(null)
-        setToken(null)
-        notifyAuthChanged()
+        // Hanya bersihkan session jika server merespons dengan status 401 (Unauthorized)
+        if (err.response?.status === 401) {
+          persistAuth(null, null)
+          setUser(null)
+          setToken(null)
+          notifyAuthChanged()
+        }
       })
       .finally(() => {
         if (!cancelled) setIsLoading(false)
