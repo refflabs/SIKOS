@@ -11,7 +11,7 @@ export function PaymentHistory({ user }) {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
-  const D = { bg: '#F7F4E8', card: '#FDFCF9', cardHover: '#f5f0e8', border: '#D8D0BE', text: '#3A342E', muted: '#7a6247', sub: '#b8a898' }
+  const D = { bg: '#f8f7f2', card: '#ffffff', cardHover: '#f0f4ee', border: '#d9e2d3', text: '#2f3a34', muted: '#2f3a34', sub: '#c79a63' }
 
   const { data, isLoading, isError, refetch } = useBookingsQuery()
   const bookings = Array.isArray(data) ? data : []
@@ -39,9 +39,9 @@ export function PaymentHistory({ user }) {
   return (
     <div className="rounded-3xl overflow-hidden" style={{ background: D.card, border: `1px solid ${D.border}` }}>
       {/* Header */}
-      <div className="px-6 py-5" style={{ borderBottom: `1px solid ${D.border}`, background: isDark ? '#231808' : '#f5f0e8' }}>
+      <div className="px-6 py-5" style={{ borderBottom: `1px solid ${D.border}`, background: '#faf8f5' }}>
         <h2 className="text-lg font-bold flex items-center gap-2" style={{ color: D.text }}>
-          <CreditCard className="h-5 w-5 text-[#CFA16D]" />
+          <CreditCard className="h-5 w-5 text-[#c79a63]" />
           Histori Pembayaran Anda
         </h2>
         <p className="text-xs mt-1" style={{ color: D.muted }}>
@@ -61,7 +61,7 @@ export function PaymentHistory({ user }) {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr style={{ background: isDark ? '#1a1208' : '#faf8f5', borderBottom: `1px solid ${D.border}`, color: D.text }}>
+              <tr style={{ background: '#faf8f5', borderBottom: `1px solid ${D.border}`, color: D.text }}>
                 <th className="p-4 pl-6 font-bold">Kamar Kost</th>
                 <th className="p-4 font-bold">Periode Sewa</th>
                 <th className="p-4 font-bold">Total Pembayaran</th>
@@ -102,11 +102,11 @@ export function PaymentHistory({ user }) {
                     </td>
                     <td className="p-4">
                       <span className="flex items-center gap-1">
-                        <CalendarDays className="h-3.5 w-3.5 text-[#CFA16D]" />
+                        <CalendarDays className="h-3.5 w-3.5 text-[#c79a63]" />
                         {b.check_in ? String(b.check_in).slice(0, 10) : '—'} s/d {b.check_out ? String(b.check_out).slice(0, 10) : '—'}
                       </span>
                     </td>
-                    <td className="p-4 font-semibold" style={{ color: '#CFA16D' }}>
+                    <td className="p-4 font-semibold" style={{ color: '#c79a63' }}>
                       {formatPrice(totalPrice)}
                     </td>
                     <td className="p-4">
@@ -115,7 +115,7 @@ export function PaymentHistory({ user }) {
                           href={b.payment_receipt}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 font-semibold text-[#CFA16D] hover:underline"
+                          className="inline-flex items-center gap-1.5 font-semibold text-[#6b8f71] hover:underline"
                         >
                           Lihat Bukti Bayar
                           <ExternalLink className="h-3 w-3" />

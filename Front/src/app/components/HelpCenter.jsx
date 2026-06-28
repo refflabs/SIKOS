@@ -25,7 +25,7 @@ export function HelpCenter() {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
-  const D = { bg: '#F7F4E8', card: '#FDFCF9', header: '#f5f0e8', border: '#D8D0BE', text: '#3A342E', muted: '#7a6247', hover: '#f0ebe0' }
+  const D = { bg: '#f8f7f2', card: '#ffffff', header: '#faf8f5', border: '#d9e2d3', text: '#2f3a34', muted: '#2f3a34', hover: '#f0f4ee' }
 
   const [openIndex, setOpenIndex] = useState(null)
   const toggle = (i) => setOpenIndex(openIndex === i ? null : i)
@@ -50,12 +50,12 @@ export function HelpCenter() {
                   type="button"
                   onClick={() => toggle(index)}
                   className="w-full flex items-center justify-between text-left text-sm py-1 cursor-pointer transition-colors duration-200"
-                  style={{ color: isOpen ? '#B0BA99' : D.text, fontWeight: isOpen ? '600' : '500' }}
-                  onMouseEnter={e => { if (!isOpen) e.currentTarget.style.color = '#B0BA99' }}
+                  style={{ color: isOpen ? '#6b8f71' : D.text, fontWeight: isOpen ? '600' : '500' }}
+                  onMouseEnter={e => { if (!isOpen) e.currentTarget.style.color = '#6b8f71' }}
                   onMouseLeave={e => { if (!isOpen) e.currentTarget.style.color = D.text }}
                 >
                   <span className="flex items-center gap-2.5">
-                    <HelpCircle className="h-4 w-4 shrink-0" style={{ color: '#B0BA99' }} />
+                    <HelpCircle className="h-4 w-4 shrink-0" style={{ color: '#6b8f71' }} />
                     {faq.q}
                   </span>
                   {isOpen
@@ -97,9 +97,9 @@ export function HelpCenter() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs font-semibold transition-colors duration-200"
-                  style={{ color: '#B0BA99' }}
+                  style={{ color: '#6b8f71' }}
                   onMouseEnter={e => e.currentTarget.style.color = D.text}
-                  onMouseLeave={e => e.currentTarget.style.color = '#B0BA99'}
+                  onMouseLeave={e => e.currentTarget.style.color = '#6b8f71'}
                 >
                   +62 812-3456-7890
                 </a>
@@ -110,7 +110,7 @@ export function HelpCenter() {
             <div className="flex items-start gap-3">
               <span
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
-                style={{ background: isDark ? 'rgba(91,127,166,0.15)' : 'rgba(91,127,166,0.1)', color: '#5b7fa6' }}
+                style={{ background: 'rgba(107,143,113,0.1)', color: '#6b8f71' }}
               >
                 <Mail className="h-4 w-4" />
               </span>
@@ -119,9 +119,9 @@ export function HelpCenter() {
                 <a
                   href="mailto:support@kostpakrt.com"
                   className="text-xs font-semibold transition-colors duration-200"
-                  style={{ color: '#B0BA99' }}
+                  style={{ color: '#6b8f71' }}
                   onMouseEnter={e => e.currentTarget.style.color = D.text}
-                  onMouseLeave={e => e.currentTarget.style.color = '#B0BA99'}
+                  onMouseLeave={e => e.currentTarget.style.color = '#6b8f71'}
                 >
                   support@kostpakrt.com
                 </a>
@@ -132,7 +132,7 @@ export function HelpCenter() {
             <div className="flex items-start gap-3">
               <span
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
-                style={{ background: isDark ? 'rgba(176,186,153,0.12)' : 'rgba(176,186,153,0.2)', color: '#B0BA99' }}
+                style={{ background: 'rgba(107,143,113,0.1)', color: '#6b8f71' }}
               >
                 <MapPin className="h-4 w-4" />
               </span>

@@ -10,7 +10,7 @@ export function RoomsPage() {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
-  const D = { bg: '#F7F4E8', card: '#FDFCF9', border: '#D8D0BE', text: '#3A342E', muted: '#7a6247', input: '#F7F4E8' }
+  const D = { bg: '#f8f7f2', card: '#ffffff', border: '#d9e2d3', text: '#2f3a34', muted: '#2f3a34', input: '#f8f7f2' }
 
   const [searchTerm, setSearchTerm] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -47,7 +47,7 @@ export function RoomsPage() {
     <div className="pb-16" style={{ background: D.bg }}>
       {/* Page intro */}
       <div className="container-app pt-8 pb-6">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-2" style={{ color: '#B0BA99' }}>Katalog</p>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-2" style={{ color: '#6b8f71' }}>Katalog</p>
         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2" style={{ color: D.text }}>
           Daftar Kamar
         </h1>
@@ -63,7 +63,7 @@ export function RoomsPage() {
       {/* Search bar */}
       <div
         className="relative z-10"
-        style={{ background: isDark ? 'rgba(18,13,8,0.3)' : 'rgba(247,244,238,0.3)', borderBottom: `1px solid ${D.border}` }}
+        style={{ background: 'rgba(248,247,242,0.3)', borderBottom: `1px solid ${D.border}` }}
       >
         <div className="container-app py-3">
           <div className="flex flex-col sm:flex-row gap-3">
@@ -75,7 +75,7 @@ export function RoomsPage() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={{ ...inputStyle, paddingLeft: '2.75rem' }}
-                onFocus={e => e.currentTarget.style.borderColor = '#B0BA99'}
+                onFocus={e => e.currentTarget.style.borderColor = '#6b8f71'}
                 onBlur={e => e.currentTarget.style.borderColor = D.border}
               />
             </div>
@@ -84,7 +84,7 @@ export function RoomsPage() {
                 value={selectedType}
                 onChange={(e) => setSelectedType(e.target.value)}
                 style={{ ...inputStyle, width: '8rem', padding: '0.625rem 0.75rem', cursor: 'pointer' }}
-                onFocus={e => e.currentTarget.style.borderColor = '#B0BA99'}
+                onFocus={e => e.currentTarget.style.borderColor = '#6b8f71'}
                 onBlur={e => e.currentTarget.style.borderColor = D.border}
               >
                 <option value="all">Semua tipe</option>
@@ -95,7 +95,7 @@ export function RoomsPage() {
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
                 style={{ ...inputStyle, width: '9.5rem', padding: '0.625rem 0.75rem', cursor: 'pointer' }}
-                onFocus={e => e.currentTarget.style.borderColor = '#B0BA99'}
+                onFocus={e => e.currentTarget.style.borderColor = '#6b8f71'}
                 onBlur={e => e.currentTarget.style.borderColor = D.border}
               >
                 <option value="all">Semua status</option>

@@ -301,8 +301,8 @@ export function AdminChatPanel() {
                     <span
                       className={`flex h-9 w-9 items-center justify-center rounded-xl text-xs font-extrabold shadow-sm ${
                         isSelected
-                          ? 'bg-white/15 text-white'
-                          : 'bg-[#EDE8DC] text-[#412D15]'
+                          ? 'bg-[#6b8f71]/10 text-[#6b8f71]'
+                          : 'bg-[#d9e2d3] text-[#2f3a34]'
                       }`}
                     >
                       {getInitials(thread.userName)}
@@ -320,7 +320,7 @@ export function AdminChatPanel() {
                       </span>
                       <span
                         className={`text-[9px] ${
-                          isSelected ? 'text-[#EDE8DC]/80' : 'text-muted-foreground'
+                          isSelected ? 'text-[#2f3a34]/80' : 'text-muted-foreground'
                         }`}
                       >
                         {formatTime(thread.timestamp)}
@@ -328,7 +328,7 @@ export function AdminChatPanel() {
                     </div>
                     <p
                       className={`text-[11px] truncate leading-tight ${
-                        isSelected ? 'text-[#EDE8DC]/70' : 'text-muted-foreground'
+                        isSelected ? 'text-[#2f3a34]/70' : 'text-muted-foreground'
                       }`}
                     >
                       {thread.lastMessage}
@@ -395,7 +395,7 @@ export function AdminChatPanel() {
                       className={`max-w-[70%] rounded-2xl px-4 py-2.5 text-xs leading-relaxed shadow-sm ${
                         isAdmin
                           ? 'bg-primary text-primary-foreground rounded-tr-none'
-                          : 'bg-card border border-border text-[#1F150C] rounded-tl-none'
+                          : 'bg-card border border-border text-[#2f3a34] rounded-tl-none'
                       }`}
                     >
                       {msg.text}
@@ -445,7 +445,7 @@ export function AdminChatPanel() {
                 Pilih salah satu penghuni di daftar sebelah kiri untuk membalas pertanyaan atau keluhan fasilitas secara real-time.
               </p>
             </div>
-            <div className="flex items-center gap-1.5 text-[10px] text-[#4a7c59] bg-[#f0f2ec] border border-[#B0BA99]/30 px-3.5 py-1.5 rounded-full font-medium">
+            <div className="flex items-center gap-1.5 text-[10px] text-[#6b8f71] bg-[#d9e2d3]/30 border border-[#d9e2d3]/50 px-3.5 py-1.5 rounded-full font-medium">
               <Sparkles className="h-3 w-3 text-amber-500 animate-pulse" />
               Notifikasi chat baru akan muncul otomatis secara instan.
             </div>

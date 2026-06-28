@@ -38,14 +38,14 @@ const STATS = [
 
 /* ─── Palette shorthand ─── */
 const C = {
-  beige: '#E1DCC9',
-  mocca: '#412D15',
-  sage: '#B0BA99',
-  coffee: '#1F150C',
-  bg: '#F7F4EE',
-  card: '#FDFCF9',
-  muted: '#7a6247',
-  border: '#D8D0BE',
+  beige: '#d9e2d3',
+  mocca: '#c79a63',
+  sage: '#6b8f71',
+  coffee: '#2f3a34',
+  bg: '#f8f7f2',
+  card: '#ffffff',
+  muted: '#2f3a34',
+  border: '#d9e2d3',
 }
 
 /* ─── Main Component ─── */
@@ -57,15 +57,15 @@ export function LandingPage({ search = '' }) {
 
   // Dynamic palette based on theme
   const C = {
-    beige:  '#E8E6BC',
-    mocca:  '#CFA16D',
-    sage:   '#D8DEAF',
-    coffee: '#3A342E',
-    bg:     '#F7F4E8',
-    card:   '#FDFCF9',
-    muted:  '#7a6247',
-    border: '#D8D0BE',
-    btnText: '#3A342E',
+    beige:  '#d9e2d3',
+    mocca:  '#c79a63',
+    sage:   '#6b8f71',
+    coffee: '#2f3a34',
+    bg:     '#f8f7f2',
+    card:   '#ffffff',
+    muted:  '#2f3a34',
+    border: '#d9e2d3',
+    btnText: '#ffffff',
   }
 
   /* ── Tab views ── */
@@ -168,12 +168,12 @@ export function LandingPage({ search = '' }) {
                   <button
                     className="flex items-center gap-2 px-6 py-3.5 rounded-2xl text-sm font-bold transition-all duration-200 cursor-pointer"
                     style={{
-                      background: `linear-gradient(135deg, ${C.mocca}, #2e1e0a)`,
-                      color: C.beige,
-                      boxShadow: `0 4px 20px rgba(65,45,21,0.35)`,
+                      background: `linear-gradient(135deg, ${C.sage}, #56745c)`,
+                      color: '#ffffff',
+                      boxShadow: `0 4px 20px rgba(107,143,113,0.3)`,
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 8px 28px rgba(65,45,21,0.45)` }}
-                    onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = `0 4px 20px rgba(65,45,21,0.35)` }}
+                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 8px 28px rgba(107,143,113,0.4)` }}
+                    onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = `0 4px 20px rgba(107,143,113,0.3)` }}
                   >
                     <Search className="h-4 w-4" />
                     Cari Kost Sekarang
@@ -254,7 +254,7 @@ export function LandingPage({ search = '' }) {
                 }}
               >
                 <div className="h-10 w-10 rounded-xl flex items-center justify-center"
-                  style={{ background: `linear-gradient(135deg,${C.sage},#8a9478)` }}>
+                  style={{ background: `linear-gradient(135deg,${C.sage},#56745c)` }}>
                   <Star className="h-5 w-5 text-white fill-white" />
                 </div>
                 <div>
@@ -445,44 +445,36 @@ export function LandingPage({ search = '' }) {
         <div
           className="relative overflow-hidden rounded-3xl p-10 md:p-14 text-center"
           style={{
-            background: isDark
-              ? 'linear-gradient(135deg, #E1DCC9 0%, #D4C4A4 100%)'
-              : 'linear-gradient(135deg, #412D15 0%, #2e1e0a 100%)',
-            boxShadow: isDark
-              ? '0 20px 60px rgba(225,220,201,0.15)'
-              : '0 20px 60px rgba(65,45,21,0.4)',
+            background: 'linear-gradient(135deg, #6b8f71 0%, #56745c 100%)',
+            boxShadow: '0 20px 60px rgba(107,143,113,0.18)',
           }}
         >
           {/* Decorative */}
           <div
             className="absolute -top-16 -right-16 w-64 h-64 rounded-full opacity-10 pointer-events-none"
-            style={{ background: isDark ? '#412D15' : C.sage }}
+            style={{ background: '#ffffff' }}
           />
           <div
             className="absolute -bottom-12 -left-12 w-48 h-48 rounded-full opacity-10 pointer-events-none"
-            style={{ background: isDark ? '#1F150C' : C.beige }}
+            style={{ background: '#ffffff' }}
           />
 
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] mb-3 opacity-60"
-            style={{ color: isDark ? '#412D15' : C.sage }}>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] mb-3 opacity-80"
+            style={{ color: '#ffffff' }}>
             Mulai Sekarang
           </p>
           <h2 className="text-2xl sm:text-4xl font-extrabold mb-4 leading-tight"
-            style={{ color: isDark ? '#1F150C' : C.beige }}>
+            style={{ color: '#ffffff' }}>
             Temukan hunian impian Anda<br />bersama Kost Pak RT
           </h2>
-          <p className="text-sm max-w-md mx-auto mb-8 opacity-70"
-            style={{ color: isDark ? '#3a2810' : C.beige }}>
+          <p className="text-sm max-w-md mx-auto mb-8 opacity-95"
+            style={{ color: '#f0f4ee' }}>
             Bergabung dengan ratusan penghuni yang sudah merasakan kenyamanan tinggal bersama kami.
           </p>
           <a href="/rooms">
             <button
               className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl text-sm font-bold transition-all duration-200 cursor-pointer"
-              style={
-                isDark
-                  ? { background: '#412D15', color: '#E1DCC9', boxShadow: '0 4px 20px rgba(65,45,21,0.35)' }
-                  : { background: '#E1DCC9', color: '#1F150C', boxShadow: '0 4px 20px rgba(225,220,201,0.3)' }
-              }
+              style={{ background: '#c79a63', color: '#ffffff', boxShadow: '0 4px 20px rgba(199,154,99,0.3)' }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.filter = 'brightness(1.06)' }}
               onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.filter = 'none' }}
             >

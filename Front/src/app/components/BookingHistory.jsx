@@ -13,7 +13,7 @@ export function BookingHistory({ user }) {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
-  const D = { bg: '#F7F4E8', card: '#FDFCF9', cardHover: '#f5f0e8', border: '#D8D0BE', text: '#3A342E', muted: '#7a6247', sub: '#b8a898' }
+  const D = { bg: '#f8f7f2', card: '#ffffff', cardHover: '#f0f4ee', border: '#d9e2d3', text: '#2f3a34', muted: '#2f3a34', sub: '#c79a63' }
 
   const { data, isLoading, isError, refetch } = useBookingsQuery()
   const bookings = Array.isArray(data) ? data : []
@@ -23,9 +23,9 @@ export function BookingHistory({ user }) {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[300px] items-center justify-center rounded-3xl p-8"
-        style={{ background: D.card, border: `1px solid ${D.border}` }}>
-        <LoadingSpinner />
+      <div className="flex flex-col items-center justify-center py-20 gap-3" style={{ color: D.muted }}>
+        <Loader2 className="h-8 w-8 animate-spin" />
+        <span className="text-sm font-semibold tracking-wide">Memuat data booking…</span>
       </div>
     )
   }
@@ -38,10 +38,21 @@ export function BookingHistory({ user }) {
     )
   }
 
+  if (userBookings.length === 0) {
+    return (
+      <EmptyState
+        title="Belum Ada Booking"
+        description="Anda belum memesan kamar kost apa pun saat ini."
+        actionLabel="Cari Kamar"
+        actionHref="/rooms"
+      />
+    )
+  }
+
   return (
     <div className="rounded-3xl overflow-hidden" style={{ background: D.card, border: `1px solid ${D.border}` }}>
       {/* Header */}
-      <div className="px-6 py-5" style={{ borderBottom: `1px solid ${D.border}`, background: isDark ? '#231808' : '#f5f0e8' }}>
+      <div className="px-6 py-5" style={{ borderBottom: `1px solid ${D.border}`, background: '#faf8f5' }}>
         <h2 className="text-lg font-bold" style={{ color: D.text }}>Histori Booking Anda</h2>
         <p className="text-xs mt-1" style={{ color: D.muted }}>
           Daftar pesanan kamar kost Anda yang sedang diproses maupun telah disetujui.
@@ -171,22 +182,22 @@ function BookingHistoryItem({ booking: b, D, waMessage, isFirst, refetch }) {
 
         <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs" style={{ color: D.muted }}>
           <span className="flex items-center gap-1.5">
-            <CalendarDays className="h-4 w-4 shrink-0" style={{ color: '#CFA16D' }} />
+            <CalendarDays className="h-4 w-4 shrink-0" style={{ color: '#c79a63' }} />
             Mulai: {b.check_in ? String(b.check_in).slice(0, 10) : '—'}
           </span>
           <span className="flex items-center gap-1.5">
-            <CalendarDays className="h-4 w-4 shrink-0" style={{ color: '#CFA16D' }} />
+            <CalendarDays className="h-4 w-4 shrink-0" style={{ color: '#c79a63' }} />
             Selesai: {b.check_out ? String(b.check_out).slice(0, 10) : '—'}
           </span>
           <span className="flex items-center gap-1.5">
-            <Clock className="h-4 w-4 shrink-0" style={{ color: '#CFA16D' }} />
+            <Clock className="h-4 w-4 shrink-0" style={{ color: '#c79a63' }} />
             Durasi: {b.duration_months || 1} Bulan
           </span>
         </div>
 
         <div className="text-sm font-semibold pt-1" style={{ color: D.text }}>
           Total Biaya:{' '}
-          <span style={{ color: '#CFA16D' }}>{formatPrice(totalPrice)}</span>
+          <span style={{ color: '#c79a63' }}>{formatPrice(totalPrice)}</span>
         </div>
 
         {/* Form Perpanjang */}
@@ -196,7 +207,7 @@ function BookingHistoryItem({ booking: b, D, waMessage, isFirst, refetch }) {
             <select
               value={renewMonths}
               onChange={(e) => setRenewMonths(e.target.value)}
-              className="text-xs px-2.5 py-1.5 rounded-lg border bg-[#F7F4EE] outline-none"
+              className="text-xs px-2.5 py-1.5 rounded-lg border bg-[#f8f7f2] outline-none"
               style={{ borderColor: D.border, color: D.text }}
             >
               <option value={1}>1 Bulan</option>
@@ -206,7 +217,7 @@ function BookingHistoryItem({ booking: b, D, waMessage, isFirst, refetch }) {
             </select>
             <button
               onClick={handleRenew}
-              className="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-[#412D15] text-[#E1DCC9] cursor-pointer hover:bg-black transition-colors"
+              className="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-[#6b8f71] text-[#ffffff] cursor-pointer hover:bg-[#56745c] transition-colors"
             >
               Ajukan
             </button>
@@ -231,7 +242,7 @@ function BookingHistoryItem({ booking: b, D, waMessage, isFirst, refetch }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-1.5 rounded-2xl px-4 py-2.5 text-xs font-semibold transition-all duration-200 border cursor-pointer"
-                  style={{ borderColor: D.border, color: D.text, background: isDark ? 'rgba(176,186,153,0.06)' : 'rgba(65,45,21,0.04)' }}
+                  style={{ borderColor: D.border, color: D.text, background: 'rgba(107,143,113,0.06)' }}
                 >
                   Lihat Bukti Bayar
                 </a>
@@ -250,8 +261,8 @@ function BookingHistoryItem({ booking: b, D, waMessage, isFirst, refetch }) {
               <label
                 className="inline-flex items-center justify-center gap-1.5 rounded-2xl px-4 py-2.5 text-xs font-bold transition-all duration-200 text-white cursor-pointer shadow-sm active:scale-95"
                 style={{
-                  background: 'linear-gradient(135deg,#CFA16D,#b08451)',
-                  color: '#3A342E'
+                  background: 'linear-gradient(135deg,#6b8f71,#56745c)',
+                  color: '#ffffff'
                 }}
               >
                 <span>Upload Bukti Bayar</span>
@@ -272,7 +283,7 @@ function BookingHistoryItem({ booking: b, D, waMessage, isFirst, refetch }) {
           <button
             onClick={() => setIsRenewing(true)}
             className="inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-xs font-semibold transition-all duration-200 cursor-pointer hover:opacity-95"
-            style={{ background: '#412D15', color: '#E1DCC9' }}
+            style={{ background: '#6b8f71', color: '#ffffff' }}
           >
             Perpanjang Sewa
           </button>
@@ -284,15 +295,15 @@ function BookingHistoryItem({ booking: b, D, waMessage, isFirst, refetch }) {
           rel="noopener noreferrer"
           className="inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-xs font-semibold transition-all duration-200 border"
           style={{
-            background: isDark ? 'rgba(37,211,102,0.1)' : 'rgba(37,211,102,0.06)',
-            color: isDark ? '#4ade80' : '#15803d',
-            borderColor: isDark ? 'rgba(74,222,128,0.25)' : 'rgba(21,128,61,0.25)'
+            background: 'rgba(107,143,113,0.06)',
+            color: '#6b8f71',
+            borderColor: 'rgba(107,143,113,0.2)'
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.background = isDark ? 'rgba(37,211,102,0.18)' : 'rgba(37,211,102,0.12)'
+            e.currentTarget.style.background = 'rgba(107,143,113,0.12)'
           }}
           onMouseLeave={e => {
-            e.currentTarget.style.background = isDark ? 'rgba(37,211,102,0.1)' : 'rgba(37,211,102,0.06)'
+            e.currentTarget.style.background = 'rgba(107,143,113,0.06)'
           }}
         >
           Hubungi Pak RT

@@ -3,50 +3,50 @@
 :root {
   --font-size: 16px;
 
-  /* Brand — Mocca Brown */
-  --brand: #CFA16D;
-  --brand-hover: #b08451;
-  --brand-foreground: #3A342E;
+  /* Brand — Primary */
+  --brand: #6b8f71;
+  --brand-hover: #56745c;
+  --brand-foreground: #2f3a34;
 
   --primary: var(--brand);
   --primary-dark: var(--brand-hover);
   --primary-foreground: var(--brand-foreground);
 
   /* Accents */
-  --sage: #D8DEAF;
-  --sage-soft: #f4f6e6;
-  --mocca: #CFA16D;
-  --mocca-soft: #faf6eb;
+  --sage: #d9e2d3;
+  --sage-soft: #f0f4ee;
+  --mocca: #c79a63;
+  --mocca-soft: #faf8f5;
 
-  /* Warm neutrals — Beige/Coffee */
-  --background: #F7F4E8;
-  --foreground: #3A342E;
-  --card: #FDFCF9;
-  --card-foreground: #3A342E;
+  /* Warm neutrals */
+  --background: #f8f7f2;
+  --foreground: #2f3a34;
+  --card: #ffffff;
+  --card-foreground: #2f3a34;
 
-  --secondary: #E8E6BC;
-  --secondary-foreground: #3A342E;
-  --muted: #E8E6BC;
-  --muted-foreground: #7a6247;
+  --secondary: #d9e2d3;
+  --secondary-foreground: #2f3a34;
+  --muted: #d9e2d3;
+  --muted-foreground: #2f3a34;
 
-  --border: #D8D0BE;
-  --input: #D8D0BE;
-  --input-background: #FDFCF9;
-  --ring: #D8DEAF;
+  --border: #d9e2d3;
+  --input: #d9e2d3;
+  --input-background: #ffffff;
+  --ring: #6b8f71;
 
   --destructive: #c0392b;
-  --success: #4ade80;
-  --warning: #c07d3a;
+  --success: #6b8f71;
+  --warning: #c79a63;
   --info: #5b7fa6;
 
   --radius: 0.75rem;
 
   /* Section surfaces */
-  --surface-warm: #F7F4E8;
-  --surface-beige: #E8E6BC;
-  --surface-sage: #f4f6e6;
-  --surface-mocca: #faf6eb;
-  --surface-stone: #E8E6BC;
+  --surface-warm: #f8f7f2;
+  --surface-beige: #d9e2d3;
+  --surface-sage: #f0f4ee;
+  --surface-mocca: #faf8f5;
+  --surface-stone: #d9e2d3;
 }
 
 @theme inline {
@@ -94,50 +94,50 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(65, 45, 21, 0.18);
+    background: rgba(107, 143, 113, 0.18);
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(65, 45, 21, 0.35);
+    background: rgba(107, 143, 113, 0.35);
   }
   
   html.dark ::-webkit-scrollbar-thumb {
-    background: rgba(176, 186, 153, 0.2);
+    background: rgba(107, 143, 113, 0.18);
   }
   html.dark ::-webkit-scrollbar-thumb:hover {
-    background: rgba(176, 186, 153, 0.4);
+    background: rgba(107, 143, 113, 0.35);
   }
 
 
-  /* ─── DARK MODE ─── */
+  /* ─── DARK MODE (Identical to Light Theme color palette) ─── */
   html.dark {
-    --background: #F7F4E8;
-    --foreground: #3A342E;
-    --card: #FDFCF9;
-    --card-foreground: #3A342E;
+    --background: #f8f7f2;
+    --foreground: #2f3a34;
+    --card: #ffffff;
+    --card-foreground: #2f3a34;
 
-    --secondary: #E8E6BC;
-    --secondary-foreground: #3A342E;
-    --muted: #E8E6BC;
-    --muted-foreground: #7a6247;
+    --secondary: #d9e2d3;
+    --secondary-foreground: #2f3a34;
+    --muted: #d9e2d3;
+    --muted-foreground: #2f3a34;
 
-    --border: #D8D0BE;
-    --input: #D8D0BE;
-    --input-background: #FDFCF9;
-    --ring: #D8DEAF;
+    --border: #d9e2d3;
+    --input: #d9e2d3;
+    --input-background: #ffffff;
+    --ring: #6b8f71;
 
-    --brand: #CFA16D;
-    --brand-hover: #b08451;
-    --brand-foreground: #3A342E;
+    --brand: #6b8f71;
+    --brand-hover: #56745c;
+    --brand-foreground: #2f3a34;
     --primary: var(--brand);
     --primary-dark: var(--brand-hover);
     --primary-foreground: var(--brand-foreground);
 
-    --surface-warm: #F7F4E8;
-    --surface-beige: #E8E6BC;
-    --surface-sage: #f4f6e6;
-    --surface-mocca: #faf6eb;
-    --surface-stone: #E8E6BC;
+    --surface-warm: #f8f7f2;
+    --surface-beige: #d9e2d3;
+    --surface-sage: #f0f4ee;
+    --surface-mocca: #faf8f5;
+    --surface-stone: #d9e2d3;
   }
 }
 
@@ -175,20 +175,20 @@
     background: var(--surface-warm);
   }
   .bg-surface-beige {
-    background: linear-gradient(135deg, #E1DCC9 0%, #F7F4EE 100%);
+    background: linear-gradient(135deg, #d9e2d3 0%, #f8f7f2 100%);
   }
   .bg-surface-sage {
-    background: linear-gradient(160deg, #f0f2ec 0%, #F7F4EE 70%);
+    background: linear-gradient(160deg, #f0f4ee 0%, #f8f7f2 70%);
   }
   .bg-surface-mocca {
-    background: linear-gradient(160deg, #f5efe6 0%, #F7F4EE 65%);
+    background: linear-gradient(160deg, #faf8f5 0%, #f8f7f2 65%);
   }
   .bg-surface-stone {
     background: var(--surface-stone);
   }
 
   .page-gradient-top {
-    background: linear-gradient(180deg, #F7F4EE 0%, #FDFCF9 120px);
+    background: linear-gradient(180deg, #f8f7f2 0%, #ffffff 120px);
   }
 
   .input-field {
