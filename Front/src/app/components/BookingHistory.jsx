@@ -81,27 +81,34 @@ function BookingHistoryItem({ booking: b, waMessage, isFirst, refetch }) {
     const file = e.target.files?.[0]
     if (!file) return
 
-    const formData = new FormData()
-    formData.append('receipt', file)
-
     setIsUploading(true)
-    const token = localStorage.getItem('sikos-token')
+    const token = localStorage.getItem('token')
 
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/bookings/${b.id}/payment`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      })
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = async () => {
+      try {
+        const base64Image = reader.result
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/bookings/${b.id}/payment-receipt`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ image: base64Image }),
+        })
 
-      if (!res.ok) throw new Error('Gagal mengupload bukti transfer')
-      toast.success('Bukti bayar berhasil diunggah!')
-      refetch()
-    } catch (err) {
-      toast.error(err.message || 'Terjadi kesalahan saat mengunggah bukti bayar')
-    } finally {
+        if (!res.ok) throw new Error('Gagal mengupload bukti transfer')
+        toast.success('Bukti bayar berhasil diunggah!')
+        refetch()
+      } catch (err) {
+        toast.error(err.message || 'Terjadi kesalahan saat mengunggah bukti bayar')
+      } finally {
+        setIsUploading(false)
+      }
+    }
+    reader.onerror = () => {
+      toast.error('Gagal membaca file bukti bayar')
       setIsUploading(false)
     }
   }
