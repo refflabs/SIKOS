@@ -11,10 +11,6 @@ export function PaymentHistory({ user }) {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
-  const D = isDark
-    ? { bg: '#1f2722', card: '#27312b', cardHover: '#323e37', border: '#323e37', text: '#f8f7f2', muted: '#9cb5a4', sub: '#c79a63' }
-    : { bg: '#f8f7f2', card: '#ffffff', cardHover: '#f0f4ee', border: '#d9e2d3', text: '#2f3a34', muted: '#2f3a34', sub: '#c79a63' }
-
   const { data, isLoading, isError, refetch } = useBookingsQuery()
   const bookings = Array.isArray(data) ? data : []
   const userBookings = bookings.filter(
@@ -24,7 +20,7 @@ export function PaymentHistory({ user }) {
   if (isLoading) {
     return (
       <div className="flex min-h-[300px] items-center justify-center rounded-3xl p-8"
-        style={{ background: D.card, border: `1px solid ${D.border}` }}>
+        style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
         <LoadingSpinner />
       </div>
     )
@@ -32,21 +28,21 @@ export function PaymentHistory({ user }) {
 
   if (isError) {
     return (
-      <div className="rounded-3xl p-8" style={{ background: D.card, border: `1px solid ${D.border}` }}>
+      <div className="rounded-3xl p-8" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
         <QueryError message="Gagal memuat histori pembayaran." onRetry={refetch} />
       </div>
     )
   }
 
   return (
-    <div className="rounded-3xl overflow-hidden" style={{ background: D.card, border: `1px solid ${D.border}` }}>
+    <div className="rounded-3xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
       {/* Header */}
-      <div className="px-6 py-5" style={{ borderBottom: `1px solid ${D.border}`, background: isDark ? '#323e37' : '#faf8f5' }}>
-        <h2 className="text-lg font-bold flex items-center gap-2" style={{ color: D.text }}>
+      <div className="px-6 py-5" style={{ borderBottom: '1px solid var(--border)', background: 'var(--secondary)' }}>
+        <h2 className="text-lg font-bold flex items-center gap-2" style={{ color: 'var(--foreground)' }}>
           <CreditCard className="h-5 w-5 text-[#c79a63]" />
           Histori Pembayaran Anda
         </h2>
-        <p className="text-xs mt-1" style={{ color: D.muted }}>
+        <p className="text-xs mt-1" style={{ color: 'var(--muted-foreground)' }}>
           Riwayat transaksi, bukti transfer, dan status verifikasi pembayaran sewa kost Anda.
         </p>
       </div>
@@ -63,7 +59,7 @@ export function PaymentHistory({ user }) {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr style={{ background: isDark ? '#323e37' : '#faf8f5', borderBottom: `1px solid ${D.border}`, color: D.text }}>
+              <tr style={{ background: 'var(--secondary)', borderBottom: '1px solid var(--border)', color: 'var(--foreground)' }}>
                 <th className="p-4 pl-6 font-bold">Kamar Kost</th>
                 <th className="p-4 font-bold">Periode Sewa</th>
                 <th className="p-4 font-bold">Total Pembayaran</th>
@@ -71,7 +67,7 @@ export function PaymentHistory({ user }) {
                 <th className="p-4 pr-6 font-bold text-right">Status Verifikasi</th>
               </tr>
             </thead>
-            <tbody className="divide-y" style={{ divideColor: D.border, color: D.text }}>
+            <tbody className="divide-y" style={{ divideColor: 'var(--border)', color: 'var(--foreground)' }}>
               {userBookings.map((b) => {
                 const totalPrice = b.room ? Number(b.room.price) * Number(b.duration_months || 1) : 0
                 
@@ -100,7 +96,7 @@ export function PaymentHistory({ user }) {
                   <tr key={b.id} className="transition-colors hover:bg-stone-50/5" style={{ background: 'transparent' }}>
                     <td className="p-4 pl-6">
                       <span className="font-bold block">{b.room?.name || 'Kamar Kost'}</span>
-                      <span className="text-[10px] block mt-0.5" style={{ color: D.muted }}>Booking ID: #{b.id}</span>
+                      <span className="text-[10px] block mt-0.5" style={{ color: 'var(--muted-foreground)' }}>Booking ID: #{b.id}</span>
                     </td>
                     <td className="p-4">
                       <span className="flex items-center gap-1">
@@ -123,7 +119,7 @@ export function PaymentHistory({ user }) {
                           <ExternalLink className="h-3 w-3" />
                         </a>
                       ) : (
-                        <span className="text-[10px] font-medium" style={{ color: D.muted }}>Belum diunggah</span>
+                        <span className="text-[10px] font-medium" style={{ color: 'var(--muted-foreground)' }}>Belum diunggah</span>
                       )}
                     </td>
                     <td className="p-4 pr-6 text-right">

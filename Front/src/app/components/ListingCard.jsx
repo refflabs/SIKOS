@@ -1,5 +1,6 @@
-import { MapPin, Star, ArrowRight } from 'lucide-react'
+import { Star, ArrowRight } from 'lucide-react'
 import { Badge } from './Badge'
+import { Button } from './Button'
 import { LazyImage } from '../../components/LazyImage'
 import { useTheme } from '../../context/ThemeContext'
 import {
@@ -7,7 +8,6 @@ import {
   isRoomAvailable,
   roomFacilities,
   roomImage,
-  statusLabel,
 } from '../../api/roomUtils'
 
 export function ListingCard({
@@ -18,43 +18,6 @@ export function ListingCard({
 }) {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
-
-  // ── Dynamic tokens ──
-  const C = isDark ? {
-    mocca:       '#c79a63',
-    moccaBtn:    '#c79a63',
-    beige:       '#1f2722',
-    coffee:      '#f8f7f2',        // nama kamar — krem terang
-    muted:       '#9cb5a4',        // teks muted
-    border:      '#323e37',
-    badgeBg:     'rgba(107,143,113,0.18)',
-    badgeText:   '#88ad8e',
-    btnBg:       'transparent',
-    btnColor:    '#88ad8e',
-    btnBorder:   '#323e37',
-    btnHoverBg:  '#88ad8e',
-    btnHoverColor: '#1f2722',
-    btnHoverBorder: '#88ad8e',
-    ctaPrimBg:   'linear-gradient(135deg,#6b8f71,#88ad8e)',
-    ctaPrimColor: '#1f2722',
-  } : {
-    mocca:       '#c79a63',
-    moccaBtn:    '#c79a63',
-    beige:       '#f8f7f2',
-    coffee:      '#2f3a34',        // nama kamar — gelap
-    muted:       '#2f3a34',
-    border:      '#d9e2d3',
-    badgeBg:     'rgba(107,143,113,0.1)',
-    badgeText:   '#6b8f71',
-    btnBg:       'transparent',
-    btnColor:    '#6b8f71',
-    btnBorder:   '#d9e2d3',
-    btnHoverBg:  '#6b8f71',
-    btnHoverColor: '#ffffff',
-    btnHoverBorder: '#6b8f71',
-    ctaPrimBg:   'linear-gradient(135deg,#6b8f71,#56745c)',
-    ctaPrimColor: '#ffffff',
-  }
 
   const available = isRoomAvailable(room)
   const facilities = roomFacilities(room)
@@ -87,7 +50,7 @@ export function ListingCard({
         {/* Rating pill */}
         <div
           className="absolute top-3 right-3 z-10 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold"
-          style={{ background: isDark ? 'rgba(39,49,43,0.92)' : 'rgba(253,252,249,0.92)', color: isDark ? '#f8f7f2' : '#2f3a34', backdropFilter: 'blur(6px)' }}
+          style={{ background: isDark ? 'rgba(39,49,43,0.92)' : 'rgba(253,252,249,0.92)', color: 'var(--foreground)', backdropFilter: 'blur(6px)' }}
         >
           <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
           4.9
@@ -96,10 +59,10 @@ export function ListingCard({
         <div className="absolute bottom-3 left-3 z-10">
           <span
             className="inline-flex items-baseline gap-1 px-2.5 py-1 rounded-xl text-xs font-bold"
-            style={{ background: isDark ? 'rgba(39,49,43,0.92)' : 'rgba(253,252,249,0.92)', color: isDark ? '#f8f7f2' : '#2f3a34', backdropFilter: 'blur(6px)' }}
+            style={{ background: isDark ? 'rgba(39,49,43,0.92)' : 'rgba(253,252,249,0.92)', color: 'var(--foreground)', backdropFilter: 'blur(6px)' }}
           >
             {formatPrice(room.price)}
-            <span className="font-normal text-[10px]" style={{ color: isDark ? '#9cb5a4' : '#6b8f71' }}>/ bln</span>
+            <span className="font-normal text-[10px]" style={{ color: 'var(--primary)' }}>/ bln</span>
           </span>
         </div>
       </a>
@@ -111,17 +74,17 @@ export function ListingCard({
             className={`font-bold truncate leading-snug transition-colors duration-200 group-hover:underline underline-offset-2 ${
               featured ? 'text-lg' : 'text-[15px]'
             }`}
-            style={{ color: C.coffee }}
+            style={{ color: 'var(--foreground)' }}
           >
             {room.name}
           </h3>
         </a>
 
-        <p className="text-xs flex items-center gap-1" style={{ color: C.muted }}>
+        <p className="text-xs flex items-center gap-1" style={{ color: 'var(--muted-foreground)' }}>
           <span className="capitalize font-semibold">{room.type === 'kosongan' ? 'Kosongan' : 'Fasilitas (Isian)'}</span>
           {room.size ? ` · ${room.size}` : ''}
         </p>
-        <p className="text-xs font-semibold mt-0.5" style={{ color: room.stock > 0 ? '#6b8f71' : '#c0392b' }}>
+        <p className="text-xs font-semibold mt-0.5" style={{ color: room.stock > 0 ? 'var(--primary)' : '#c0392b' }}>
           Tersedia: {room.stock} Kamar
         </p>
 
@@ -131,8 +94,8 @@ export function ListingCard({
             {facilities.slice(0, 3).map((f) => (
               <span
                 key={f}
-                className="text-[10px] px-2 py-0.5 rounded-full font-medium"
-                style={{ background: C.badgeBg, color: C.badgeText }}
+                className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-primary/10 dark:bg-primary/20"
+                style={{ color: 'var(--primary)' }}
               >
                 {f}
               </span>
@@ -144,45 +107,22 @@ export function ListingCard({
         {showCta && (
           <div className="mt-3 mt-auto">
             {available ? (
-              <a
-                href={`/booking?room=${room.id}`}
-                className="w-full py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer flex items-center justify-center gap-1.5"
-                style={
-                  ctaStyle === 'primary'
-                    ? { background: C.ctaPrimBg, color: C.ctaPrimColor, boxShadow: isDark ? '0 2px 10px rgba(176,186,153,0.18)' : '0 2px 10px rgba(65,45,21,0.25)' }
-                    : { background: C.btnBg, color: C.btnColor, border: `1.5px solid ${C.btnBorder}`, textDecoration: 'none' }
-                }
-                onMouseEnter={e => {
-                  if (ctaStyle !== 'primary') {
-                    e.currentTarget.style.background = C.btnHoverBg
-                    e.currentTarget.style.color = C.btnHoverColor
-                    e.currentTarget.style.borderColor = C.btnHoverBorder
-                  }
-                }}
-                onMouseLeave={e => {
-                  if (ctaStyle !== 'primary') {
-                    e.currentTarget.style.background = C.btnBg
-                    e.currentTarget.style.color = C.btnColor
-                    e.currentTarget.style.borderColor = C.btnBorder
-                  }
-                }}
-              >
+              <a href={`/booking?room=${room.id}`} className="w-full">
                 {ctaStyle === 'primary' ? (
-                  'Booking Sekarang'
+                  <Button variant="primary" size="md" className="w-full text-xs py-2.5 rounded-xl">
+                    Booking Sekarang
+                  </Button>
                 ) : (
-                  <>
+                  <Button variant="outline" size="md" className="w-full text-xs py-2.5 rounded-xl flex items-center justify-center gap-1.5 bg-transparent border-border text-foreground hover:bg-secondary">
                     <span>Lihat & Booking</span>
                     <ArrowRight className="h-3.5 w-3.5" />
-                  </>
+                  </Button>
                 )}
               </a>
             ) : (
-              <div
-                className="w-full py-2.5 rounded-xl text-xs font-semibold opacity-40 cursor-not-allowed text-center"
-                style={{ background: C.border, color: C.muted }}
-              >
+              <Button variant="outline" size="md" className="w-full text-xs py-2.5 rounded-xl opacity-40 cursor-not-allowed bg-transparent border-border text-foreground" disabled>
                 Tidak Tersedia
-              </div>
+              </Button>
             )}
           </div>
         )}

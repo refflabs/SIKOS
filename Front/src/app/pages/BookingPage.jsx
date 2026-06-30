@@ -27,10 +27,6 @@ export function BookingPage({ search = '' }) {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
-  const D = isDark
-    ? { bg: '#1f2722', card: '#27312b', cardHover: '#323e37', border: '#323e37', text: '#f8f7f2', muted: '#9cb5a4', sub: '#c79a63' }
-    : { bg: '#f8f7f2', card: '#ffffff', cardHover: '#f0f4ee', border: '#d9e2d3', text: '#2f3a34', muted: '#2f3a34', sub: '#c79a63' }
-
   const [message, setMessage] = useState({ type: '', text: '' })
 
   const [form, setForm] = useState({
@@ -117,13 +113,13 @@ export function BookingPage({ search = '' }) {
           background: isDark
             ? 'linear-gradient(160deg, #27312b 0%, #1f2722 100%)'
             : 'linear-gradient(160deg, #f0f4ee 0%, #f8f7f2 100%)',
-          borderColor: D.border
+          borderColor: 'var(--border)'
         }}
       >
         <div className="container-app py-8 md:py-10 max-w-5xl">
           <p className="text-xs uppercase tracking-widest font-semibold mb-2" style={{ color: '#c79a63' }}>Reservasi</p>
-          <h1 className="text-2xl sm:text-3xl font-extrabold mb-2" style={{ color: D.text }}>Form Booking</h1>
-          <p className="text-sm" style={{ color: D.muted }}>Lengkapi data — proses cepat & aman.</p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold mb-2" style={{ color: 'var(--foreground)' }}>Form Booking</h1>
+          <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>Lengkapi data — proses cepat & aman.</p>
         </div>
       </div>
 
@@ -148,28 +144,27 @@ export function BookingPage({ search = '' }) {
           <div className="grid lg:grid-cols-[1fr_340px] gap-8">
             <form
               onSubmit={handleSubmit}
-              className="rounded-2xl p-6 md:p-8 space-y-6 shadow-sm border"
+              className="rounded-2xl p-6 md:p-8 space-y-6 shadow-sm border bg-card"
               style={{
-                background: D.card,
-                borderColor: D.border
+                borderColor: 'var(--border)'
               }}
             >
               <div>
-                <label className="text-xs uppercase tracking-wider font-bold block mb-2" style={{ color: D.text }}>Kamar</label>
+                <label className="text-xs uppercase tracking-wider font-bold block mb-2" style={{ color: 'var(--foreground)' }}>Kamar</label>
                 <select
                   name="room_id"
                   value={form.room_id}
                   onChange={handleChange}
                   className="input-field outline-none"
                   style={{
-                    background: '#F7F4E8',
-                    color: D.text,
-                    borderColor: D.border
+                    background: 'var(--secondary)',
+                    color: 'var(--foreground)',
+                    borderColor: 'var(--border)'
                   }}
                   required
                 >
                   {rooms.map((r) => (
-                    <option key={r.id} value={r.id} style={{ background: D.card, color: D.text }}>
+                    <option key={r.id} value={r.id} style={{ background: 'var(--card)', color: 'var(--foreground)' }}>
                       {r.name} — {formatPrice(r.price)}/bln
                     </option>
                   ))}
@@ -178,7 +173,7 @@ export function BookingPage({ search = '' }) {
 
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs uppercase tracking-wider font-bold block mb-2" style={{ color: D.text }}>Tanggal mulai</label>
+                  <label className="text-xs uppercase tracking-wider font-bold block mb-2" style={{ color: 'var(--foreground)' }}>Tanggal mulai</label>
                   <input
                     type="date"
                     name="check_in"
@@ -186,35 +181,35 @@ export function BookingPage({ search = '' }) {
                     onChange={handleChange}
                     className="input-field outline-none"
                     style={{
-                      background: '#F7F4E8',
-                      color: D.text,
-                      borderColor: D.border
+                      background: 'var(--secondary)',
+                      color: 'var(--foreground)',
+                      borderColor: 'var(--border)'
                     }}
                     required
                   />
                 </div>
                 <div>
-                  <label className="text-xs uppercase tracking-wider font-bold block mb-2" style={{ color: D.text }}>Durasi</label>
+                  <label className="text-xs uppercase tracking-wider font-bold block mb-2" style={{ color: 'var(--foreground)' }}>Durasi</label>
                   <select
                     name="duration_months"
                     value={form.duration_months}
                     onChange={handleChange}
                     className="input-field outline-none"
                     style={{
-                      background: '#F7F4E8',
-                      color: D.text,
-                      borderColor: D.border
+                      background: 'var(--secondary)',
+                      color: 'var(--foreground)',
+                      borderColor: 'var(--border)'
                     }}
                   >
                     {[1, 3, 6, 12].map((m) => (
-                      <option key={m} value={m} style={{ background: D.card, color: D.text }}>{m} bulan</option>
+                      <option key={m} value={m} style={{ background: 'var(--card)', color: 'var(--foreground)' }}>{m} bulan</option>
                     ))}
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="text-xs uppercase tracking-wider font-bold block mb-2" style={{ color: D.text }}>Catatan</label>
+                <label className="text-xs uppercase tracking-wider font-bold block mb-2" style={{ color: 'var(--foreground)' }}>Catatan</label>
                 <textarea
                   name="notes"
                   value={form.notes}
@@ -222,9 +217,9 @@ export function BookingPage({ search = '' }) {
                   rows={3}
                   className="input-field resize-none outline-none"
                   style={{
-                    background: '#F7F4E8',
-                    color: D.text,
-                    borderColor: D.border
+                    background: 'var(--secondary)',
+                    color: 'var(--foreground)',
+                    borderColor: 'var(--border)'
                   }}
                 />
               </div>
@@ -236,48 +231,47 @@ export function BookingPage({ search = '' }) {
             </form>
 
             <div
-              className="lg:sticky lg:top-24 h-fit rounded-2xl overflow-hidden shadow-md border"
+              className="lg:sticky lg:top-24 h-fit rounded-2xl overflow-hidden shadow-md border bg-card"
               style={{
-                background: D.card,
-                borderColor: D.border
+                borderColor: 'var(--border)'
               }}
             >
               {room ? (
                 <>
                   <LazyImage src={roomImage(room)} alt={room.name} wrapperClassName="aspect-[16/10] w-full" />
                   <div className="p-6">
-                    <h3 className="font-bold text-base mb-1" style={{ color: D.text }}>{room.name}</h3>
-                    <p className="text-[11px] leading-relaxed mb-3" style={{ color: D.muted }}>{room.description}</p>
+                    <h3 className="font-bold text-base mb-1" style={{ color: 'var(--foreground)' }}>{room.name}</h3>
+                    <p className="text-[11px] leading-relaxed mb-3" style={{ color: 'var(--muted-foreground)' }}>{room.description}</p>
                     <div className="flex flex-wrap gap-1 mb-4">
                       {room.size && (
-                        <span className="text-[10px] px-2 py-0.5 rounded-full font-medium" style={{ background: isDark ? '#2a1a0e' : '#F2EDE4', color: D.text }}>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full font-medium" style={{ background: 'var(--secondary)', color: 'var(--foreground)' }}>
                           {room.size}
                         </span>
                       )}
                       {roomFacilities(room).map((f) => (
-                        <span key={f} className="text-[10px] px-2 py-0.5 rounded-full font-medium" style={{ background: isDark ? '#2a1a0e' : '#F2EDE4', color: D.text }}>
+                        <span key={f} className="text-[10px] px-2 py-0.5 rounded-full font-medium" style={{ background: 'var(--secondary)', color: 'var(--foreground)' }}>
                           {f}
                         </span>
                       ))}
                     </div>
-                    <div className="space-y-2 text-sm border-t pt-4" style={{ borderColor: D.border }}>
-                      <div className="flex justify-between" style={{ color: D.muted }}>
+                    <div className="space-y-2 text-sm border-t pt-4" style={{ borderColor: 'var(--border)' }}>
+                      <div className="flex justify-between" style={{ color: 'var(--muted-foreground)' }}>
                         <span>Harga/bulan</span>
                         <span>{formatPrice(room.price)}</span>
                       </div>
-                      <div className="flex justify-between" style={{ color: D.muted }}>
+                      <div className="flex justify-between" style={{ color: 'var(--muted-foreground)' }}>
                         <span>Durasi</span>
                         <span>{form.duration_months} bln</span>
                       </div>
-                      <div className="flex justify-between font-extrabold pt-3 border-t" style={{ color: D.text, borderColor: D.border }}>
+                      <div className="flex justify-between font-extrabold pt-3 border-t" style={{ color: 'var(--foreground)', borderColor: 'var(--border)' }}>
                         <span>Total</span>
-                        <span style={{ color: isDark ? '#B0BA99' : '#412D15' }}>{formatPrice(total)}</span>
+                        <span style={{ color: 'var(--primary)' }}>{formatPrice(total)}</span>
                       </div>
                     </div>
                   </div>
                 </>
               ) : (
-                <p className="p-8 text-sm text-center" style={{ color: D.muted }}>Pilih kamar</p>
+                <p className="p-8 text-sm text-center" style={{ color: 'var(--muted-foreground)' }}>Pilih kamar</p>
               )}
             </div>
           </div>

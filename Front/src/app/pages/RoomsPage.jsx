@@ -10,10 +10,6 @@ export function RoomsPage() {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
-  const D = isDark
-    ? { bg: '#1f2722', card: '#27312b', border: '#323e37', text: '#f8f7f2', muted: '#9cb5a4', input: '#27312b' }
-    : { bg: '#f8f7f2', card: '#ffffff', border: '#d9e2d3', text: '#2f3a34', muted: '#2f3a34', input: '#f8f7f2' }
-
   const [searchTerm, setSearchTerm] = useState(() => {
     if (typeof window !== 'undefined') {
       return new URLSearchParams(window.location.search).get('search') || ''
@@ -34,9 +30,9 @@ export function RoomsPage() {
   )
 
   const inputStyle = {
-    background: D.input,
-    border: `1.5px solid ${D.border}`,
-    color: D.text,
+    background: 'var(--card)',
+    border: '1.5px solid var(--border)',
+    color: 'var(--foreground)',
     borderRadius: '0.75rem',
     padding: '0.625rem 1rem',
     fontSize: '0.875rem',
@@ -46,14 +42,14 @@ export function RoomsPage() {
   }
 
   return (
-    <div className="pb-16" style={{ background: D.bg }}>
+    <div className="pb-16" style={{ background: 'transparent' }}>
       {/* Page intro */}
       <div className="container-app pt-8 pb-6">
         <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-2" style={{ color: '#6b8f71' }}>Katalog</p>
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2" style={{ color: D.text }}>
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2" style={{ color: 'var(--foreground)' }}>
           Daftar Kamar
         </h1>
-        <p className="text-sm" style={{ color: D.muted }}>
+        <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
           {isLoading
             ? 'Memuat…'
             : searchTerm || selectedType !== 'all' || selectedStatus !== 'all'
@@ -65,12 +61,12 @@ export function RoomsPage() {
       {/* Search bar */}
       <div
         className="relative z-10"
-        style={{ background: isDark ? 'rgba(39,49,43,0.3)' : 'rgba(248,247,242,0.3)', borderBottom: `1px solid ${D.border}` }}
+        style={{ background: isDark ? 'rgba(39,49,43,0.3)' : 'rgba(248,247,242,0.3)', borderBottom: '1px solid var(--border)' }}
       >
         <div className="container-app py-3">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: D.muted }} />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: 'var(--muted-foreground)' }} />
               <input
                 type="text"
                 placeholder="Cari nama kamar…"
@@ -78,7 +74,7 @@ export function RoomsPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={{ ...inputStyle, paddingLeft: '2.75rem' }}
                 onFocus={e => e.currentTarget.style.borderColor = '#6b8f71'}
-                onBlur={e => e.currentTarget.style.borderColor = D.border}
+                onBlur={e => e.currentTarget.style.borderColor = 'var(--border)'}
               />
             </div>
             <div className="flex gap-2 items-center">
@@ -87,7 +83,7 @@ export function RoomsPage() {
                 onChange={(e) => setSelectedType(e.target.value)}
                 style={{ ...inputStyle, width: '8rem', padding: '0.625rem 0.75rem', cursor: 'pointer' }}
                 onFocus={e => e.currentTarget.style.borderColor = '#6b8f71'}
-                onBlur={e => e.currentTarget.style.borderColor = D.border}
+                onBlur={e => e.currentTarget.style.borderColor = 'var(--border)'}
               >
                 <option value="all">Semua tipe</option>
                 <option value="kosongan">Kosongan</option>
@@ -98,7 +94,7 @@ export function RoomsPage() {
                 onChange={(e) => setSelectedStatus(e.target.value)}
                 style={{ ...inputStyle, width: '9.5rem', padding: '0.625rem 0.75rem', cursor: 'pointer' }}
                 onFocus={e => e.currentTarget.style.borderColor = '#6b8f71'}
-                onBlur={e => e.currentTarget.style.borderColor = D.border}
+                onBlur={e => e.currentTarget.style.borderColor = 'var(--border)'}
               >
                 <option value="all">Semua status</option>
                 <option value="available">Tersedia</option>
@@ -119,9 +115,9 @@ export function RoomsPage() {
         ) : filtered.length === 0 ? (
           <div
             className="text-center py-20 rounded-3xl"
-            style={{ border: `1.5px dashed ${D.border}`, background: D.card }}
+            style={{ border: '1.5px dashed var(--border)', background: 'var(--card)' }}
           >
-            <p className="text-sm" style={{ color: D.muted }}>Tidak ada kamar yang cocok dengan pencarian Anda.</p>
+            <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>Tidak ada kamar yang cocok dengan pencarian Anda.</p>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -130,8 +126,8 @@ export function RoomsPage() {
                 key={room.id}
                 className="rounded-3xl p-3 transition-all duration-300"
                 style={{
-                  background: D.card,
-                  border: `1px solid ${D.border}`,
+                  background: 'var(--card)',
+                  border: '1px solid var(--border)',
                   boxShadow: isDark ? '0 2px 12px rgba(0,0,0,0.3)' : '0 2px 12px rgba(31,21,12,0.06)',
                 }}
                 onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = isDark ? '0 8px 28px rgba(0,0,0,0.4)' : '0 8px 28px rgba(31,21,12,0.1)' }}

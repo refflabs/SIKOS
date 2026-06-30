@@ -25,49 +25,45 @@ export function HelpCenter() {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
-  const D = isDark
-    ? { bg: '#1f2722', card: '#27312b', header: '#323e37', border: '#323e37', text: '#f8f7f2', muted: '#9cb5a4', hover: '#1f2722' }
-    : { bg: '#f8f7f2', card: '#ffffff', header: '#faf8f5', border: '#d9e2d3', text: '#2f3a34', muted: '#2f3a34', hover: '#f0f4ee' }
-
   const [openIndex, setOpenIndex] = useState(null)
   const toggle = (i) => setOpenIndex(openIndex === i ? null : i)
 
   return (
     <div className="grid md:grid-cols-[1fr_300px] gap-8">
       {/* FAQ accordion */}
-      <div className="rounded-3xl overflow-hidden" style={{ background: D.card, border: `1px solid ${D.border}` }}>
-        <div className="px-6 py-5" style={{ borderBottom: `1px solid ${D.border}`, background: D.header }}>
-          <h2 className="text-lg font-bold" style={{ color: D.text }}>Pusat Bantuan (FAQs)</h2>
-          <p className="text-xs mt-1" style={{ color: D.muted }}>
+      <div className="rounded-3xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
+        <div className="px-6 py-5" style={{ borderBottom: '1px solid var(--border)', background: 'var(--secondary)' }}>
+          <h2 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>Pusat Bantuan (FAQs)</h2>
+          <p className="text-xs mt-1" style={{ color: 'var(--muted-foreground)' }}>
             Jawaban dari pertanyaan yang paling sering ditanyakan oleh calon maupun penghuni kost.
           </p>
         </div>
 
-        <div className="px-6" style={{ divideColor: D.border }}>
+        <div className="px-6" style={{ divideColor: 'var(--border)' }}>
           {FAQS.map((faq, index) => {
             const isOpen = openIndex === index
             return (
-              <div key={faq.q} style={{ borderBottom: index < FAQS.length - 1 ? `1px solid ${D.border}` : 'none' }} className="py-4">
+              <div key={faq.q} style={{ borderBottom: index < FAQS.length - 1 ? '1px solid var(--border)' : 'none' }} className="py-4">
                 <button
                   type="button"
                   onClick={() => toggle(index)}
                   className="w-full flex items-center justify-between text-left text-sm py-1 cursor-pointer transition-colors duration-200"
-                  style={{ color: isOpen ? '#6b8f71' : D.text, fontWeight: isOpen ? '600' : '500' }}
+                  style={{ color: isOpen ? '#6b8f71' : 'var(--foreground)', fontWeight: isOpen ? '600' : '500' }}
                   onMouseEnter={e => { if (!isOpen) e.currentTarget.style.color = '#6b8f71' }}
-                  onMouseLeave={e => { if (!isOpen) e.currentTarget.style.color = D.text }}
+                  onMouseLeave={e => { if (!isOpen) e.currentTarget.style.color = 'var(--foreground)' }}
                 >
                   <span className="flex items-center gap-2.5">
                     <HelpCircle className="h-4 w-4 shrink-0" style={{ color: '#6b8f71' }} />
                     {faq.q}
                   </span>
                   {isOpen
-                    ? <ChevronUp className="h-4 w-4 shrink-0" style={{ color: D.muted }} />
-                    : <ChevronDown className="h-4 w-4 shrink-0" style={{ color: D.muted }} />}
+                    ? <ChevronUp className="h-4 w-4 shrink-0" style={{ color: 'var(--muted-foreground)' }} />
+                    : <ChevronDown className="h-4 w-4 shrink-0" style={{ color: 'var(--muted-foreground)' }} />}
                 </button>
                 {isOpen && (
                   <div
                     className="mt-3 pl-6 text-xs leading-relaxed"
-                    style={{ color: D.muted, animation: 'fadeIn 0.18s ease' }}
+                    style={{ color: 'var(--muted-foreground)', animation: 'fadeIn 0.18s ease' }}
                   >
                     {faq.a}
                   </div>
@@ -80,8 +76,8 @@ export function HelpCenter() {
 
       {/* Contact card */}
       <div>
-        <div className="rounded-3xl p-6" style={{ background: D.card, border: `1px solid ${D.border}` }}>
-          <h3 className="font-bold text-sm mb-5" style={{ color: D.text }}>Kontak Pengelola</h3>
+        <div className="rounded-3xl p-6" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
+          <h3 className="font-bold text-sm mb-5" style={{ color: 'var(--foreground)' }}>Kontak Pengelola</h3>
           <div className="space-y-5">
 
             {/* WhatsApp */}
@@ -93,14 +89,14 @@ export function HelpCenter() {
                 <MessageCircle className="h-4 w-4" />
               </span>
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: D.muted }}>WhatsApp</p>
+                <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: 'var(--muted-foreground)' }}>WhatsApp</p>
                 <a
                   href="https://wa.me/6281234567890?text=Halo%20Pak%20RT,%20saya%20butuh%20bantuan%20terkait%20kost."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs font-semibold transition-colors duration-200"
                   style={{ color: '#6b8f71' }}
-                  onMouseEnter={e => e.currentTarget.style.color = D.text}
+                  onMouseEnter={e => e.currentTarget.style.color = 'var(--foreground)'}
                   onMouseLeave={e => e.currentTarget.style.color = '#6b8f71'}
                 >
                   +62 812-3456-7890
@@ -117,12 +113,12 @@ export function HelpCenter() {
                 <Mail className="h-4 w-4" />
               </span>
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: D.muted }}>Email</p>
+                <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: 'var(--muted-foreground)' }}>Email</p>
                 <a
                   href="mailto:support@kostpakrt.com"
                   className="text-xs font-semibold transition-colors duration-200"
                   style={{ color: '#6b8f71' }}
-                  onMouseEnter={e => e.currentTarget.style.color = D.text}
+                  onMouseEnter={e => e.currentTarget.style.color = 'var(--foreground)'}
                   onMouseLeave={e => e.currentTarget.style.color = '#6b8f71'}
                 >
                   support@kostpakrt.com
@@ -139,8 +135,8 @@ export function HelpCenter() {
                 <MapPin className="h-4 w-4" />
               </span>
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: D.muted }}>Lokasi Kost</p>
-                <p className="text-xs leading-relaxed" style={{ color: D.text }}>
+                <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: 'var(--muted-foreground)' }}>Lokasi Kost</p>
+                <p className="text-xs leading-relaxed" style={{ color: 'var(--foreground)' }}>
                   Jl. Letjend. S.Parman, Gg. Al-Khalish No.18A<br />
                   Cinta Raja, Sail, Kota Pekanbaru, Riau 28127
                 </p>

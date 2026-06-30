@@ -37,48 +37,12 @@ const STATS = [
 ]
 
 /* ─── Palette shorthand ─── */
-const C = {
-  beige: '#d9e2d3',
-  mocca: '#c79a63',
-  sage: '#6b8f71',
-  coffee: '#2f3a34',
-  bg: '#f8f7f2',
-  card: '#ffffff',
-  muted: '#2f3a34',
-  border: '#d9e2d3',
-}
-
 /* ─── Main Component ─── */
 export function LandingPage({ search = '' }) {
   const activeTab = new URLSearchParams(search).get('tab')
   const { user } = useAuth()
   const { theme } = useTheme()
   const isDark = theme === 'dark'
-
-  // Dynamic palette based on theme
-  const C = isDark
-    ? {
-        beige:   '#323e37',
-        mocca:   '#c79a63',
-        sage:    '#6b8f71',
-        coffee:  '#f8f7f2',
-        bg:      '#1f2722',
-        card:    '#27312b',
-        muted:   '#9cb5a4',
-        border:  '#323e37',
-        btnText: '#ffffff',
-      }
-    : {
-        beige:   '#d9e2d3',
-        mocca:   '#c79a63',
-        sage:    '#6b8f71',
-        coffee:  '#2f3a34',
-        bg:      '#f8f7f2',
-        card:    '#ffffff',
-        muted:   '#2f3a34',
-        border:  '#d9e2d3',
-        btnText: '#ffffff',
-      }
 
   /* ── Tab views ── */
   if (user && activeTab) {
@@ -99,9 +63,9 @@ export function LandingPage({ search = '' }) {
 
     return (
       <div className="container-app py-8 md:py-12 max-w-5xl">
-        <div className="mb-8 pb-4" style={{ borderBottom: `1px solid ${C.border}` }}>
-          <h1 className="text-2xl font-bold tracking-tight" style={{ color: C.coffee }}>{tabTitle}</h1>
-          <p className="text-xs mt-1" style={{ color: C.muted }}>Halaman khusus panel akun {user.name}.</p>
+        <div className="mb-8 pb-4" style={{ borderBottom: '1px solid var(--border)' }}>
+          <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--foreground)' }}>{tabTitle}</h1>
+          <p className="text-xs mt-1" style={{ color: 'var(--muted-foreground)' }}>Halaman khusus panel akun {user.name}.</p>
         </div>
         {renderTabContent()}
       </div>
@@ -113,7 +77,6 @@ export function LandingPage({ search = '' }) {
   const availableRooms = rooms.filter(isRoomAvailable)
   const featuredRooms = availableRooms.slice(0, 3)
 
-  /* ── Main Landing ── */
   return (
     <div style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}>
 
@@ -122,16 +85,16 @@ export function LandingPage({ search = '' }) {
       ═══════════════════════════════════════════ */}
       <section
         className="relative overflow-hidden"
-        style={{ background: `linear-gradient(160deg, ${C.beige} 0%, ${C.bg} 100%)` }}
+        style={{ background: `linear-gradient(160deg, ${isDark ? '#323e37' : '#d9e2d3'} 0%, var(--background) 100%)` }}
       >
         {/* Decorative blobs */}
         <div
           className="absolute -top-24 -right-24 w-96 h-96 rounded-full opacity-30 pointer-events-none"
-          style={{ background: `radial-gradient(circle, ${C.sage} 0%, transparent 70%)` }}
+          style={{ background: 'radial-gradient(circle, var(--primary) 0%, transparent 70%)' }}
         />
         <div
           className="absolute bottom-0 -left-16 w-72 h-72 rounded-full opacity-20 pointer-events-none"
-          style={{ background: `radial-gradient(circle, ${C.mocca} 0%, transparent 70%)` }}
+          style={{ background: 'radial-gradient(circle, #c79a63 0%, transparent 70%)' }}
         />
 
         <div className="container-app relative z-10 py-16 md:py-24">
@@ -144,22 +107,22 @@ export function LandingPage({ search = '' }) {
                 className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold"
                 style={{
                   background: isDark ? 'rgba(199,154,99,0.12)' : 'rgba(107,143,113,0.1)',
-                  color: C.mocca,
+                  color: '#c79a63',
                   border: `1px solid rgba(199,154,99,${isDark ? '0.3' : '0.15'})`
                 }}
               >
-                <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: C.sage }} />
+                <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: 'var(--primary)' }} />
                 Kost Syariah Pekanbaru, Riau
               </div>
 
               <h1
                 className="text-[2.2rem] sm:text-[3rem] lg:text-[3.4rem] font-extrabold tracking-tight leading-[1.08]"
-                style={{ color: C.coffee }}
+                style={{ color: 'var(--foreground)' }}
               >
                 Temukan kost{' '}
                 <span
                   className="relative inline-block"
-                  style={{ color: C.mocca }}
+                  style={{ color: '#c79a63' }}
                 >
                   nyaman
                   <svg
@@ -168,13 +131,13 @@ export function LandingPage({ search = '' }) {
                     xmlns="http://www.w3.org/2000/svg"
                     preserveAspectRatio="none"
                   >
-                    <path d="M0 4 Q50 0 100 4 Q150 8 200 4" stroke={C.sage} strokeWidth="3" strokeLinecap="round" fill="none"/>
+                    <path d="M0 4 Q50 0 100 4 Q150 8 200 4" stroke="var(--primary)" strokeWidth="3" strokeLinecap="round" fill="none"/>
                   </svg>
                 </span>{' '}
                 yang sesuai kebutuhan Anda
               </h1>
 
-              <p className="text-base leading-relaxed max-w-md" style={{ color: C.muted }}>
+              <p className="text-base leading-relaxed max-w-md" style={{ color: 'var(--muted-foreground)' }}>
                 Cari kamar, booking dengan mudah, dan komunikasi langsung dengan pengelola kost — semua dalam satu platform.
               </p>
 
@@ -184,12 +147,12 @@ export function LandingPage({ search = '' }) {
                   <button
                     className="flex items-center gap-2 px-6 py-3.5 rounded-2xl text-sm font-bold transition-all duration-200 cursor-pointer"
                     style={{
-                      background: `linear-gradient(135deg, ${C.sage}, #56745c)`,
+                      background: 'linear-gradient(135deg, var(--primary), #56745c)',
                       color: '#ffffff',
-                      boxShadow: `0 4px 20px rgba(107,143,113,0.3)`,
+                      boxShadow: '0 4px 20px rgba(107,143,113,0.3)',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 8px 28px rgba(107,143,113,0.4)` }}
-                    onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = `0 4px 20px rgba(107,143,113,0.3)` }}
+                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(107,143,113,0.4)' }}
+                    onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(107,143,113,0.3)' }}
                   >
                     <Search className="h-4 w-4" />
                     Cari Kost Sekarang
@@ -199,12 +162,12 @@ export function LandingPage({ search = '' }) {
                   <button
                     className="flex items-center gap-2 px-6 py-3.5 rounded-2xl text-sm font-semibold transition-all duration-200 cursor-pointer"
                     style={{
-                      color: C.mocca,
-                      border: `1.5px solid ${C.mocca}`,
+                      color: '#c79a63',
+                      border: '1.5px solid #c79a63',
                       background: 'transparent',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = C.mocca; e.currentTarget.style.color = C.btnText }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = C.mocca }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#c79a63'; e.currentTarget.style.color = '#ffffff' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#c79a63' }}
                   >
                     Daftar Gratis <ArrowRight className="h-4 w-4" />
                   </button>
@@ -216,13 +179,13 @@ export function LandingPage({ search = '' }) {
                 {STATS.map(({ label, value, icon: Icon }) => (
                   <div key={label} className="flex items-center gap-2">
                     <span className="h-8 w-8 rounded-xl flex items-center justify-center"
-                      style={{ background: isDark ? 'rgba(107,143,113,0.28)' : 'rgba(107,143,113,0.15)', color: C.sage }}
+                      style={{ background: isDark ? 'rgba(107,143,113,0.28)' : 'rgba(107,143,113,0.15)', color: 'var(--primary)' }}
                     >
                       <Icon className="h-4 w-4" />
                     </span>
                     <div>
-                      <p className="text-base font-extrabold leading-none" style={{ color: C.coffee }}>{value}</p>
-                      <p className="text-[10px] leading-tight mt-0.5" style={{ color: C.muted }}>{label}</p>
+                      <p className="text-base font-extrabold leading-none" style={{ color: 'var(--foreground)' }}>{value}</p>
+                      <p className="text-[10px] leading-tight mt-0.5" style={{ color: 'var(--muted-foreground)' }}>{label}</p>
                     </div>
                   </div>
                 ))}
@@ -233,7 +196,7 @@ export function LandingPage({ search = '' }) {
             <div className="relative grid grid-cols-2 gap-3">
               {/* Big image */}
               <div className="col-span-2 rounded-3xl overflow-hidden aspect-[16/10] shadow-xl"
-                style={{ border: `2px solid rgba(255,255,255,0.7)` }}>
+                style={{ border: '2px solid rgba(255,255,255,0.7)' }}>
                 <img
                   src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=900&q=80"
                   alt="Tampak Depan Kost"
@@ -242,7 +205,7 @@ export function LandingPage({ search = '' }) {
                 />
               </div>
               <div className="rounded-2xl overflow-hidden aspect-square shadow-md"
-                style={{ border: `2px solid rgba(255,255,255,0.6)` }}>
+                style={{ border: '2px solid rgba(255,255,255,0.6)' }}>
                 <img
                   src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=500&q=80"
                   alt="Interior Kamar"
@@ -251,7 +214,7 @@ export function LandingPage({ search = '' }) {
                 />
               </div>
               <div className="rounded-2xl overflow-hidden aspect-square shadow-md"
-                style={{ border: `2px solid rgba(255,255,255,0.6)` }}>
+                style={{ border: '2px solid rgba(255,255,255,0.6)' }}>
                 <img
                   src="https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=500&q=80"
                   alt="Ruang Bersama"
@@ -266,7 +229,7 @@ export function LandingPage({ search = '' }) {
                 style={{
                   background: isDark ? 'rgba(39,49,43,0.96)' : 'rgba(253,252,249,0.96)',
                   backdropFilter: 'blur(12px)',
-                  border: `1px solid ${C.border}`,
+                  border: '1px solid var(--border)',
                 }}
               >
                 <div className="h-10 w-10 rounded-xl flex items-center justify-center"
@@ -274,8 +237,8 @@ export function LandingPage({ search = '' }) {
                   <Star className="h-5 w-5 text-white fill-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold leading-none" style={{ color: C.coffee }}>4.9 / 5.0</p>
-                  <p className="text-[10px] mt-0.5" style={{ color: C.muted }}>200+ ulasan penghuni</p>
+                  <p className="text-sm font-bold leading-none" style={{ color: 'var(--foreground)' }}>4.9 / 5.0</p>
+                  <p className="text-[10px] mt-0.5" style={{ color: 'var(--muted-foreground)' }}>200+ ulasan penghuni</p>
                 </div>
               </div>
             </div>
@@ -288,10 +251,10 @@ export function LandingPage({ search = '' }) {
       ═══════════════════════════════════════════ */}
       <section className="container-app py-20">
         <div className="text-center mb-12">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-2" style={{ color: C.sage }}>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-2" style={{ color: 'var(--primary)' }}>
             Mengapa Pilih Kami
           </p>
-          <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: C.coffee }}>
+          <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: 'var(--foreground)' }}>
             Hunian yang lebih dari sekadar kamar
           </h2>
         </div>
@@ -299,32 +262,31 @@ export function LandingPage({ search = '' }) {
           {TRUST_ITEMS.map(({ icon: Icon, title, desc }, i) => (
             <div
               key={title}
-              className="group flex flex-col gap-5 p-7 rounded-3xl cursor-default transition-all duration-300"
+              className="group flex flex-col gap-5 p-7 rounded-3xl cursor-default transition-all duration-300 shadow-sm"
               style={{
-                background: C.card,
-                border: `1px solid ${C.border}`,
-                boxShadow: '0 2px 16px rgba(31,21,12,0.05)',
+                background: 'var(--card)',
+                border: '1px solid var(--border)',
               }}
               onMouseEnter={e => {
                 e.currentTarget.style.transform = 'translateY(-4px)'
                 e.currentTarget.style.boxShadow = '0 12px 36px rgba(31,21,12,0.1)'
-                e.currentTarget.style.borderColor = C.sage
+                e.currentTarget.style.borderColor = 'var(--primary)'
               }}
               onMouseLeave={e => {
                 e.currentTarget.style.transform = 'translateY(0)'
                 e.currentTarget.style.boxShadow = '0 2px 16px rgba(31,21,12,0.05)'
-                e.currentTarget.style.borderColor = C.border
+                e.currentTarget.style.borderColor = 'var(--border)'
               }}
             >
               <span
                 className="h-14 w-14 rounded-2xl flex items-center justify-center animate-pulse"
-                style={{ background: isDark ? 'rgba(107,143,113,0.18)' : 'rgba(107,143,113,0.1)', color: C.mocca }}
+                style={{ background: isDark ? 'rgba(107,143,113,0.18)' : 'rgba(107,143,113,0.1)', color: '#c79a63' }}
               >
                 <Icon className="h-7 w-7" />
               </span>
               <div>
-                <h3 className="font-bold text-base mb-2" style={{ color: C.coffee }}>{title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: C.muted }}>{desc}</p>
+                <h3 className="font-bold text-base mb-2" style={{ color: 'var(--foreground)' }}>{title}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--muted-foreground)' }}>{desc}</p>
               </div>
             </div>
           ))}
@@ -334,23 +296,23 @@ export function LandingPage({ search = '' }) {
       {/* ═══════════════════════════════════════════
           FEATURED ROOMS
       ═══════════════════════════════════════════ */}
-      <section style={{ background: `linear-gradient(160deg, ${C.beige}55 0%, ${C.bg} 60%)` }} className="py-20">
+      <section style={{ background: `linear-gradient(160deg, ${isDark ? '#323e37' : '#d9e2d3'}55 0%, var(--background) 100%)` }} className="py-20">
         <div className="container-app">
           <div className="flex items-end justify-between pb-10">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-2" style={{ color: C.sage }}>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-2" style={{ color: 'var(--primary)' }}>
                 Rekomendasi Terbaik
               </p>
-              <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: C.coffee }}>
+              <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: 'var(--foreground)' }}>
                 Kamar Pilihan Terbaik Untuk Anda
               </h2>
             </div>
             <a
               href="/rooms"
               className="hidden sm:flex items-center gap-1.5 text-sm font-semibold transition-colors duration-200 cursor-pointer"
-              style={{ color: C.mocca }}
-              onMouseEnter={e => e.currentTarget.style.color = C.sage}
-              onMouseLeave={e => e.currentTarget.style.color = C.mocca}
+              style={{ color: '#c79a63' }}
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'}
+              onMouseLeave={e => e.currentTarget.style.color = '#c79a63'}
             >
               Lihat semua <ArrowRight className="h-4 w-4" />
             </a>
@@ -363,15 +325,15 @@ export function LandingPage({ search = '' }) {
           ) : featuredRooms.length === 0 ? (
             <div
               className="text-center py-16 rounded-3xl"
-              style={{ border: `1.5px dashed ${C.border}`, background: `${C.bg}` }}
+              style={{ border: '1.5px dashed var(--border)', background: 'var(--background)' }}
             >
-              <p className="text-sm mb-4" style={{ color: C.muted }}>Maaf, saat ini seluruh kamar sedang terisi penuh.</p>
+              <p className="text-sm mb-4" style={{ color: 'var(--muted-foreground)' }}>Maaf, saat ini seluruh kamar sedang terisi penuh.</p>
               <a href="https://wa.me/6281234567890?text=Halo%20Pak%20RT,%20apakah%20ada%20daftar%20tunggu%20untuk%20kamar%20kost?">
                 <button
                   className="px-6 py-3 rounded-2xl text-sm font-bold transition-all duration-300 cursor-pointer hover:opacity-95 active:scale-95"
                   style={{
-                    background: C.mocca,
-                    color: C.btnText,
+                    background: '#c79a63',
+                    color: '#ffffff',
                     boxShadow: '0 4px 16px rgba(65,45,21,0.25)',
                     transform: 'translateY(0)',
                   }}
@@ -393,11 +355,10 @@ export function LandingPage({ search = '' }) {
               {featuredRooms.map((room) => (
                 <div
                   key={room.id}
-                  className="rounded-3xl overflow-hidden transition-all duration-300"
+                  className="rounded-3xl overflow-hidden transition-all duration-300 shadow-sm"
                   style={{
-                    background: C.card,
-                    border: `1px solid ${C.border}`,
-                    boxShadow: '0 2px 16px rgba(31,21,12,0.06)',
+                    background: 'var(--card)',
+                    border: '1px solid var(--border)',
                   }}
                   onMouseEnter={e => {
                     e.currentTarget.style.transform = 'translateY(-4px)'
@@ -405,7 +366,7 @@ export function LandingPage({ search = '' }) {
                   }}
                   onMouseLeave={e => {
                     e.currentTarget.style.transform = 'translateY(0)'
-                    e.currentTarget.style.boxShadow = '0 2px 16px rgba(31,21,12,0.06)'
+                    e.currentTarget.style.boxShadow = 'none'
                   }}
                 >
                   <ListingCard room={room} ctaStyle="outline" />
@@ -421,10 +382,10 @@ export function LandingPage({ search = '' }) {
       ═══════════════════════════════════════════ */}
       <section className="container-app py-20">
         <div className="text-center mb-12">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-2" style={{ color: C.sage }}>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-2" style={{ color: 'var(--primary)' }}>
             Cara Kerja
           </p>
-          <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: C.coffee }}>
+          <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: 'var(--foreground)' }}>
             Booking kost semudah pesan hotel
           </h2>
         </div>
@@ -438,17 +399,17 @@ export function LandingPage({ search = '' }) {
             <div
               key={step}
               className="relative p-7 rounded-3xl"
-              style={{ background: C.card, border: `1px solid ${C.border}` }}
+              style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
             >
               <p
                 className="text-5xl font-black leading-none mb-4 opacity-10"
-                style={{ color: C.mocca }}
+                style={{ color: '#c79a63' }}
               >
                 {step}
               </p>
-              <CheckCircle className="h-6 w-6 mb-3" style={{ color: C.sage }} />
-              <h3 className="font-bold text-sm mb-1.5" style={{ color: C.coffee }}>{title}</h3>
-              <p className="text-xs leading-relaxed" style={{ color: C.muted }}>{desc}</p>
+              <CheckCircle className="h-6 w-6 mb-3" style={{ color: 'var(--primary)' }} />
+              <h3 className="font-bold text-sm mb-1.5" style={{ color: 'var(--foreground)' }}>{title}</h3>
+              <p className="text-xs leading-relaxed" style={{ color: 'var(--muted-foreground)' }}>{desc}</p>
             </div>
           ))}
         </div>

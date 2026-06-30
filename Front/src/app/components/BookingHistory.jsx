@@ -10,13 +10,6 @@ import { formatPrice } from '../../api/roomUtils'
 import { toast } from 'sonner'
 
 export function BookingHistory({ user }) {
-  const { theme } = useTheme()
-  const isDark = theme === 'dark'
-
-  const D = isDark
-    ? { bg: '#1f2722', card: '#27312b', cardHover: '#323e37', border: '#323e37', text: '#f8f7f2', muted: '#9cb5a4', sub: '#c79a63' }
-    : { bg: '#f8f7f2', card: '#ffffff', cardHover: '#f0f4ee', border: '#d9e2d3', text: '#2f3a34', muted: '#2f3a34', sub: '#c79a63' }
-
   const { data, isLoading, isError, refetch } = useBookingsQuery()
   const bookings = Array.isArray(data) ? data : []
   const userBookings = bookings.filter(
@@ -25,7 +18,7 @@ export function BookingHistory({ user }) {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 gap-3" style={{ color: D.muted }}>
+      <div className="flex flex-col items-center justify-center py-20 gap-3" style={{ color: 'var(--muted-foreground)' }}>
         <Loader2 className="h-8 w-8 animate-spin" />
         <span className="text-sm font-semibold tracking-wide">Memuat data booking…</span>
       </div>
@@ -34,7 +27,7 @@ export function BookingHistory({ user }) {
 
   if (isError) {
     return (
-      <div className="rounded-3xl p-8" style={{ background: D.card, border: `1px solid ${D.border}` }}>
+      <div className="rounded-3xl p-8" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
         <QueryError message="Gagal memuat histori booking." onRetry={refetch} />
       </div>
     )
@@ -52,128 +45,94 @@ export function BookingHistory({ user }) {
   }
 
   return (
-    <div className="rounded-3xl overflow-hidden" style={{ background: D.card, border: `1px solid ${D.border}` }}>
+    <div className="rounded-3xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
       {/* Header */}
-      <div className="px-6 py-5" style={{ borderBottom: `1px solid ${D.border}`, background: '#faf8f5' }}>
-        <h2 className="text-lg font-bold" style={{ color: D.text }}>Histori Booking Anda</h2>
-        <p className="text-xs mt-1" style={{ color: D.muted }}>
+      <div className="px-6 py-5" style={{ borderBottom: '1px solid var(--border)', background: 'var(--secondary)' }}>
+        <h2 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>Histori Booking Anda</h2>
+        <p className="text-xs mt-1" style={{ color: 'var(--muted-foreground)' }}>
           Daftar pesanan kamar kost Anda yang sedang diproses maupun telah disetujui.
         </p>
       </div>
 
-      {userBookings.length === 0 ? (
-        <EmptyState
-          icon={Inbox}
-          title="Belum ada pesanan"
-          description="Anda belum memiliki riwayat booking. Temukan kamar kost yang cocok sekarang."
-          actionLabel="Cari Kamar"
-          actionHref="/rooms"
-        />
-      ) : (
-        <div style={{ divideColor: D.border }}>
-          {userBookings.map((b, i) => {
-            const waMessage = `Halo Pak RT, saya ingin menanyakan status booking saya untuk kamar ${b.room?.name || 'Kost'}. (Booking ID: ${b.id})`
-            return (
-              <BookingHistoryItem 
-                key={b.id} 
-                booking={b} 
-                D={D} 
-                waMessage={waMessage} 
-                isFirst={i === 0} 
-                refetch={refetch}
-              />
-            )
-          })}
-        </div>
-      )}
+      <div style={{ divideColor: 'var(--border)' }}>
+        {userBookings.map((b, i) => {
+          const waMessage = `Halo Pak RT, saya ingin menanyakan status booking saya untuk kamar ${b.room?.name || 'Kost'}. (Booking ID: ${b.id})`
+          return (
+            <BookingHistoryItem 
+              key={b.id} 
+              booking={b} 
+              waMessage={waMessage} 
+              isFirst={i === 0} 
+              refetch={refetch}
+            />
+          )
+        })}
+      </div>
     </div>
   )
 }
 
-function BookingHistoryItem({ booking: b, D, waMessage, isFirst, refetch }) {
+function BookingHistoryItem({ booking: b, waMessage, isFirst, refetch }) {
   const [isRenewing, setIsRenewing] = useState(false)
   const [renewMonths, setRenewMonths] = useState(1)
   const [isUploading, setIsUploading] = useState(false)
-  const requestRenewalMutation = useRequestBookingRenewalMutation()
-
-  const { theme } = useTheme()
-  const isDark = theme === 'dark'
 
   const handleFileChange = async (e) => {
     const file = e.target.files?.[0]
     if (!file) return
 
+    const formData = new FormData()
+    formData.append('receipt', file)
+
     setIsUploading(true)
-    const uploadToast = toast.loading('Mengunggah bukti transfer...')
+    const token = localStorage.getItem('sikos-token')
 
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = async () => {
-      try {
-        const base64Image = reader.result
-        const token = localStorage.getItem('token')
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/bookings/${b.id}/payment-receipt`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ image: base64Image }),
-        })
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/bookings/${b.id}/payment`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      })
 
-        if (!response.ok) {
-          throw new Error('Gagal mengunggah')
-        }
-
-        toast.success('Bukti transfer berhasil diunggah!', { id: uploadToast })
-        if (typeof refetch === 'function') refetch()
-      } catch (err) {
-        toast.error('Gagal mengunggah bukti transfer.', { id: uploadToast })
-      } finally {
-        setIsUploading(false)
-      }
-    }
-    reader.onerror = () => {
-      toast.error('Gagal membaca file gambar.', { id: uploadToast })
+      if (!res.ok) throw new Error('Gagal mengupload bukti transfer')
+      toast.success('Bukti bayar berhasil diunggah!')
+      refetch()
+    } catch (err) {
+      toast.error(err.message || 'Terjadi kesalahan saat mengunggah bukti bayar')
+    } finally {
       setIsUploading(false)
     }
   }
 
-  const totalPrice = b.room ? Number(b.room.price) * Number(b.duration_months || 1) : 0
+  const roomPrice = Number(b.room?.price) || 0
+  const duration = Number(b.duration_months) || 1
+  const totalPrice = roomPrice * duration
+
   const statusLabel =
-    b.status === 'confirmed' || b.status === 'accepted' ? 'Disetujui'
-    : b.status === 'pending' ? 'Menunggu'
-    : b.status === 'rejected' ? 'Ditolak'
-    : b.status === 'ended' ? 'Selesai'
-    : b.status
+    b.status === 'confirmed' || b.status === 'accepted' ? 'Aktif'
+    : b.status === 'pending' ? 'Menunggu Konfirmasi'
+    : 'Selesai'
+
   const statusBadgeVariant =
     b.status === 'confirmed' || b.status === 'accepted' ? 'available'
     : b.status === 'pending' ? 'booked'
     : 'default'
 
-  const handleRenew = async () => {
-    try {
-      await requestRenewalMutation.mutateAsync({ id: b.id, durationMonths: Number(renewMonths) })
-      setIsRenewing(false)
-      toast.success('Permintaan perpanjangan berhasil diajukan!')
-    } catch (err) {
-      toast.error('Gagal mengajukan perpanjangan sewa.')
-    }
-  }
-
   return (
     <div
       className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 transition-colors duration-200"
       style={{
-        borderTop: !isFirst ? `1px solid ${D.border}` : 'none',
+        borderTop: !isFirst ? '1px solid var(--border)' : 'none',
         background: 'transparent',
       }}
-      onMouseEnter={e => e.currentTarget.style.background = D.cardHover}
+      onMouseEnter={e => e.currentTarget.style.background = 'var(--secondary)'}
       onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
     >
       <div className="space-y-3 flex-1">
         <div className="flex items-center gap-3 flex-wrap">
-          <h3 className="font-bold text-base" style={{ color: D.text }}>
+          <h3 className="font-bold text-base" style={{ color: 'var(--foreground)' }}>
             {b.room?.name || 'Kamar Kost'}
           </h3>
           <Badge variant={statusBadgeVariant}>{statusLabel}</Badge>
@@ -182,7 +141,7 @@ function BookingHistoryItem({ booking: b, D, waMessage, isFirst, refetch }) {
           )}
         </div>
 
-        <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs" style={{ color: D.muted }}>
+        <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs" style={{ color: 'var(--muted-foreground)' }}>
           <span className="flex items-center gap-1.5">
             <CalendarDays className="h-4 w-4 shrink-0" style={{ color: '#c79a63' }} />
             Mulai: {b.check_in ? String(b.check_in).slice(0, 10) : '—'}
@@ -197,109 +156,52 @@ function BookingHistoryItem({ booking: b, D, waMessage, isFirst, refetch }) {
           </span>
         </div>
 
-        <div className="text-sm font-semibold pt-1" style={{ color: D.text }}>
+        <div className="text-sm font-semibold pt-1" style={{ color: 'var(--foreground)' }}>
           Total Biaya:{' '}
           <span style={{ color: '#c79a63' }}>{formatPrice(totalPrice)}</span>
         </div>
 
-        {/* Form Perpanjang */}
         {isRenewing && (
           <div className="pt-3 flex items-center gap-2 flex-wrap">
-            <label className="text-xs font-semibold" style={{ color: D.text }}>Pilih Durasi:</label>
+            <label className="text-xs font-semibold" style={{ color: 'var(--foreground)' }}>Pilih Durasi:</label>
             <select
               value={renewMonths}
               onChange={(e) => setRenewMonths(e.target.value)}
-              className="text-xs px-2.5 py-1.5 rounded-lg border bg-[#f8f7f2] outline-none"
-              style={{ borderColor: D.border, color: D.text }}
+              className="text-xs px-2.5 py-1.5 rounded-lg border bg-card outline-none"
+              style={{ borderColor: 'var(--border)', color: 'var(--foreground)' }}
             >
               <option value={1}>1 Bulan</option>
               <option value={3}>3 Bulan</option>
               <option value={6}>6 Bulan</option>
               <option value={12}>12 Bulan</option>
             </select>
-            <button
-              onClick={handleRenew}
-              className="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-[#6b8f71] text-[#ffffff] cursor-pointer hover:bg-[#56745c] transition-colors"
-            >
-              Ajukan
-            </button>
-            <button
-              onClick={() => setIsRenewing(false)}
-              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-stone-200 text-stone-700 cursor-pointer hover:bg-stone-300 transition-colors"
-            >
-              Batal
-            </button>
           </div>
         )}
       </div>
 
       <div className="flex flex-wrap sm:items-center gap-3">
-        {/* Bukti Transfer Upload / Status */}
         {b.status === 'pending' && (
-          <div className="flex items-center gap-2 flex-wrap">
-            {b.payment_receipt ? (
-              <>
-                <a
-                  href={b.payment_receipt}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-1.5 rounded-2xl px-4 py-2.5 text-xs font-semibold transition-all duration-200 border cursor-pointer"
-                  style={{ borderColor: D.border, color: D.text, background: 'rgba(107,143,113,0.06)' }}
-                >
-                  Lihat Bukti Bayar
-                </a>
-                <label className="inline-flex items-center justify-center gap-1.5 rounded-2xl px-4 py-2.5 text-xs font-semibold transition-all duration-200 text-stone-700 bg-stone-100 hover:bg-stone-200 cursor-pointer">
-                  <span>Ganti Bukti</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    disabled={isUploading}
-                    className="hidden"
-                  />
-                </label>
-              </>
-            ) : (
-              <label
-                className="inline-flex items-center justify-center gap-1.5 rounded-2xl px-4 py-2.5 text-xs font-bold transition-all duration-200 text-white cursor-pointer shadow-sm active:scale-95"
-                style={{
-                  background: 'linear-gradient(135deg,#6b8f71,#56745c)',
-                  color: '#ffffff'
-                }}
-              >
-                <span>Upload Bukti Bayar</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  disabled={isUploading}
-                  className="hidden"
-                />
-              </label>
-            )}
-          </div>
-        )}
-
-        {/* Tombol Perpanjang */}
-        {b.status === 'accepted' && !b.renewal_requested && !isRenewing && (
-          <button
-            onClick={() => setIsRenewing(true)}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-xs font-semibold transition-all duration-200 cursor-pointer hover:opacity-95"
-            style={{ background: '#6b8f71', color: '#ffffff' }}
+          <label
+            className="inline-flex items-center justify-center gap-1.5 rounded-2xl px-4 py-2.5 text-xs font-bold transition-all duration-200 cursor-pointer shadow-sm active:scale-95"
+            style={{
+              background: '#6b8f71',
+              color: '#ffffff'
+            }}
           >
-            Perpanjang Sewa
-          </button>
+            <span>{b.payment_receipt ? 'Ganti Bukti' : 'Upload Bukti Bayar'}</span>
+            <input type="file" accept="image/*" onChange={handleFileChange} disabled={isUploading} className="hidden" />
+          </label>
         )}
 
         <a
           href={`https://wa.me/6281234567890?text=${encodeURIComponent(waMessage)}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-xs font-semibold transition-all duration-200 border"
+          className="inline-flex items-center justify-center gap-1.5 rounded-2xl px-4 py-2.5 text-xs font-semibold transition-all duration-200 border cursor-pointer"
           style={{
-            background: 'rgba(107,143,113,0.06)',
-            color: '#6b8f71',
-            borderColor: 'rgba(107,143,113,0.2)'
+            borderColor: 'var(--border)',
+            color: 'var(--foreground)',
+            background: 'rgba(107,143,113,0.06)'
           }}
           onMouseEnter={e => {
             e.currentTarget.style.background = 'rgba(107,143,113,0.12)'
