@@ -1,52 +1,54 @@
 @custom-variant dark (&:is(.dark *));
 
-:root {
-  --font-size: 16px;
+@layer base {
+  :root {
+    --font-size: 16px;
 
-  /* Brand — Primary */
-  --brand: #6b8f71;
-  --brand-hover: #56745c;
-  --brand-foreground: #2f3a34;
+    /* Brand — Primary */
+    --brand: #6b8f71;
+    --brand-hover: #56745c;
+    --brand-foreground: #2f3a34;
 
-  --primary: var(--brand);
-  --primary-dark: var(--brand-hover);
-  --primary-foreground: var(--brand-foreground);
+    --primary: var(--brand);
+    --primary-dark: var(--brand-hover);
+    --primary-foreground: var(--brand-foreground);
 
-  /* Accents */
-  --sage: #d9e2d3;
-  --sage-soft: #f0f4ee;
-  --mocca: #c79a63;
-  --mocca-soft: #faf8f5;
+    /* Accents */
+    --sage: #d9e2d3;
+    --sage-soft: #f0f4ee;
+    --mocca: #c79a63;
+    --mocca-soft: #faf8f5;
 
-  /* Warm neutrals */
-  --background: #f8f7f2;
-  --foreground: #2f3a34;
-  --card: #ffffff;
-  --card-foreground: #2f3a34;
+    /* Warm neutrals */
+    --background: #f8f7f2;
+    --foreground: #2f3a34;
+    --card: #ffffff;
+    --card-foreground: #2f3a34;
 
-  --secondary: #d9e2d3;
-  --secondary-foreground: #2f3a34;
-  --muted: #d9e2d3;
-  --muted-foreground: #2f3a34;
+    --secondary: #d9e2d3;
+    --secondary-foreground: #2f3a34;
+    --muted: #d9e2d3;
+    --muted-foreground: #2f3a34;
 
-  --border: #d9e2d3;
-  --input: #d9e2d3;
-  --input-background: #ffffff;
-  --ring: #6b8f71;
+    --border: #d9e2d3;
+    --input: #d9e2d3;
+    --input-background: #ffffff;
+    --ring: #6b8f71;
 
-  --destructive: #c0392b;
-  --success: #6b8f71;
-  --warning: #c79a63;
-  --info: #5b7fa6;
+    --destructive: #c0392b;
+    --success: #6b8f71;
+    --warning: #c79a63;
+    --info: #5b7fa6;
 
-  --radius: 0.75rem;
+    --radius: 0.75rem;
 
-  /* Section surfaces */
-  --surface-warm: #f8f7f2;
-  --surface-beige: #d9e2d3;
-  --surface-sage: #f0f4ee;
-  --surface-mocca: #faf8f5;
-  --surface-stone: #d9e2d3;
+    /* Section surfaces */
+    --surface-warm: #f8f7f2;
+    --surface-beige: #d9e2d3;
+    --surface-sage: #f0f4ee;
+    --surface-mocca: #faf8f5;
+    --surface-stone: #d9e2d3;
+  }
 }
 
 @theme inline {

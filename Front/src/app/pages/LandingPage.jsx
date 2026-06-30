@@ -1,4 +1,4 @@
-import { ArrowRight, Shield, Wifi, MapPin, Star, Users, Home, CheckCircle, Search } from 'lucide-react'
+import { ArrowRight, Shield, Wifi, MapPin, Star, Users, Home, CheckCircle, Search, Calendar, Key } from 'lucide-react'
 import { useRoomsQuery } from '../../hooks/queries'
 import { isRoomAvailable } from '../../api/roomUtils'
 import { ListingCard } from '../components/ListingCard'
@@ -251,10 +251,10 @@ export function LandingPage({ search = '' }) {
       ═══════════════════════════════════════════ */}
       <section className="container-app py-20">
         <div className="text-center mb-12">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-2" style={{ color: 'var(--primary)' }}>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-2" style={{ color: isDark ? '#88ad8e' : '#6b8f71' }}>
             Mengapa Pilih Kami
           </p>
-          <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: 'var(--foreground)' }}>
+          <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: isDark ? '#f8f7f2' : '#2f3a34' }}>
             Hunian yang lebih dari sekadar kamar
           </h2>
         </div>
@@ -264,29 +264,33 @@ export function LandingPage({ search = '' }) {
               key={title}
               className="group flex flex-col gap-5 p-7 rounded-3xl cursor-default transition-all duration-300 shadow-sm"
               style={{
-                background: 'var(--card)',
-                border: '1px solid var(--border)',
+                background: isDark ? '#27312b' : '#ffffff',
+                border: isDark ? '1px solid #323e37' : '1px solid #d9e2d3',
               }}
               onMouseEnter={e => {
                 e.currentTarget.style.transform = 'translateY(-4px)'
                 e.currentTarget.style.boxShadow = '0 12px 36px rgba(31,21,12,0.1)'
-                e.currentTarget.style.borderColor = 'var(--primary)'
+                e.currentTarget.style.borderColor = isDark ? '#6b8f71' : '#c79a63'
               }}
               onMouseLeave={e => {
                 e.currentTarget.style.transform = 'translateY(0)'
                 e.currentTarget.style.boxShadow = '0 2px 16px rgba(31,21,12,0.05)'
-                e.currentTarget.style.borderColor = 'var(--border)'
+                e.currentTarget.style.borderColor = isDark ? '#323e37' : '#d9e2d3'
               }}
             >
               <span
-                className="h-14 w-14 rounded-2xl flex items-center justify-center animate-pulse"
-                style={{ background: isDark ? 'rgba(107,143,113,0.18)' : 'rgba(107,143,113,0.1)', color: '#c79a63' }}
+                className="h-14 w-14 rounded-2xl flex items-center justify-center"
+                style={{
+                  background: isDark ? 'rgba(199, 154, 99, 0.15)' : 'rgba(199, 154, 99, 0.08)',
+                  color: '#c79a63',
+                  border: `1px solid ${isDark ? 'rgba(199, 154, 99, 0.3)' : 'rgba(199, 154, 99, 0.15)'}`,
+                }}
               >
                 <Icon className="h-7 w-7" />
               </span>
               <div>
-                <h3 className="font-bold text-base mb-2" style={{ color: 'var(--foreground)' }}>{title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--muted-foreground)' }}>{desc}</p>
+                <h3 className="font-bold text-base mb-2" style={{ color: isDark ? '#f8f7f2' : '#2f3a34' }}>{title}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: isDark ? '#9cb5a4' : '#475569' }}>{desc}</p>
               </div>
             </div>
           ))}
@@ -296,14 +300,14 @@ export function LandingPage({ search = '' }) {
       {/* ═══════════════════════════════════════════
           FEATURED ROOMS
       ═══════════════════════════════════════════ */}
-      <section style={{ background: `linear-gradient(160deg, ${isDark ? '#323e37' : '#d9e2d3'}55 0%, var(--background) 100%)` }} className="py-20">
+      <section style={{ background: `linear-gradient(160deg, ${isDark ? '#323e37' : '#d9e2d3'}55 0%, ${isDark ? '#1f2722' : '#f8f7f2'} 100%)` }} className="py-20">
         <div className="container-app">
           <div className="flex items-end justify-between pb-10">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-2" style={{ color: 'var(--primary)' }}>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-2" style={{ color: isDark ? '#88ad8e' : '#6b8f71' }}>
                 Rekomendasi Terbaik
               </p>
-              <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: 'var(--foreground)' }}>
+              <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: isDark ? '#f8f7f2' : '#2f3a34' }}>
                 Kamar Pilihan Terbaik Untuk Anda
               </h2>
             </div>
@@ -311,7 +315,7 @@ export function LandingPage({ search = '' }) {
               href="/rooms"
               className="hidden sm:flex items-center gap-1.5 text-sm font-semibold transition-colors duration-200 cursor-pointer"
               style={{ color: '#c79a63' }}
-              onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'}
+              onMouseEnter={e => e.currentTarget.style.color = isDark ? '#88ad8e' : '#6b8f71'}
               onMouseLeave={e => e.currentTarget.style.color = '#c79a63'}
             >
               Lihat semua <ArrowRight className="h-4 w-4" />
@@ -325,9 +329,12 @@ export function LandingPage({ search = '' }) {
           ) : featuredRooms.length === 0 ? (
             <div
               className="text-center py-16 rounded-3xl"
-              style={{ border: '1.5px dashed var(--border)', background: 'var(--background)' }}
+              style={{
+                border: `1.5px dashed ${isDark ? '#323e37' : '#d9e2d3'}`,
+                background: isDark ? '#27312b' : '#ffffff',
+              }}
             >
-              <p className="text-sm mb-4" style={{ color: 'var(--muted-foreground)' }}>Maaf, saat ini seluruh kamar sedang terisi penuh.</p>
+              <p className="text-sm mb-4" style={{ color: isDark ? '#9cb5a4' : '#475569' }}>Maaf, saat ini seluruh kamar sedang terisi penuh.</p>
               <a href="https://wa.me/6281234567890?text=Halo%20Pak%20RT,%20apakah%20ada%20daftar%20tunggu%20untuk%20kamar%20kost?">
                 <button
                   className="px-6 py-3 rounded-2xl text-sm font-bold transition-all duration-300 cursor-pointer hover:opacity-95 active:scale-95"
@@ -357,16 +364,18 @@ export function LandingPage({ search = '' }) {
                   key={room.id}
                   className="rounded-3xl overflow-hidden transition-all duration-300 shadow-sm"
                   style={{
-                    background: 'var(--card)',
-                    border: '1px solid var(--border)',
+                    background: isDark ? '#27312b' : '#ffffff',
+                    border: isDark ? '1px solid #323e37' : '1px solid #d9e2d3',
                   }}
                   onMouseEnter={e => {
                     e.currentTarget.style.transform = 'translateY(-4px)'
                     e.currentTarget.style.boxShadow = '0 16px 40px rgba(31,21,12,0.12)'
+                    e.currentTarget.style.borderColor = isDark ? '#6b8f71' : '#c79a63'
                   }}
                   onMouseLeave={e => {
                     e.currentTarget.style.transform = 'translateY(0)'
                     e.currentTarget.style.boxShadow = 'none'
+                    e.currentTarget.style.borderColor = isDark ? '#323e37' : '#d9e2d3'
                   }}
                 >
                   <ListingCard room={room} ctaStyle="outline" />
@@ -382,34 +391,62 @@ export function LandingPage({ search = '' }) {
       ═══════════════════════════════════════════ */}
       <section className="container-app py-20">
         <div className="text-center mb-12">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-2" style={{ color: 'var(--primary)' }}>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-2" style={{ color: theme === 'dark' ? '#88ad8e' : '#6b8f71' }}>
             Cara Kerja
           </p>
-          <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: 'var(--foreground)' }}>
+          <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: theme === 'dark' ? '#f8f7f2' : '#2f3a34' }}>
             Booking kost semudah pesan hotel
           </h2>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { step: '01', title: 'Cari Kamar', desc: 'Telusuri daftar kamar yang tersedia dengan filter yang mudah.' },
-            { step: '02', title: 'Pilih & Detail', desc: 'Lihat foto, fasilitas, harga, dan lokasi secara lengkap.' },
-            { step: '03', title: 'Booking Online', desc: 'Isi formulir pemesanan dan konfirmasi dalam hitungan menit.' },
-            { step: '04', title: 'Check-in', desc: 'Datang ke lokasi dengan bukti booking dan mulai menghuni.' },
-          ].map(({ step, title, desc }) => (
+            { step: '01', title: 'Cari Kamar', desc: 'Telusuri daftar kamar yang tersedia dengan filter yang mudah.', icon: Search },
+            { step: '02', title: 'Pilih & Detail', desc: 'Lihat foto, fasilitas, harga, dan lokasi secara lengkap.', icon: Home },
+            { step: '03', title: 'Booking Online', desc: 'Isi formulir pemesanan dan konfirmasi dalam hitungan menit.', icon: Calendar },
+            { step: '04', title: 'Check-in', desc: 'Datang ke lokasi dengan bukti booking dan mulai menghuni.', icon: Key },
+          ].map(({ step, title, desc, icon: Icon }) => (
             <div
               key={step}
-              className="relative p-7 rounded-3xl"
-              style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+              className="relative p-7 rounded-3xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1.5 cursor-pointer group"
+              style={{
+                background: theme === 'dark' ? '#27312b' : '#ffffff',
+                border: theme === 'dark' ? '1px solid #323e37' : '1px solid #d9e2d3',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.borderColor = theme === 'dark' ? '#6b8f71' : '#c79a63';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.borderColor = theme === 'dark' ? '#323e37' : '#d9e2d3';
+              }}
             >
-              <p
-                className="text-5xl font-black leading-none mb-4 opacity-10"
-                style={{ color: '#c79a63' }}
+              {/* Decorative Watermark Number */}
+              <div
+                className="absolute top-6 right-6 text-5xl font-black select-none pointer-events-none transition-all duration-300 group-hover:scale-110"
+                style={{
+                  color: theme === 'dark' ? '#d9e2d3' : '#c79a63',
+                  opacity: theme === 'dark' ? 0.22 : 0.28,
+                }}
               >
                 {step}
+              </div>
+
+              {/* Icon Container */}
+              <div
+                className="h-12 w-12 rounded-2xl flex items-center justify-center mb-5 transition-all duration-300 group-hover:scale-110"
+                style={{
+                  background: theme === 'dark' ? 'rgba(107, 143, 113, 0.15)' : 'rgba(107, 143, 113, 0.08)',
+                  border: `1.5px solid ${theme === 'dark' ? 'rgba(107, 143, 113, 0.3)' : 'rgba(107, 143, 113, 0.15)'}`,
+                }}
+              >
+                <Icon className="h-6 w-6" style={{ color: theme === 'dark' ? '#88ad8e' : '#6b8f71' }} />
+              </div>
+
+              <h3 className="font-bold text-sm mb-1.5 transition-colors duration-200 group-hover:text-primary" style={{ color: theme === 'dark' ? '#f8f7f2' : '#2f3a34' }}>
+                {title}
+              </h3>
+              <p className="text-xs leading-relaxed" style={{ color: theme === 'dark' ? '#9cb5a4' : '#475569' }}>
+                {desc}
               </p>
-              <CheckCircle className="h-6 w-6 mb-3" style={{ color: 'var(--primary)' }} />
-              <h3 className="font-bold text-sm mb-1.5" style={{ color: 'var(--foreground)' }}>{title}</h3>
-              <p className="text-xs leading-relaxed" style={{ color: 'var(--muted-foreground)' }}>{desc}</p>
             </div>
           ))}
         </div>
