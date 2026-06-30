@@ -7,7 +7,7 @@
     /* Brand — Primary */
     --brand: #6b8f71;
     --brand-hover: #56745c;
-    --brand-foreground: #2f3a34;
+    --brand-foreground: #ffffff;
 
     --primary: var(--brand);
     --primary-dark: var(--brand-hover);

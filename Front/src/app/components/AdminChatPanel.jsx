@@ -320,7 +320,7 @@ export function AdminChatPanel() {
                       </span>
                       <span
                         className={`text-[9px] ${
-                          isSelected ? 'text-[#2f3a34]/80' : 'text-muted-foreground'
+                          isSelected ? 'text-white/80' : 'text-muted-foreground'
                         }`}
                       >
                         {formatTime(thread.timestamp)}
@@ -328,7 +328,7 @@ export function AdminChatPanel() {
                     </div>
                     <p
                       className={`text-[11px] truncate leading-tight ${
-                        isSelected ? 'text-[#2f3a34]/70' : 'text-muted-foreground'
+                        isSelected ? 'text-white/70' : 'text-muted-foreground'
                       }`}
                     >
                       {thread.lastMessage}
