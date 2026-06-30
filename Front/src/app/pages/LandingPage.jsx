@@ -122,7 +122,7 @@ export function LandingPage({ search = '' }) {
       ═══════════════════════════════════════════ */}
       <section
         className="relative overflow-hidden"
-        style={{ background: `linear-gradient(160deg, ${C.beige} 0%, ${C.bg} 55%, #f4f6e6 100%)` }}
+        style={{ background: `linear-gradient(160deg, ${C.beige} 0%, ${C.bg} 100%)` }}
       >
         {/* Decorative blobs */}
         <div
@@ -142,7 +142,11 @@ export function LandingPage({ search = '' }) {
               {/* Badge */}
               <div
                 className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold"
-                style={{ background: 'rgba(65,45,21,0.08)', color: C.mocca, border: `1px solid rgba(65,45,21,0.18)` }}
+                style={{
+                  background: isDark ? 'rgba(199,154,99,0.12)' : 'rgba(107,143,113,0.1)',
+                  color: C.mocca,
+                  border: `1px solid rgba(199,154,99,${isDark ? '0.3' : '0.15'})`
+                }}
               >
                 <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: C.sage }} />
                 Kost Syariah Pekanbaru, Riau
@@ -212,7 +216,7 @@ export function LandingPage({ search = '' }) {
                 {STATS.map(({ label, value, icon: Icon }) => (
                   <div key={label} className="flex items-center gap-2">
                     <span className="h-8 w-8 rounded-xl flex items-center justify-center"
-                      style={{ background: 'rgba(176,186,153,0.25)', color: C.sage }}
+                      style={{ background: isDark ? 'rgba(107,143,113,0.28)' : 'rgba(107,143,113,0.15)', color: C.sage }}
                     >
                       <Icon className="h-4 w-4" />
                     </span>
@@ -260,13 +264,13 @@ export function LandingPage({ search = '' }) {
               <div
                 className="absolute -bottom-4 -left-4 px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3"
                 style={{
-                  background: 'rgba(253,252,249,0.96)',
+                  background: isDark ? 'rgba(39,49,43,0.96)' : 'rgba(253,252,249,0.96)',
                   backdropFilter: 'blur(12px)',
                   border: `1px solid ${C.border}`,
                 }}
               >
                 <div className="h-10 w-10 rounded-xl flex items-center justify-center"
-                  style={{ background: `linear-gradient(135deg,${C.sage},#56745c)` }}>
+                  style={{ background: 'linear-gradient(135deg,#6b8f71,#56745c)' }}>
                   <Star className="h-5 w-5 text-white fill-white" />
                 </div>
                 <div>
@@ -313,8 +317,8 @@ export function LandingPage({ search = '' }) {
               }}
             >
               <span
-                className="h-14 w-14 rounded-2xl flex items-center justify-center"
-                style={{ background: `linear-gradient(135deg,${C.sage}22,${C.sage}44)`, color: C.mocca }}
+                className="h-14 w-14 rounded-2xl flex items-center justify-center animate-pulse"
+                style={{ background: isDark ? 'rgba(107,143,113,0.18)' : 'rgba(107,143,113,0.1)', color: C.mocca }}
               >
                 <Icon className="h-7 w-7" />
               </span>

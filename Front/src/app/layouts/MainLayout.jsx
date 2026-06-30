@@ -49,7 +49,7 @@ export function MainLayout({ children }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: '#F7F4E8' }}>
+    <div className="min-h-screen flex flex-col" style={{ background: isDark ? '#1f2722' : '#f8f7f2', transition: 'background 0.3s ease' }}>
 
       {/* ───── FLOATING NAVBAR ───── */}
       <header
@@ -124,12 +124,12 @@ export function MainLayout({ children }) {
               <>
                 <span
                   className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium"
-                  style={{ color: '#2f3a34' }}
+                  style={{ color: isDark ? '#f8f7f2' : '#2f3a34' }}
                 >
                   <span className="h-6 w-6 rounded-full flex items-center justify-center text-xs font-bold"
                     style={{
-                      background: 'rgba(107,143,113,0.1)',
-                      color: '#2f3a34',
+                      background: 'rgba(107,143,113,0.15)',
+                      color: isDark ? '#f8f7f2' : '#2f3a34',
                     }}
                   >
                     {user.name?.[0]?.toUpperCase() || 'U'}
@@ -153,12 +153,12 @@ export function MainLayout({ children }) {
                   href="/login"
                   className="px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200"
                   style={{
-                    color: '#2f3a34',
-                    border: '1px solid rgba(107,143,113,0.2)',
-                    background: 'rgba(107,143,113,0.05)',
+                    color: isDark ? '#f8f7f2' : '#2f3a34',
+                    border: `1px solid rgba(107,143,113,${isDark ? '0.3' : '0.2'})`,
+                    background: `rgba(107,143,113,${isDark ? '0.08' : '0.05'})`,
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(107,143,113,0.15)'; e.currentTarget.style.color = '#6b8f71' }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(107,143,113,0.05)'; e.currentTarget.style.color = '#2f3a34' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(107,143,113,0.18)'; e.currentTarget.style.color = '#6b8f71' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = `rgba(107,143,113,${isDark ? '0.08' : '0.05'})`; e.currentTarget.style.color = isDark ? '#f8f7f2' : '#2f3a34' }}
                 >
                   Masuk
                 </a>
@@ -186,9 +186,9 @@ export function MainLayout({ children }) {
               onClick={toggleTheme}
               className="flex items-center justify-center h-9 w-9 rounded-xl transition-all duration-200 cursor-pointer"
               style={{
-                color: '#2f3a34',
-                background: 'rgba(107,143,113,0.06)',
-                border: '1px solid rgba(107,143,113,0.12)',
+                color: isDark ? '#f8f7f2' : '#2f3a34',
+                background: `rgba(107,143,113,${isDark ? '0.1' : '0.06'})`,
+                border: `1px solid rgba(107,143,113,${isDark ? '0.25' : '0.12'})`,
               }}
               aria-label={isDark ? 'Mode terang' : 'Mode gelap'}
             >
@@ -198,9 +198,9 @@ export function MainLayout({ children }) {
               type="button"
               className="flex items-center justify-center h-9 w-9 rounded-xl transition-all duration-200 cursor-pointer"
               style={{
-                color: '#2f3a34',
-                background: 'rgba(107,143,113,0.06)',
-                border: '1px solid rgba(107,143,113,0.12)',
+                color: isDark ? '#f8f7f2' : '#2f3a34',
+                background: `rgba(107,143,113,${isDark ? '0.1' : '0.06'})`,
+                border: `1px solid rgba(107,143,113,${isDark ? '0.25' : '0.12'})`,
               }}
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Menu"
@@ -215,10 +215,10 @@ export function MainLayout({ children }) {
           <div
             className="pointer-events-auto absolute top-[76px] left-4 right-4 rounded-2xl p-4 space-y-1"
             style={{
-              background: 'rgba(253,252,249,0.97)',
+              background: isDark ? 'rgba(39,49,43,0.97)' : 'rgba(248,247,242,0.97)',
               backdropFilter: 'blur(20px)',
-              border: '1px solid #d9e2d3',
-              boxShadow: '0 16px 40px rgba(31,21,12,0.12)',
+              border: `1px solid ${isDark ? 'rgba(107,143,113,0.25)' : '#d9e2d3'}`,
+              boxShadow: isDark ? '0 16px 40px rgba(0,0,0,0.3)' : '0 16px 40px rgba(31,21,12,0.12)',
             }}
           >
             {links.map((item) => (
@@ -227,15 +227,15 @@ export function MainLayout({ children }) {
                 href={item.href}
                 className="block px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
                 style={{
-                  color: isActive(item) ? '#6b8f71' : '#2f3a34',
-                  background: isActive(item) ? 'rgba(107,143,113,0.1)' : 'transparent',
+                  color: isActive(item) ? '#6b8f71' : (isDark ? '#f8f7f2' : '#2f3a34'),
+                  background: isActive(item) ? 'rgba(107,143,113,0.12)' : 'transparent',
                 }}
                 onClick={() => setMobileOpen(false)}
               >
                 {item.name}
               </a>
             ))}
-            <div className="pt-3 flex gap-2 border-t" style={{ borderColor: '#d9e2d3' }}>
+            <div className="pt-3 flex gap-2 border-t" style={{ borderColor: isDark ? 'rgba(107,143,113,0.25)' : '#d9e2d3' }}>
               {user ? (
                 <button
                   onClick={() => { setMobileOpen(false); logout() }}
@@ -250,8 +250,8 @@ export function MainLayout({ children }) {
                     href="/login"
                     className="flex-1 py-2.5 rounded-xl text-sm font-medium text-center"
                     style={{
-                      color: '#2f3a34',
-                      border: '1px solid rgba(107,143,113,0.2)',
+                      color: isDark ? '#f8f7f2' : '#2f3a34',
+                      border: `1px solid rgba(107,143,113,${isDark ? '0.3' : '0.2'})`,
                     }}
                     onClick={() => setMobileOpen(false)}
                   >
@@ -281,7 +281,14 @@ export function MainLayout({ children }) {
       <ChatWidget />
 
       {/* ───── FOOTER ───── */}
-      <footer style={{ background: '#faf8f5', borderTop: '1px solid #d9e2d3' }} className="mt-16">
+      <footer
+        style={{
+          background: isDark ? '#1b2320' : '#f8f7f2',
+          borderTop: `1px solid ${isDark ? 'rgba(107,143,113,0.2)' : '#d9e2d3'}`,
+          transition: 'background 0.3s ease',
+        }}
+        className="mt-16"
+      >
         <div className="container-app py-12 md:py-14">
           <div className="grid gap-10 md:grid-cols-3 lg:grid-cols-4">
 
@@ -294,16 +301,16 @@ export function MainLayout({ children }) {
                 >
                   <Building2 className="h-3.5 w-3.5 text-white" />
                 </span>
-                <span className="font-bold" style={{ color: '#2f3a34' }}>Kost Pak RT</span>
+                <span className="font-bold" style={{ color: isDark ? '#f8f7f2' : '#2f3a34' }}>Kost Pak RT</span>
               </div>
-              <p className="text-sm max-w-sm leading-relaxed mb-4" style={{ color: '#2f3a34', opacity: 0.8 }}>
+              <p className="text-sm max-w-sm leading-relaxed mb-4" style={{ color: isDark ? '#c8d8c8' : '#2f3a34', opacity: 0.85 }}>
                 Platform booking kost syariah modern. Hunian nyaman, lokasi strategis, fasilitas lengkap.
               </p>
               <p className="text-[11px] font-semibold uppercase tracking-widest mb-2" style={{ color: '#6b8f71' }}>Kontak</p>
-              <p className="text-sm leading-relaxed" style={{ color: '#2f3a34', opacity: 0.8 }}>
+              <p className="text-sm leading-relaxed" style={{ color: isDark ? '#b8ccb8' : '#2f3a34', opacity: 0.85 }}>
                 +62 812-3456-7890
               </p>
-              <p className="text-xs mt-1 leading-relaxed" style={{ color: '#2f3a34', opacity: 0.6 }}>
+              <p className="text-xs mt-1 leading-relaxed" style={{ color: isDark ? '#8aaa8a' : '#2f3a34', opacity: 0.7 }}>
                 Jl. Letjend. S.Parman, Gg. Al-Khalish No.18A<br />
                 Cinta Raja, Sail, Kota Pekanbaru, Riau 28127
               </p>
@@ -318,9 +325,9 @@ export function MainLayout({ children }) {
                     <a
                       href={item.href}
                       className="text-sm transition-colors duration-200"
-                      style={{ color: '#2f3a34', opacity: 0.8 }}
+                      style={{ color: isDark ? '#b8ccb8' : '#2f3a34', opacity: 0.85 }}
                       onMouseEnter={e => { e.currentTarget.style.color = '#6b8f71'; e.currentTarget.style.opacity = '1' }}
-                      onMouseLeave={e => { e.currentTarget.style.color = '#2f3a34'; e.currentTarget.style.opacity = '0.8' }}
+                      onMouseLeave={e => { e.currentTarget.style.color = isDark ? '#b8ccb8' : '#2f3a34'; e.currentTarget.style.opacity = '0.85' }}
                     >
                       {item.name}
                     </a>
@@ -334,22 +341,21 @@ export function MainLayout({ children }) {
               <p className="text-[11px] font-semibold uppercase tracking-widest mb-3" style={{ color: '#6b8f71' }}>Lokasi Kami</p>
               <div
                 className="relative rounded-2xl overflow-hidden"
-                style={{ border: '1.5px solid #d9e2d3', height: '180px' }}
+                style={{ border: `1.5px solid ${isDark ? 'rgba(107,143,113,0.25)' : '#d9e2d3'}`, height: '180px' }}
               >
                 <iframe
                   title="Lokasi Kost Pak RT"
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.659457629657!2d101.4592415!3d0.5112973!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31d5ae9f263cc0ab%3A0x60d6e3bd329de7d2!2sKost%20Pak%20RT!5e0!3m2!1sid!2sid!4v1719000000000!5m2!1sid!2sid"
                   width="100%"
                   height="100%"
-                  style={{ border: 0, filter: 'brightness(0.95) contrast(1.05) saturate(0.95)' }}
+                  style={{ border: 0, filter: isDark ? 'brightness(0.7) contrast(1.1) saturate(0.8)' : 'brightness(0.95) contrast(1.05) saturate(0.95)' }}
                   allowFullScreen=""
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
                 />
-                {/* Overlay gradient bottom */}
                 <div
                   className="absolute bottom-0 left-0 right-0 h-10 pointer-events-none"
-                  style={{ background: 'linear-gradient(to top, rgba(248,247,242,0.7), transparent)' }}
+                  style={{ background: `linear-gradient(to top, ${isDark ? 'rgba(27,35,32,0.7)' : 'rgba(248,247,242,0.7)'}, transparent)` }}
                 />
               </div>
               <a
@@ -358,7 +364,7 @@ export function MainLayout({ children }) {
                 rel="noopener noreferrer"
                 className="mt-2 flex items-center gap-1.5 text-xs font-medium transition-colors duration-200 cursor-pointer"
                 style={{ color: '#6b8f71' }}
-                onMouseEnter={e => e.currentTarget.style.color = '#56745c'}
+                onMouseEnter={e => e.currentTarget.style.color = '#88ad8e'}
                 onMouseLeave={e => e.currentTarget.style.color = '#6b8f71'}
               >
                 <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -371,7 +377,14 @@ export function MainLayout({ children }) {
 
           </div>
 
-          <p className="mt-10 pt-6 text-xs" style={{ color: '#2f3a34', opacity: 0.6, borderTop: '1px solid #d9e2d3' }}>
+          <p
+            className="mt-10 pt-6 text-xs"
+            style={{
+              color: isDark ? '#8aaa8a' : '#2f3a34',
+              opacity: 0.7,
+              borderTop: `1px solid ${isDark ? 'rgba(107,143,113,0.18)' : '#d9e2d3'}`,
+            }}
+          >
             © {new Date().getFullYear()} Kost Pak RT · All rights reserved
           </p>
         </div>

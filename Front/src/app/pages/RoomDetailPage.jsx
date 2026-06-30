@@ -78,10 +78,10 @@ export function RoomDetailPage({ search = '' }) {
         </div>
 
         <div className="lg:sticky lg:top-24 h-fit">
-          <div className="rounded-2xl border border-border bg-white p-6 shadow-md">
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-md">
             <p className="text-label mb-2">Harga sewa</p>
             <p className="text-price-lg mb-4">{formatPrice(room.price)} / bulan</p>
-            <p className="text-xs font-semibold mb-6" style={{ color: room.stock > 0 ? '#412D15' : '#C86B4F' }}>
+            <p className="text-xs font-semibold mb-6" style={{ color: room.stock > 0 ? 'var(--foreground)' : '#c0392b' }}>
               Stok Ketersediaan: {room.stock} Kamar
             </p>
             {isRoomAvailable(room) ? (
