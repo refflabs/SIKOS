@@ -283,7 +283,7 @@ export function MainLayout({ children }) {
       {/* ───── FOOTER ───── */}
       <footer
         style={{
-          background: isDark ? '#1b2320' : '#f8f7f2',
+          background: isDark ? '#1c2520' : '#f2f5f0',
           borderTop: `1px solid ${isDark ? 'rgba(107,143,113,0.2)' : '#d9e2d3'}`,
           transition: 'background 0.3s ease',
         }}
@@ -297,20 +297,20 @@ export function MainLayout({ children }) {
               <div className="flex items-center gap-2 mb-3">
                 <span
                   className="flex h-8 w-8 items-center justify-center rounded-xl"
-                  style={{ background: 'linear-gradient(135deg,#6b8f71,#56745c)' }}
+                  style={{ background: 'var(--primary)' }}
                 >
                   <Building2 className="h-3.5 w-3.5 text-white" />
                 </span>
-                <span className="font-bold" style={{ color: isDark ? '#f8f7f2' : '#2f3a34' }}>Kost Pak RT</span>
+                <span className="font-bold" style={{ color: 'var(--foreground)' }}>Kost Pak RT</span>
               </div>
-              <p className="text-sm max-w-sm leading-relaxed mb-4" style={{ color: isDark ? '#c8d8c8' : '#2f3a34', opacity: 0.85 }}>
+              <p className="text-sm max-w-sm leading-relaxed mb-4" style={{ color: 'var(--muted-foreground)' }}>
                 Platform booking kost syariah modern. Hunian nyaman, lokasi strategis, fasilitas lengkap.
               </p>
-              <p className="text-[11px] font-semibold uppercase tracking-widest mb-2" style={{ color: '#6b8f71' }}>Kontak</p>
-              <p className="text-sm leading-relaxed" style={{ color: isDark ? '#b8ccb8' : '#2f3a34', opacity: 0.85 }}>
+              <p className="text-[11px] font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--primary)' }}>Kontak</p>
+              <p className="text-sm font-medium leading-relaxed" style={{ color: 'var(--foreground)' }}>
                 +62 812-3456-7890
               </p>
-              <p className="text-xs mt-1 leading-relaxed" style={{ color: isDark ? '#8aaa8a' : '#2f3a34', opacity: 0.7 }}>
+              <p className="text-xs mt-1.5 leading-relaxed" style={{ color: 'var(--muted-foreground)' }}>
                 Jl. Letjend. S.Parman, Gg. Al-Khalish No.18A<br />
                 Cinta Raja, Sail, Kota Pekanbaru, Riau 28127
               </p>
@@ -318,16 +318,16 @@ export function MainLayout({ children }) {
 
             {/* Menu */}
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-widest mb-3" style={{ color: '#6b8f71' }}>Menu</p>
+              <p className="text-[11px] font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--primary)' }}>Menu</p>
               <ul className="space-y-2">
                 {links.map((item) => (
                   <li key={item.name}>
                     <a
                       href={item.href}
                       className="text-sm transition-colors duration-200"
-                      style={{ color: isDark ? '#b8ccb8' : '#2f3a34', opacity: 0.85 }}
-                      onMouseEnter={e => { e.currentTarget.style.color = '#6b8f71'; e.currentTarget.style.opacity = '1' }}
-                      onMouseLeave={e => { e.currentTarget.style.color = isDark ? '#b8ccb8' : '#2f3a34'; e.currentTarget.style.opacity = '0.85' }}
+                      style={{ color: 'var(--muted-foreground)' }}
+                      onMouseEnter={e => { e.currentTarget.style.color = 'var(--primary)' }}
+                      onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted-foreground)' }}
                     >
                       {item.name}
                     </a>
@@ -338,24 +338,20 @@ export function MainLayout({ children }) {
 
             {/* Map */}
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-widest mb-3" style={{ color: '#6b8f71' }}>Lokasi Kami</p>
+              <p className="text-[11px] font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--primary)' }}>Lokasi Kami</p>
               <div
-                className="relative rounded-2xl overflow-hidden"
-                style={{ border: `1.5px solid ${isDark ? 'rgba(107,143,113,0.25)' : '#d9e2d3'}`, height: '180px' }}
+                className="relative rounded-xl overflow-hidden"
+                style={{ border: '1.5px solid var(--border)', height: '180px' }}
               >
                 <iframe
                   title="Lokasi Kost Pak RT"
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.659457629657!2d101.4592415!3d0.5112973!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31d5ae9f263cc0ab%3A0x60d6e3bd329de7d2!2sKost%20Pak%20RT!5e0!3m2!1sid!2sid!4v1719000000000!5m2!1sid!2sid"
                   width="100%"
                   height="100%"
-                  style={{ border: 0, filter: isDark ? 'brightness(0.7) contrast(1.1) saturate(0.8)' : 'brightness(0.95) contrast(1.05) saturate(0.95)' }}
+                  style={{ border: 0, filter: isDark ? 'brightness(0.7) contrast(1.1) saturate(0.8)' : 'none' }}
                   allowFullScreen=""
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                />
-                <div
-                  className="absolute bottom-0 left-0 right-0 h-10 pointer-events-none"
-                  style={{ background: `linear-gradient(to top, ${isDark ? 'rgba(27,35,32,0.7)' : 'rgba(248,247,242,0.7)'}, transparent)` }}
                 />
               </div>
               <a
@@ -363,9 +359,9 @@ export function MainLayout({ children }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-2 flex items-center gap-1.5 text-xs font-medium transition-colors duration-200 cursor-pointer"
-                style={{ color: '#6b8f71' }}
-                onMouseEnter={e => e.currentTarget.style.color = '#88ad8e'}
-                onMouseLeave={e => e.currentTarget.style.color = '#6b8f71'}
+                style={{ color: 'var(--primary)' }}
+                onMouseEnter={e => e.currentTarget.style.color = 'var(--primary-dark)'}
+                onMouseLeave={e => e.currentTarget.style.color = 'var(--primary)'}
               >
                 <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
@@ -380,9 +376,8 @@ export function MainLayout({ children }) {
           <p
             className="mt-10 pt-6 text-xs"
             style={{
-              color: isDark ? '#8aaa8a' : '#2f3a34',
-              opacity: 0.7,
-              borderTop: `1px solid ${isDark ? 'rgba(107,143,113,0.18)' : '#d9e2d3'}`,
+              color: 'var(--muted-foreground)',
+              borderTop: '1px solid var(--border)',
             }}
           >
             © {new Date().getFullYear()} Kost Pak RT · All rights reserved

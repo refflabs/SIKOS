@@ -15,12 +15,14 @@ import {
 function RoomDetailSkeleton() {
   return (
     <div className="container-app py-8 animate-pulse">
-      <div className="h-4 w-32 bg-slate-200 rounded mb-8" />
+      <div className="h-4 w-32 rounded mb-8" style={{ background: 'var(--secondary)' }} />
       <div className="grid lg:grid-cols-2 gap-10">
-        <div className="aspect-[16/10] rounded-2xl bg-slate-200" />
+        <div className="aspect-[16/10] rounded-2xl" style={{ background: 'var(--secondary)' }} />
         <div className="space-y-4">
-          <div className="h-8 w-2/3 bg-slate-200 rounded" />
-          <div className="h-24 bg-slate-100 rounded" />
+          <div className="h-8 w-2/3 rounded" style={{ background: 'var(--secondary)' }} />
+          <div className="h-4 w-full rounded" style={{ background: 'var(--secondary)' }} />
+          <div className="h-4 w-3/4 rounded" style={{ background: 'var(--secondary)' }} />
+          <div className="h-24 rounded" style={{ background: 'var(--secondary)' }} />
         </div>
       </div>
     </div>
@@ -69,8 +71,8 @@ export function RoomDetailPage({ search = '' }) {
           <p className="text-subtitle">{room.description}</p>
           <ul className="mt-8 grid sm:grid-cols-2 gap-2">
             {(facilities.length ? facilities : ['WiFi', 'Area bersama']).map((f) => (
-              <li key={f} className="text-sm flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-teal-600" />
+              <li key={f} className="text-sm flex items-center gap-2" style={{ color: 'var(--foreground)' }}>
+                <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ background: 'var(--primary)' }} />
                 {f}
               </li>
             ))}
@@ -80,21 +82,43 @@ export function RoomDetailPage({ search = '' }) {
         <div className="lg:sticky lg:top-24 h-fit">
           <div className="rounded-2xl border border-border bg-card p-6 shadow-md">
             <p className="text-label mb-2">Harga sewa</p>
-            <p className="text-price-lg mb-4">{formatPrice(room.price)} / bulan</p>
-            <p className="text-xs font-semibold mb-6" style={{ color: room.stock > 0 ? 'var(--foreground)' : '#c0392b' }}>
-              Stok Ketersediaan: {room.stock} Kamar
-            </p>
+            <p className="text-price-lg mb-1">{formatPrice(room.price)} / bulan</p>
+            <p className="text-xs mb-5" style={{ color: 'var(--muted-foreground)' }}>Harga sudah termasuk listrik & air</p>
+
+            {/* Stock indicator */}
+            <div className="flex items-center gap-2 mb-5">
+              <span
+                className="inline-block h-2 w-2 rounded-full"
+                style={{ background: room.stock > 2 ? '#22c55e' : room.stock > 0 ? '#f59e0b' : '#ef4444' }}
+              />
+              <p className="text-xs font-semibold" style={{
+                color: room.stock > 2 ? 'var(--primary)' : room.stock > 0 ? '#d97706' : 'var(--destructive)'
+              }}>
+                {room.stock > 2
+                  ? `${room.stock} kamar tersedia`
+                  : room.stock > 0
+                  ? `Hanya ${room.stock} kamar tersisa — segera booking!`
+                  : 'Tidak tersedia saat ini'}
+              </p>
+            </div>
+
             {isRoomAvailable(room) ? (
               <a href={`/booking?room=${room.id}`}>
                 <Button variant="primary" size="lg" className="w-full">
                   <Calendar className="h-4 w-4" />
-                  Booking sekarang
+                  Booking Sekarang
                 </Button>
               </a>
             ) : (
               <Button variant="outline" className="w-full" disabled>
                 Tidak tersedia
               </Button>
+            )}
+
+            {isRoomAvailable(room) && (
+              <p className="text-[10px] text-center mt-3" style={{ color: 'var(--muted-foreground)' }}>
+                Setelah booking, upload bukti transfer di tab Histori Pembayaran.
+              </p>
             )}
           </div>
         </div>

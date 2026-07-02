@@ -27,9 +27,9 @@ export function ProfileView({ user }) {
         <div
           className="h-20 w-20 rounded-2xl flex items-center justify-center font-black text-2xl shrink-0"
           style={{
-            background: 'linear-gradient(135deg, #6b8f71, #56745c)',
+            background: 'var(--primary)',
             color: '#ffffff',
-            boxShadow: '0 4px 16px rgba(107,143,113,0.3)',
+            border: '2px solid var(--border)',
             letterSpacing: '-0.02em',
           }}
         >
@@ -71,6 +71,25 @@ export function ProfileView({ user }) {
             </div>
           )
         })}
+      </div>
+
+      {/* Edit profile note */}
+      <div
+        className="mt-5 px-4 py-3 rounded-xl text-xs flex items-center gap-2"
+        style={{ background: 'var(--secondary)', border: '1px solid var(--border)', color: 'var(--muted-foreground)' }}
+      >
+        <span>ℹ️</span>
+        <span>Untuk mengubah data profil, hubungi pengelola via{' '}
+          <a
+            href="https://wa.me/6281234567890?text=Halo%20Pak%20RT,%20saya%20ingin%20mengubah%20data%20profil%20saya."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold underline"
+            style={{ color: 'var(--primary)' }}
+          >
+            WhatsApp
+          </a>.
+        </span>
       </div>
     </div>
   )

@@ -11,7 +11,7 @@ import { PaymentHistory } from '../components/PaymentHistory'
 import { ProfileView } from '../components/ProfileView'
 import { HelpCenter } from '../components/HelpCenter'
 
-/* ─── Statis Data ─── */
+/* ─── Static Data ─── */
 const TRUST_ITEMS = [
   {
     icon: Shield,
@@ -36,7 +36,13 @@ const STATS = [
   { label: 'Rating Rata-rata', value: '4.9', icon: Star },
 ]
 
-/* ─── Palette shorthand ─── */
+const HOW_IT_WORKS = [
+  { step: '01', title: 'Cari Kamar', desc: 'Telusuri daftar kamar yang tersedia dengan filter yang mudah.', icon: Search },
+  { step: '02', title: 'Pilih & Detail', desc: 'Lihat foto, fasilitas, harga, dan lokasi secara lengkap.', icon: Home },
+  { step: '03', title: 'Booking Online', desc: 'Isi formulir pemesanan dan konfirmasi dalam hitungan menit.', icon: Calendar },
+  { step: '04', title: 'Check-in', desc: 'Datang ke lokasi dengan bukti booking dan mulai menghuni.', icon: Key },
+]
+
 /* ─── Main Component ─── */
 export function LandingPage({ search = '' }) {
   const activeTab = new URLSearchParams(search).get('tab')
@@ -85,65 +91,60 @@ export function LandingPage({ search = '' }) {
       ═══════════════════════════════════════════ */}
       <section
         className="relative overflow-hidden"
-        style={{ background: 'linear-gradient(160deg, var(--secondary) 0%, var(--background) 100%)' }}
+        style={{ background: isDark ? 'var(--background)' : 'var(--surface-sage)' }}
       >
-        {/* Decorative blobs */}
+        {/* Subtle top border accent */}
         <div
-          className="absolute -top-24 -right-24 w-96 h-96 rounded-full opacity-30 pointer-events-none"
-          style={{ background: 'radial-gradient(circle, var(--primary) 0%, transparent 70%)' }}
-        />
-        <div
-          className="absolute bottom-0 -left-16 w-72 h-72 rounded-full opacity-20 pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #c79a63 0%, transparent 70%)' }}
+          className="absolute top-0 left-0 right-0 h-0.5 pointer-events-none"
+          style={{ background: 'linear-gradient(90deg, transparent, var(--primary), var(--accent), transparent)' }}
         />
 
-        <div className="container-app relative z-10 py-16 md:py-24">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="container-app relative z-10 py-14 md:py-20">
+          <div className="grid lg:grid-cols-2 gap-10 items-center">
 
             {/* Left – copy */}
-            <div className="space-y-7">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-[#c79a63]/10 text-[#c79a63] border border-[#c79a63]/20">
-                <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: 'var(--primary)' }} />
-                Kost Syariah Pekanbaru, Riau
+            <div className="space-y-6">
+              {/* Location badge */}
+              <div
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold border"
+                style={{
+                  background: 'var(--accent)/10',
+                  backgroundColor: isDark ? 'rgba(212,169,111,0.1)' : 'rgba(199,154,99,0.1)',
+                  color: 'var(--accent)',
+                  borderColor: isDark ? 'rgba(212,169,111,0.25)' : 'rgba(199,154,99,0.25)',
+                }}
+              >
+                <span
+                  className="h-1.5 w-1.5 rounded-full animate-pulse"
+                  style={{ background: 'var(--primary)' }}
+                />
+                Kost Syariah · Pekanbaru, Riau
               </div>
 
               <h1
-                className="text-[2.2rem] sm:text-[3rem] lg:text-[3.4rem] font-extrabold tracking-tight leading-[1.08] text-foreground"
+                className="text-[2rem] sm:text-[2.7rem] lg:text-[3.1rem] font-extrabold tracking-tight leading-[1.1]"
+                style={{ color: 'var(--foreground)' }}
               >
-                Temukan kost{' '}
-                <span
-                  className="relative inline-block text-[#c79a63]"
-                >
-                  nyaman
-                  <svg
-                    className="absolute -bottom-1 left-0 w-full"
-                    height="6" viewBox="0 0 200 6" fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    preserveAspectRatio="none"
-                  >
-                    <path d="M0 4 Q50 0 100 4 Q150 8 200 4" stroke="var(--primary)" strokeWidth="3" strokeLinecap="round" fill="none"/>
-                  </svg>
-                </span>{' '}
-                yang sesuai kebutuhan Anda
+                Cari & Booking<br />
+                <span style={{ color: 'var(--primary)' }}>Kost Syariah</span>{' '}
+                <span style={{ color: 'var(--foreground)' }}>Terbaik</span>
               </h1>
 
-              <p className="text-base leading-relaxed max-w-md text-muted-foreground">
-                Cari kamar, booking dengan mudah, dan komunikasi langsung dengan pengelola kost — semua dalam satu platform.
+              <p className="text-base leading-relaxed max-w-md" style={{ color: 'var(--muted-foreground)' }}>
+                Temukan kamar kost syariah yang nyaman, booking dengan mudah, dan komunikasi langsung dengan pengelola — semua dalam satu platform.
               </p>
 
               {/* CTA Buttons */}
-              <div className="flex flex-wrap gap-3 pt-1">
+              <div className="flex flex-wrap gap-3">
                 <a href="/rooms">
                   <button
-                    className="flex items-center gap-2 px-6 py-3.5 rounded-2xl text-sm font-bold transition-all duration-200 cursor-pointer"
+                    className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-200 cursor-pointer"
                     style={{
-                      background: 'linear-gradient(135deg, var(--primary), #56745c)',
+                      background: 'var(--primary)',
                       color: '#ffffff',
-                      boxShadow: '0 4px 20px rgba(107,143,113,0.3)',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(107,143,113,0.4)' }}
-                    onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(107,143,113,0.3)' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--primary-dark)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'var(--primary)'; e.currentTarget.style.transform = 'translateY(0)' }}
                   >
                     <Search className="h-4 w-4" />
                     Cari Kost Sekarang
@@ -151,9 +152,14 @@ export function LandingPage({ search = '' }) {
                 </a>
                 <a href="/register">
                   <button
-                    className="flex items-center gap-2 px-6 py-3.5 rounded-2xl text-sm font-semibold transition-all duration-200 cursor-pointer text-[#c79a63] border border-[#c79a63] bg-transparent"
-                    onMouseEnter={e => { e.currentTarget.style.background = '#c79a63'; e.currentTarget.style.color = '#ffffff' }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#c79a63' }}
+                    className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer border"
+                    style={{
+                      color: 'var(--accent)',
+                      borderColor: 'var(--accent)',
+                      background: 'transparent',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = isDark ? 'rgba(212,169,111,0.1)' : 'rgba(199,154,99,0.08)' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
                   >
                     Daftar Gratis <ArrowRight className="h-4 w-4" />
                   </button>
@@ -161,15 +167,22 @@ export function LandingPage({ search = '' }) {
               </div>
 
               {/* Stats row */}
-              <div className="flex gap-6 pt-2">
+              <div className="flex gap-6 pt-1">
                 {STATS.map(({ label, value, icon: Icon }) => (
                   <div key={label} className="flex items-center gap-2">
-                    <span className="h-8 w-8 rounded-xl flex items-center justify-center bg-primary/10 text-primary border border-primary/20">
+                    <span
+                      className="h-8 w-8 rounded-lg flex items-center justify-center"
+                      style={{
+                        background: isDark ? 'rgba(107,143,113,0.15)' : 'rgba(107,143,113,0.1)',
+                        color: 'var(--primary)',
+                        border: '1px solid var(--border)',
+                      }}
+                    >
                       <Icon className="h-4 w-4" />
                     </span>
                     <div>
-                      <p className="text-base font-extrabold leading-none text-foreground">{value}</p>
-                      <p className="text-[10px] leading-tight mt-0.5 text-muted-foreground">{label}</p>
+                      <p className="text-base font-extrabold leading-none" style={{ color: 'var(--foreground)' }}>{value}</p>
+                      <p className="text-[10px] leading-tight mt-0.5" style={{ color: 'var(--muted-foreground)' }}>{label}</p>
                     </div>
                   </div>
                 ))}
@@ -177,47 +190,68 @@ export function LandingPage({ search = '' }) {
             </div>
 
             {/* Right – photo mosaic */}
-            <div className="relative grid grid-cols-2 gap-3">
-              {/* Big image */}
-              <div className="col-span-2 rounded-3xl overflow-hidden aspect-[16/10] shadow-xl"
-                style={{ border: '2px solid rgba(255,255,255,0.7)' }}>
+            <div className="relative">
+              {/* Main image */}
+              <div
+                className="rounded-2xl overflow-hidden"
+                style={{
+                  aspectRatio: '4/3',
+                  border: '1.5px solid var(--border)',
+                }}
+              >
                 <img
                   src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=900&q=80"
                   alt="Tampak Depan Kost"
                   className="h-full w-full object-cover"
-                  loading="lazy"
-                />
-              </div>
-              <div className="rounded-2xl overflow-hidden aspect-square shadow-md"
-                style={{ border: '2px solid rgba(255,255,255,0.6)' }}>
-                <img
-                  src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=500&q=80"
-                  alt="Interior Kamar"
-                  className="h-full w-full object-cover"
-                  loading="lazy"
-                />
-              </div>
-              <div className="rounded-2xl overflow-hidden aspect-square shadow-md"
-                style={{ border: '2px solid rgba(255,255,255,0.6)' }}>
-                <img
-                  src="https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=500&q=80"
-                  alt="Ruang Bersama"
-                  className="h-full w-full object-cover"
-                  loading="lazy"
+                  loading="eager"
                 />
               </div>
 
-              {/* Floating review badge */}
+              {/* Two smaller images side by side */}
+              <div className="grid grid-cols-2 gap-3 mt-3">
+                <div
+                  className="rounded-xl overflow-hidden"
+                  style={{ aspectRatio: '4/3', border: '1.5px solid var(--border)' }}
+                >
+                  <img
+                    src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=500&q=80"
+                    alt="Interior Kamar"
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+                <div
+                  className="rounded-xl overflow-hidden"
+                  style={{ aspectRatio: '4/3', border: '1.5px solid var(--border)' }}
+                >
+                  <img
+                    src="https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=500&q=80"
+                    alt="Ruang Bersama"
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+
+              {/* Review badge — anchored inside the mosaic, no overflow clip */}
               <div
-                className="absolute -bottom-4 -left-4 px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 bg-card/95 border border-border backdrop-blur-md"
+                className="absolute top-4 right-4 px-3.5 py-2.5 rounded-xl flex items-center gap-2.5"
+                style={{
+                  background: isDark ? 'rgba(39,49,43,0.95)' : 'rgba(255,255,255,0.95)',
+                  border: '1px solid var(--border)',
+                  backdropFilter: 'blur(8px)',
+                  WebkitBackdropFilter: 'blur(8px)',
+                }}
               >
-                <div className="h-10 w-10 rounded-xl flex items-center justify-center"
-                  style={{ background: 'linear-gradient(135deg,#6b8f71,#56745c)' }}>
-                  <Star className="h-5 w-5 text-white fill-white" />
+                <div
+                  className="h-8 w-8 rounded-lg flex items-center justify-center shrink-0"
+                  style={{ background: 'var(--primary)' }}
+                >
+                  <Star className="h-4 w-4 text-white fill-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold leading-none text-foreground">4.9 / 5.0</p>
-                  <p className="text-[10px] mt-0.5 text-muted-foreground">200+ ulasan penghuni</p>
+                  <p className="text-sm font-bold leading-none" style={{ color: 'var(--foreground)' }}>4.9 / 5.0</p>
+                  <p className="text-[10px] mt-0.5" style={{ color: 'var(--muted-foreground)' }}>200+ ulasan penghuni</p>
                 </div>
               </div>
             </div>
@@ -228,29 +262,44 @@ export function LandingPage({ search = '' }) {
       {/* ═══════════════════════════════════════════
           TRUST / FEATURES
       ═══════════════════════════════════════════ */}
-      <section className="container-app py-20">
-        <div className="text-center mb-12">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-2 text-primary">
-            Mengapa Pilih Kami
-          </p>
-          <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
+      <section className="container-app py-16">
+        <div className="text-center mb-10">
+          <p className="section-label mb-2">Mengapa Pilih Kami</p>
+          <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: 'var(--foreground)' }}>
             Hunian yang lebih dari sekadar kamar
           </h2>
         </div>
-        <div className="grid md:grid-cols-3 gap-6">
-          {TRUST_ITEMS.map(({ icon: Icon, title, desc }, i) => (
+        <div className="grid md:grid-cols-3 gap-5">
+          {TRUST_ITEMS.map(({ icon: Icon, title, desc }) => (
             <div
               key={title}
-              className="group flex flex-col gap-5 p-7 rounded-3xl cursor-default transition-all duration-300 shadow-sm bg-card border border-border hover:border-primary hover:shadow-lg hover:-translate-y-1"
+              className="group flex flex-col gap-4 p-6 rounded-2xl cursor-default transition-all duration-300 border"
+              style={{
+                background: 'var(--card)',
+                borderColor: 'var(--border)',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.borderColor = 'var(--primary)'
+                e.currentTarget.style.transform = 'translateY(-2px)'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.borderColor = 'var(--border)'
+                e.currentTarget.style.transform = 'translateY(0)'
+              }}
             >
               <span
-                className="h-14 w-14 rounded-2xl flex items-center justify-center bg-primary/10 text-primary border border-primary/20 transition-all duration-300"
+                className="h-12 w-12 rounded-xl flex items-center justify-center"
+                style={{
+                  background: isDark ? 'rgba(107,143,113,0.15)' : 'rgba(107,143,113,0.1)',
+                  color: 'var(--primary)',
+                  border: '1px solid var(--border)',
+                }}
               >
-                <Icon className="h-7 w-7" />
+                <Icon className="h-6 w-6" />
               </span>
               <div>
-                <h3 className="font-bold text-base mb-2 text-foreground">{title}</h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">{desc}</p>
+                <h3 className="font-bold text-[15px] mb-1.5" style={{ color: 'var(--foreground)' }}>{title}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--muted-foreground)' }}>{desc}</p>
               </div>
             </div>
           ))}
@@ -258,22 +307,23 @@ export function LandingPage({ search = '' }) {
       </section>
 
       {/* ═══════════════════════════════════════════
-          FEATURED ROOMS
+          FEATURED ROOMS — flat background, clean card grid
       ═══════════════════════════════════════════ */}
-      <section style={{ background: 'linear-gradient(160deg, var(--secondary) 0%, var(--background) 100%)' }} className="py-20">
+      <section style={{ background: 'var(--surface-alt)' }} className="py-16">
         <div className="container-app">
-          <div className="flex items-end justify-between pb-10">
+          <div className="flex items-end justify-between pb-8">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-2 text-primary">
-                Rekomendasi Terbaik
-              </p>
-              <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
+              <p className="section-label mb-2">Rekomendasi Terbaik</p>
+              <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: 'var(--foreground)' }}>
                 Kamar Pilihan Terbaik Untuk Anda
               </h2>
             </div>
             <a
               href="/rooms"
-              className="hidden sm:flex items-center gap-1.5 text-sm font-semibold transition-colors duration-200 cursor-pointer text-[#c79a63] hover:text-primary"
+              className="hidden sm:flex items-center gap-1.5 text-sm font-semibold transition-colors duration-200 cursor-pointer"
+              style={{ color: 'var(--accent)' }}
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'}
+              onMouseLeave={e => e.currentTarget.style.color = 'var(--accent)'}
             >
               Lihat semua <ArrowRight className="h-4 w-4" />
             </a>
@@ -285,37 +335,36 @@ export function LandingPage({ search = '' }) {
             <QueryError message="Gagal memuat rekomendasi kamar." onRetry={refetch} />
           ) : featuredRooms.length === 0 ? (
             <div
-              className="text-center py-16 rounded-3xl border border-dashed border-border bg-card"
+              className="text-center py-14 rounded-2xl border border-dashed"
+              style={{ background: 'var(--card)', borderColor: 'var(--border)' }}
             >
-              <p className="text-sm mb-4 text-muted-foreground">Maaf, saat ini seluruh kamar sedang terisi penuh.</p>
+              <p className="text-sm mb-4" style={{ color: 'var(--muted-foreground)' }}>Maaf, saat ini seluruh kamar sedang terisi penuh.</p>
               <a href="https://wa.me/6281234567890?text=Halo%20Pak%20RT,%20apakah%20ada%20daftar%20tunggu%20untuk%20kamar%20kost?">
                 <button
-                  className="px-6 py-3 rounded-2xl text-sm font-bold transition-all duration-300 cursor-pointer hover:opacity-95 active:scale-95"
-                  style={{
-                    background: '#c79a63',
-                    color: '#ffffff',
-                    boxShadow: '0 4px 16px rgba(65,45,21,0.25)',
-                    transform: 'translateY(0)',
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.transform = 'translateY(-2px)'
-                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(65,45,21,0.35)'
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.transform = 'translateY(0)'
-                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(65,45,21,0.25)'
-                  }}
+                  className="px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 cursor-pointer"
+                  style={{ background: 'var(--accent)', color: '#ffffff' }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.background = 'var(--accent-hover)' }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.background = 'var(--accent)' }}
                 >
                   Hubungi Waiting List
                 </button>
               </a>
             </div>
           ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {featuredRooms.map((room) => (
                 <div
                   key={room.id}
-                  className="rounded-3xl overflow-hidden transition-all duration-300 shadow-sm bg-card border border-border hover:border-primary hover:shadow-lg hover:-translate-y-1"
+                  className="rounded-2xl overflow-hidden transition-all duration-300 border"
+                  style={{ background: 'var(--card)', borderColor: 'var(--border)' }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.borderColor = 'var(--primary)'
+                    e.currentTarget.style.transform = 'translateY(-2px)'
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.borderColor = 'var(--border)'
+                    e.currentTarget.style.transform = 'translateY(0)'
+                  }}
                 >
                   <ListingCard room={room} ctaStyle="outline" />
                 </div>
@@ -326,46 +375,60 @@ export function LandingPage({ search = '' }) {
       </section>
 
       {/* ═══════════════════════════════════════════
-          HOW IT WORKS
+          SISTEM BOOKING (formerly "Cara Kerja")
       ═══════════════════════════════════════════ */}
-      <section className="container-app py-20">
-        <div className="text-center mb-12">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-2 text-primary">
-            Cara Kerja
-          </p>
-          <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
-            Booking kost semudah pesan hotel
+      <section className="container-app py-16">
+        <div className="text-center mb-10">
+          <p className="section-label mb-2">Sistem Booking</p>
+          <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: 'var(--foreground)' }}>
+            Proses booking yang simpel &amp; cepat
           </h2>
+          <p className="text-sm mt-2 max-w-sm mx-auto" style={{ color: 'var(--muted-foreground)' }}>
+            Dari cari kamar hingga check-in, semua bisa dilakukan dalam beberapa langkah mudah.
+          </p>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[
-            { step: '01', title: 'Cari Kamar', desc: 'Telusuri daftar kamar yang tersedia dengan filter yang mudah.', icon: Search },
-            { step: '02', title: 'Pilih & Detail', desc: 'Lihat foto, fasilitas, harga, dan lokasi secara lengkap.', icon: Home },
-            { step: '03', title: 'Booking Online', desc: 'Isi formulir pemesanan dan konfirmasi dalam hitungan menit.', icon: Calendar },
-            { step: '04', title: 'Check-in', desc: 'Datang ke lokasi dengan bukti booking dan mulai menghuni.', icon: Key },
-          ].map(({ step, title, desc, icon: Icon }) => (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {HOW_IT_WORKS.map(({ step, title, desc, icon: Icon }) => (
             <div
               key={step}
-              className="relative p-7 rounded-3xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1.5 cursor-pointer group bg-card border border-border hover:border-primary"
+              className="relative p-6 rounded-2xl transition-all duration-300 cursor-pointer group border"
+              style={{ background: 'var(--card)', borderColor: 'var(--border)' }}
+              onMouseEnter={e => {
+                e.currentTarget.style.borderColor = 'var(--primary)'
+                e.currentTarget.style.transform = 'translateY(-2px)'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.borderColor = 'var(--border)'
+                e.currentTarget.style.transform = 'translateY(0)'
+              }}
             >
-              {/* Decorative Watermark Number */}
+              {/* Watermark step number */}
               <div
-                className="absolute top-6 right-6 text-5xl font-black select-none pointer-events-none transition-all duration-300 group-hover:scale-110 text-foreground/10"
+                className="absolute top-5 right-5 text-4xl font-black select-none pointer-events-none"
+                style={{ color: 'var(--foreground)', opacity: 0.06 }}
               >
                 {step}
               </div>
 
-              {/* Icon Container */}
+              {/* Icon */}
               <div
-                className="h-12 w-12 rounded-2xl flex items-center justify-center mb-5 transition-all duration-300 group-hover:scale-110 bg-primary/10 border border-primary/20 text-primary"
+                className="h-11 w-11 rounded-xl flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-105"
+                style={{
+                  background: isDark ? 'rgba(107,143,113,0.15)' : 'rgba(107,143,113,0.1)',
+                  color: 'var(--primary)',
+                  border: '1px solid var(--border)',
+                }}
               >
-                <Icon className="h-6 w-6" />
+                <Icon className="h-5 w-5" />
               </div>
 
-              <h3 className="font-bold text-sm mb-1.5 transition-colors duration-200 group-hover:text-primary text-foreground">
+              <h3
+                className="font-bold text-sm mb-1.5 transition-colors duration-200 group-hover:text-primary"
+                style={{ color: 'var(--foreground)' }}
+              >
                 {title}
               </h3>
-              <p className="text-xs leading-relaxed text-muted-foreground">
+              <p className="text-xs leading-relaxed" style={{ color: 'var(--muted-foreground)' }}>
                 {desc}
               </p>
             </div>
@@ -376,42 +439,40 @@ export function LandingPage({ search = '' }) {
       {/* ═══════════════════════════════════════════
           CTA BANNER
       ═══════════════════════════════════════════ */}
-      <section className="container-app pb-20">
+      <section className="container-app pb-16">
         <div
-          className="relative overflow-hidden rounded-3xl p-10 md:p-14 text-center"
+          className="rounded-2xl p-10 md:p-12 text-center"
           style={{
-            background: 'linear-gradient(135deg, #6b8f71 0%, #56745c 100%)',
-            boxShadow: '0 20px 60px rgba(107,143,113,0.18)',
+            background: 'var(--primary)',
           }}
         >
-          {/* Decorative */}
-          <div
-            className="absolute -top-16 -right-16 w-64 h-64 rounded-full opacity-10 pointer-events-none"
-            style={{ background: '#ffffff' }}
-          />
-          <div
-            className="absolute -bottom-12 -left-12 w-48 h-48 rounded-full opacity-10 pointer-events-none"
-            style={{ background: '#ffffff' }}
-          />
-
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] mb-3 opacity-80"
-            style={{ color: '#ffffff' }}>
+          <p
+            className="text-[11px] font-semibold uppercase tracking-[0.18em] mb-3"
+            style={{ color: 'rgba(255,255,255,0.75)' }}
+          >
             Mulai Sekarang
           </p>
-          <h2 className="text-2xl sm:text-4xl font-extrabold mb-4 leading-tight"
-            style={{ color: '#ffffff' }}>
+          <h2
+            className="text-2xl sm:text-3xl font-extrabold mb-3 leading-tight"
+            style={{ color: '#ffffff' }}
+          >
             Temukan hunian impian Anda<br />bersama Kost Pak RT
           </h2>
-          <p className="text-sm max-w-md mx-auto mb-8 opacity-95"
-            style={{ color: '#f0f4ee' }}>
+          <p
+            className="text-sm max-w-md mx-auto mb-7"
+            style={{ color: 'rgba(255,255,255,0.85)' }}
+          >
             Bergabung dengan ratusan penghuni yang sudah merasakan kenyamanan tinggal bersama kami.
           </p>
           <a href="/rooms">
             <button
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl text-sm font-bold transition-all duration-200 cursor-pointer"
-              style={{ background: '#c79a63', color: '#ffffff', boxShadow: '0 4px 20px rgba(199,154,99,0.3)' }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.filter = 'brightness(1.06)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.filter = 'none' }}
+              className="inline-flex items-center gap-2 px-7 py-3 rounded-xl text-sm font-bold transition-all duration-200 cursor-pointer"
+              style={{
+                background: 'var(--accent)',
+                color: '#ffffff',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-hover)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; e.currentTarget.style.transform = 'translateY(0)' }}
             >
               Cari Kamar Tersedia <ArrowRight className="h-4 w-4" />
             </button>

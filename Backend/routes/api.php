@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/users/{id}',       [UserController::class, 'show']);
         Route::put('/users/{id}',       [UserController::class, 'update']);
         Route::delete('/users/{id}',    [UserController::class, 'destroy']);
+
+        // Payments administration
+        Route::get('/payments/summary', [PaymentController::class, 'summary']);
+        Route::get('/payments',         [PaymentController::class, 'index']);
+        Route::post('/payments/{id}/verify', [PaymentController::class, 'verify']);
+        Route::get('/payments/export',  [PaymentController::class, 'export']);
     });
 });
 

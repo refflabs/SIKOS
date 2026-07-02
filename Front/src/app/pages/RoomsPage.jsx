@@ -1,15 +1,12 @@
 import { useState } from 'react'
-import { Search } from 'lucide-react'
+import { Search, SlidersHorizontal } from 'lucide-react'
 import { ListingCard } from '../components/ListingCard'
+import { EmptyState } from '../components/EmptyState'
 import { useRoomsQuery } from '../../hooks/queries'
-import { useTheme } from '../../context/ThemeContext'
 import { ListingGridSkeleton } from '../../components/skeletons/ListingCardSkeleton'
 import { QueryError } from '../../components/QueryError'
 
 export function RoomsPage() {
-  const { theme } = useTheme()
-  const isDark = theme === 'dark'
-
   const [searchTerm, setSearchTerm] = useState(() => {
     if (typeof window !== 'undefined') {
       return new URLSearchParams(window.location.search).get('search') || ''
@@ -45,7 +42,7 @@ export function RoomsPage() {
     <div className="pb-16" style={{ background: 'transparent' }}>
       {/* Page intro */}
       <div className="container-app pt-8 pb-6">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-2" style={{ color: '#6b8f71' }}>Katalog</p>
+        <p className="section-label mb-2">Katalog</p>
         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2" style={{ color: 'var(--foreground)' }}>
           Daftar Kamar
         </h1>
@@ -61,7 +58,7 @@ export function RoomsPage() {
       {/* Search bar */}
       <div
         className="relative z-10"
-        style={{ background: isDark ? 'rgba(39,49,43,0.3)' : 'rgba(248,247,242,0.3)', borderBottom: '1px solid var(--border)' }}
+        style={{ background: 'var(--secondary)', borderBottom: '1px solid var(--border)' }}
       >
         <div className="container-app py-3">
           <div className="flex flex-col sm:flex-row gap-3">
@@ -113,25 +110,31 @@ export function RoomsPage() {
         ) : isError ? (
           <QueryError message="Gagal memuat kamar. Periksa koneksi API." onRetry={() => refetch()} />
         ) : filtered.length === 0 ? (
-          <div
-            className="text-center py-20 rounded-3xl"
-            style={{ border: '1.5px dashed var(--border)', background: 'var(--card)' }}
-          >
-            <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>Tidak ada kamar yang cocok dengan pencarian Anda.</p>
-          </div>
+          <EmptyState
+            icon={Search}
+            title="Kamar tidak ditemukan"
+            description="Tidak ada kamar yang cocok dengan pencarian atau filter yang dipilih."
+            actionLabel="Reset Filter"
+            actionHref="/rooms"
+          />
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {filtered.map((room) => (
               <div
                 key={room.id}
-                className="rounded-3xl p-3 transition-all duration-300"
+                className="rounded-2xl overflow-hidden transition-all duration-300 border"
                 style={{
                   background: 'var(--card)',
-                  border: '1px solid var(--border)',
-                  boxShadow: isDark ? '0 2px 12px rgba(0,0,0,0.3)' : '0 2px 12px rgba(31,21,12,0.06)',
+                  borderColor: 'var(--border)',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = isDark ? '0 8px 28px rgba(0,0,0,0.4)' : '0 8px 28px rgba(31,21,12,0.1)' }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = isDark ? '0 2px 12px rgba(0,0,0,0.3)' : '0 2px 12px rgba(31,21,12,0.06)' }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.borderColor = 'var(--primary)'
+                  e.currentTarget.style.transform = 'translateY(-2px)'
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.borderColor = 'var(--border)'
+                  e.currentTarget.style.transform = 'translateY(0)'
+                }}
               >
                 <ListingCard room={room} ctaStyle="subtle" />
               </div>

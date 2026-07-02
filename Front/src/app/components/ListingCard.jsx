@@ -27,10 +27,9 @@ export function ListingCard({
       {/* ── Image ── */}
       <a
         href={`/room-detail?id=${room.id}`}
-        className={`block relative overflow-hidden mb-0 ${
-          featured ? 'aspect-[16/10] rounded-2xl' : 'aspect-[4/3] rounded-2xl'
+        className={`block relative overflow-hidden ${
+          featured ? 'aspect-[16/10] rounded-t-2xl' : 'aspect-[4/3] rounded-t-2xl'
         }`}
-        style={{ boxShadow: isDark ? '0 2px 12px rgba(0,0,0,0.3)' : '0 2px 12px rgba(107,143,113,0.08)' }}
       >
         <LazyImage
           src={roomImage(room)}
@@ -38,10 +37,10 @@ export function ListingCard({
           className="transition-transform duration-500 group-hover:scale-[1.04]"
           wrapperClassName="h-full w-full"
         />
-        {/* Gradient overlay */}
+        {/* Subtle bottom gradient for price readability */}
         <div
           className="absolute inset-0 pointer-events-none"
-          style={{ background: 'linear-gradient(to top, rgba(31,21,12,0.45) 0%, transparent 50%)' }}
+          style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 55%)' }}
         />
         {/* Status badge */}
         <div className="absolute top-3 left-3 z-10">
@@ -49,8 +48,12 @@ export function ListingCard({
         </div>
         {/* Rating pill */}
         <div
-          className="absolute top-3 right-3 z-10 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold"
-          style={{ background: isDark ? 'rgba(39,49,43,0.92)' : 'rgba(253,252,249,0.92)', color: 'var(--foreground)', backdropFilter: 'blur(6px)' }}
+          className="absolute top-3 right-3 z-10 flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold"
+          style={{
+            background: isDark ? 'rgba(39,49,43,0.9)' : 'rgba(255,255,255,0.9)',
+            color: 'var(--foreground)',
+            backdropFilter: 'blur(4px)',
+          }}
         >
           <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
           4.9
@@ -58,8 +61,12 @@ export function ListingCard({
         {/* Price pill */}
         <div className="absolute bottom-3 left-3 z-10">
           <span
-            className="inline-flex items-baseline gap-1 px-2.5 py-1 rounded-xl text-xs font-bold"
-            style={{ background: isDark ? 'rgba(39,49,43,0.92)' : 'rgba(253,252,249,0.92)', color: 'var(--foreground)', backdropFilter: 'blur(6px)' }}
+            className="inline-flex items-baseline gap-1 px-2.5 py-1 rounded-lg text-xs font-bold"
+            style={{
+              background: isDark ? 'rgba(39,49,43,0.92)' : 'rgba(255,255,255,0.92)',
+              color: 'var(--foreground)',
+              backdropFilter: 'blur(4px)',
+            }}
           >
             {formatPrice(room.price)}
             <span className="font-normal text-[10px]" style={{ color: 'var(--primary)' }}>/ bln</span>
@@ -68,10 +75,10 @@ export function ListingCard({
       </a>
 
       {/* ── Info ── */}
-      <div className="flex flex-col flex-1 gap-1 pt-3 px-1">
+      <div className="flex flex-col flex-1 gap-1 p-4">
         <a href={`/room-detail?id=${room.id}`} className="min-w-0">
           <h3
-            className={`font-bold truncate leading-snug transition-colors duration-200 group-hover:underline underline-offset-2 ${
+            className={`font-bold truncate leading-snug transition-colors duration-200 group-hover:text-primary ${
               featured ? 'text-lg' : 'text-[15px]'
             }`}
             style={{ color: 'var(--foreground)' }}
@@ -81,21 +88,25 @@ export function ListingCard({
         </a>
 
         <p className="text-xs flex items-center gap-1" style={{ color: 'var(--muted-foreground)' }}>
-          <span className="capitalize font-semibold">{room.type === 'kosongan' ? 'Kosongan' : 'Fasilitas (Isian)'}</span>
+          <span className="capitalize font-medium">{room.type === 'kosongan' ? 'Kosongan' : 'Fasilitas (Isian)'}</span>
           {room.size ? ` · ${room.size}` : ''}
         </p>
-        <p className="text-xs font-semibold mt-0.5" style={{ color: room.stock > 0 ? 'var(--primary)' : '#c0392b' }}>
-          Tersedia: {room.stock} Kamar
+
+        <p className="text-xs font-semibold" style={{ color: room.stock > 0 ? 'var(--primary)' : '#c0392b' }}>
+          {room.stock > 0 ? `${room.stock} kamar tersedia` : 'Tidak tersedia'}
         </p>
 
-        {/* Facility badges */}
+        {/* Facility chips */}
         {facilities.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-1">
             {facilities.slice(0, 3).map((f) => (
               <span
                 key={f}
-                className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-primary/10 dark:bg-primary/20"
-                style={{ color: 'var(--primary)' }}
+                className="text-[10px] px-2 py-0.5 rounded-full font-medium"
+                style={{
+                  background: isDark ? 'rgba(107,143,113,0.15)' : 'rgba(107,143,113,0.1)',
+                  color: 'var(--primary)',
+                }}
               >
                 {f}
               </span>
@@ -105,7 +116,7 @@ export function ListingCard({
 
         {/* CTA */}
         {showCta && (
-          <div className="mt-3 mt-auto">
+          <div className="mt-auto pt-3">
             {available ? (
               <a href={`/booking?room=${room.id}`} className="w-full">
                 {ctaStyle === 'primary' ? (
@@ -113,14 +124,23 @@ export function ListingCard({
                     Booking Sekarang
                   </Button>
                 ) : (
-                  <Button variant="outline" size="md" className="w-full text-xs py-2.5 rounded-xl flex items-center justify-center gap-1.5 bg-transparent border-border text-foreground hover:bg-secondary">
-                    <span>Lihat & Booking</span>
+                  <Button
+                    variant="outline"
+                    size="md"
+                    className="w-full text-xs py-2.5 rounded-xl flex items-center justify-center gap-1.5 bg-transparent border-border text-foreground hover:bg-secondary"
+                  >
+                    <span>Lihat &amp; Booking</span>
                     <ArrowRight className="h-3.5 w-3.5" />
                   </Button>
                 )}
               </a>
             ) : (
-              <Button variant="outline" size="md" className="w-full text-xs py-2.5 rounded-xl opacity-40 cursor-not-allowed bg-transparent border-border text-foreground" disabled>
+              <Button
+                variant="outline"
+                size="md"
+                className="w-full text-xs py-2.5 rounded-xl opacity-40 cursor-not-allowed bg-transparent border-border text-foreground"
+                disabled
+              >
                 Tidak Tersedia
               </Button>
             )}

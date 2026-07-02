@@ -1,9 +1,10 @@
-﻿import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Building2, CalendarDays, DoorOpen, Inbox, Save, Sparkles, Phone, MapPin, Eye, Bell, Settings, Shield, MessageSquare, ArrowRight, Pencil, Plus, Trash2, Upload, Users } from 'lucide-react'
 import { AdminLayout } from '../layouts/AdminLayout'
 import { StatCard } from '../components/StatCard'
 import { Badge } from '../components/Badge'
 import { EmptyState } from '../components/EmptyState'
+import { LedgerView } from '../components/LedgerView'
 import { 
   useRoomsQuery, 
   useBookingsQuery, 
@@ -24,6 +25,7 @@ import { QueryError } from '../../components/QueryError'
 import { useSocket } from '../../context/SocketContext'
 import { getSocket } from '../../realtime/socketClient'
 import { AdminChatPanel } from '../components/AdminChatPanel'
+import { AdminPaymentsReport } from '../components/AdminPaymentsReport'
 import { toast } from 'sonner'
 import { uploadRoomImage } from '../../api/rooms'
 
@@ -85,6 +87,7 @@ export function DashboardPage({ search = '' }) {
   // State for filtering
   const [roomFilter, setRoomFilter] = useState('all')
   const [bookingFilter, setBookingFilter] = useState('all')
+  const [bookingsSubTab, setBookingsSubTab] = useState('list') // 'list' | 'ledger'
 
   // State for managing rooms modal
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -546,6 +549,8 @@ export function DashboardPage({ search = '' }) {
       ? 'rooms'
       : tab === 'bookings'
       ? 'bookings'
+      : tab === 'payments'
+      ? 'payments'
       : tab === 'chats'
       ? 'chats'
       : tab === 'settings'
@@ -567,6 +572,8 @@ export function DashboardPage({ search = '' }) {
             usersQuery.refetch()
           }}
         />
+      ) : activeTab === 'payments' ? (
+        <AdminPaymentsReport />
       ) : activeTab === 'users' ? (
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -756,158 +763,193 @@ export function DashboardPage({ search = '' }) {
               <p className="text-xs text-muted-foreground mt-0.5">Kelola booking aktif dari calon penghuni kost secara instan.</p>
             </div>
             
-            <div className="flex items-center gap-1.5 bg-stone-200/50 p-1 rounded-xl border border-border/50 shrink-0 self-start sm:self-auto">
-              {['all', 'pending', 'accepted', 'rejected'].map((status) => (
-                <button
-                  key={status}
-                  type="button"
-                  onClick={() => setBookingFilter(status)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all cursor-pointer ${
-                    bookingFilter === status
-                      ? 'bg-primary text-white shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  {status === 'all' ? 'semua' 
-                   : status === 'pending' ? 'menunggu' 
-                   : status === 'accepted' ? 'disetujui' 
-                   : 'ditolak'}
-                </button>
-              ))}
+            <div className="flex border-b border-border gap-4 shrink-0">
+              <button
+                type="button"
+                onClick={() => setBookingsSubTab('list')}
+                className={`pb-2 text-xs font-bold border-b-2 cursor-pointer transition-all ${
+                  bookingsSubTab === 'list' 
+                    ? 'border-primary text-primary' 
+                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Daftar Booking
+              </button>
+              <button
+                type="button"
+                onClick={() => setBookingsSubTab('ledger')}
+                className={`pb-2 text-xs font-bold border-b-2 cursor-pointer transition-all ${
+                  bookingsSubTab === 'ledger' 
+                    ? 'border-primary text-primary' 
+                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Buku Kas (Ledger)
+              </button>
             </div>
           </div>
 
-          {filteredBookings.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-border shadow-sm">
-              <EmptyState
-                icon={Inbox}
-                title="Tidak ada booking ditemukan"
-                description={bookingFilter === 'all' ? 'Belum ada penghuni yang memesan kamar.' : `Tidak ada pemesanan dengan status "${bookingFilter}".`}
-                actionLabel="Kembali ke Overview"
-                actionHref="/dashboard"
-              />
+          {bookingsSubTab === 'ledger' ? (
+            <div className="bg-white rounded-2xl border border-border p-6 shadow-sm">
+              <LedgerView bookings={bookingsQuery.data || []} />
             </div>
           ) : (
-            <div className="bg-white rounded-2xl border border-border p-5 shadow-sm space-y-4">
-              <div className="divide-y divide-border">
-                {paginatedBookings.map((b) => (
-                  <div
-                    key={b.id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 hover:bg-surface-warm/30 transition-colors duration-200"
-                  >
-                    <div className="flex items-start gap-4">
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#2f3a34]/10 to-[#6b8f71]/35 text-[#2f3a34] font-extrabold text-sm shadow-inner">
-                        {(b.user?.name || 'P').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
-                      </span>
-                      <div>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <p className="font-semibold text-sm text-foreground">{b.user?.name || `Penghuni #${b.user_id}`}</p>
-                          <span className="text-[10px] text-muted-foreground font-medium px-2 py-0.5 rounded-full bg-stone-100 border border-stone-200">{b.user?.phone || 'No telp -'}</span>
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Kamar: <span className="font-medium text-foreground">{b.room?.name || 'Kamar -'}</span> &bull; Check-in: <span className="font-medium text-foreground">{String(b.check_in).slice(0, 10)}</span>
-                        </p>
-                        {b.renewal_requested && (
-                          <div className="mt-1.5">
-                            <span className="inline-flex items-center gap-1 text-[10px] bg-amber-50 text-amber-800 border border-amber-200/50 px-2.5 py-1 rounded-lg font-bold animate-pulse">
-                              Minta Perpanjangan: {b.renewal_months} Bulan
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between sm:justify-end gap-5 pl-14 sm:pl-0">
-                      <div className="text-right">
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Total Bayar</p>
-                        <p className="text-sm font-extrabold text-[#2f3a34]">{formatPrice(b.total_price)}</p>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Badge variant={b.status === 'confirmed' || b.status === 'accepted' ? 'available' : b.status === 'pending' ? 'maintenance' : 'default'}>
-                          {b.status === 'confirmed' || b.status === 'accepted' ? 'disetujui' 
-                           : b.status === 'pending' ? 'menunggu' 
-                           : b.status === 'rejected' ? 'ditolak' 
-                           : b.status}
-                        </Badge>
-                        {b.payment_receipt ? (
-                          <button
-                            type="button"
-                            onClick={() => setViewingReceipt(b.payment_receipt)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white font-bold rounded-xl cursor-pointer shadow-sm text-xs border border-blue-200/40 transition-colors"
-                          >
-                            <Eye className="h-3.5 w-3.5" />
-                            Bukti Bayar
-                          </button>
-                        ) : (
-                          b.status === 'pending' && (
-                            <span className="text-[10px] text-amber-700 font-semibold italic bg-amber-50 border border-amber-200/30 px-2.5 py-1 rounded-lg">
-                              Belum Upload Bukti
-                            </span>
-                          )
-                        )}
-                        {b.status === 'pending' && (
-                          <div className="flex items-center gap-2 ml-1">
-                            <button
-                              type="button"
-                              onClick={() => handleUpdateBookingStatus(b.id, 'accepted')}
-                              className="inline-flex items-center justify-center px-3.5 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white font-bold rounded-xl cursor-pointer shadow-sm active:scale-95 transition-all text-xs border border-emerald-200/40"
-                            >
-                              Setujui
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleUpdateBookingStatus(b.id, 'rejected')}
-                              className="inline-flex items-center justify-center px-3.5 py-1.5 bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white font-bold rounded-xl cursor-pointer shadow-sm active:scale-95 transition-all text-xs border border-rose-200/40"
-                            >
-                              Tolak
-                            </button>
-                          </div>
-                        )}
-                        {b.renewal_requested && (
-                          <div className="flex items-center gap-2 ml-1">
-                            <button
-                              type="button"
-                              onClick={() => handleRenewalAction(b.id, 'approve')}
-                              className="inline-flex items-center justify-center px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white font-bold rounded-xl cursor-pointer shadow-sm active:scale-95 transition-all text-xs border border-emerald-200/40"
-                            >
-                              Setujui Perpanjang
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleRenewalAction(b.id, 'reject')}
-                              className="inline-flex items-center justify-center px-3 py-1.5 bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white font-bold rounded-xl cursor-pointer shadow-sm active:scale-95 transition-all text-xs border border-rose-200/40"
-                            >
-                              Tolak Perpanjang
-                            </button>
-                          </div>
-                        )}
-                        <div className="flex items-center gap-1.5 ml-2 border-l border-border/60 pl-3">
-                          <button
-                            type="button"
-                            onClick={() => handleOpenBookingEditModal(b)}
-                            className="inline-flex items-center justify-center px-2.5 py-1.5 bg-[#d9e2d3] hover:bg-primary hover:text-white text-primary font-bold rounded-lg cursor-pointer shadow-sm active:scale-95 transition-all text-[11px]"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteBooking(b)}
-                            className="inline-flex items-center justify-center px-2.5 py-1.5 bg-destructive/10 text-destructive hover:bg-destructive hover:text-white font-bold rounded-lg cursor-pointer shadow-sm active:scale-95 transition-all text-[11px]"
-                          >
-                            Hapus
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+            <>
+              <div className="flex justify-end">
+                <div className="flex items-center gap-1.5 bg-stone-200/50 p-1 rounded-xl border border-border/50 shrink-0">
+                  {['all', 'pending', 'accepted', 'rejected'].map((status) => (
+                    <button
+                      key={status}
+                      type="button"
+                      onClick={() => setBookingFilter(status)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all cursor-pointer ${
+                        bookingFilter === status
+                          ? 'bg-primary text-white shadow-sm'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      {status === 'all' ? 'semua' 
+                       : status === 'pending' ? 'menunggu' 
+                       : status === 'accepted' ? 'disetujui' 
+                       : 'ditolak'}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <Pagination
-                currentPage={bookingPage}
-                totalItems={filteredBookings.length}
-                itemsPerPage={5}
-                onPageChange={setBookingPage}
-              />
-            </div>
+
+              {filteredBookings.length === 0 ? (
+                <div className="bg-white rounded-2xl border border-border shadow-sm">
+                  <EmptyState
+                    icon={Inbox}
+                    title="Tidak ada booking ditemukan"
+                    description={bookingFilter === 'all' ? 'Belum ada penghuni yang memesan kamar.' : `Tidak ada pemesanan dengan status "${bookingFilter}".`}
+                    actionLabel="Kembali ke Overview"
+                    actionHref="/dashboard"
+                  />
+                </div>
+              ) : (
+                <div className="bg-white rounded-2xl border border-border p-5 shadow-sm space-y-4">
+                  <div className="divide-y divide-border">
+                    {paginatedBookings.map((b) => (
+                      <div
+                        key={b.id}
+                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 hover:bg-surface-warm/30 transition-colors duration-200"
+                      >
+                        <div className="flex items-start gap-4">
+                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#2f3a34]/10 to-[#6b8f71]/35 text-[#2f3a34] font-extrabold text-sm shadow-inner">
+                            {(b.user?.name || 'P').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                          </span>
+                          <div>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <p className="font-semibold text-sm text-foreground">{b.user?.name || `Penghuni #${b.user_id}`}</p>
+                              <span className="text-[10px] text-muted-foreground font-medium px-2 py-0.5 rounded-full bg-stone-100 border border-stone-200">{b.user?.phone || 'No telp -'}</span>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Kamar: <span className="font-medium text-foreground">{b.room?.name || 'Kamar -'}</span> &bull; Check-in: <span className="font-medium text-foreground">{String(b.check_in).slice(0, 10)}</span>
+                            </p>
+                            {b.renewal_requested && (
+                              <div className="mt-1.5">
+                                <span className="inline-flex items-center gap-1 text-[10px] bg-amber-50 text-amber-800 border border-amber-200/50 px-2.5 py-1 rounded-lg font-bold animate-pulse">
+                                  Minta Perpanjangan: {b.renewal_months} Bulan
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between sm:justify-end gap-5 pl-14 sm:pl-0">
+                          <div className="text-right">
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Total Bayar</p>
+                            <p className="text-sm font-extrabold text-[#2f3a34]">{formatPrice(b.total_price)}</p>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <Badge variant={b.status === 'confirmed' || b.status === 'accepted' ? 'available' : b.status === 'pending' ? 'maintenance' : 'default'}>
+                              {b.status === 'confirmed' || b.status === 'accepted' ? 'disetujui' 
+                               : b.status === 'pending' ? 'menunggu' 
+                               : b.status === 'rejected' ? 'ditolak' 
+                               : b.status}
+                            </Badge>
+                            {b.payment_receipt ? (
+                              <button
+                                type="button"
+                                onClick={() => setViewingReceipt(b.payment_receipt)}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white font-bold rounded-xl cursor-pointer shadow-sm text-xs border border-blue-200/40 transition-colors"
+                              >
+                                <Eye className="h-3.5 w-3.5" />
+                                Bukti Bayar
+                              </button>
+                            ) : (
+                              b.status === 'pending' && (
+                                <span className="text-[10px] text-amber-700 font-semibold italic bg-amber-50 border border-amber-200/30 px-2.5 py-1 rounded-lg">
+                                  Belum Upload Bukti
+                                </span>
+                              )
+                            )}
+                            {b.status === 'pending' && (
+                              <div className="flex items-center gap-2 ml-1">
+                                <button
+                                  type="button"
+                                  onClick={() => handleUpdateBookingStatus(b.id, 'accepted')}
+                                  className="inline-flex items-center justify-center px-3.5 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white font-bold rounded-xl cursor-pointer shadow-sm active:scale-95 transition-all text-xs border border-emerald-200/40"
+                                >
+                                  Setujui
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleUpdateBookingStatus(b.id, 'rejected')}
+                                  className="inline-flex items-center justify-center px-3.5 py-1.5 bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white font-bold rounded-xl cursor-pointer shadow-sm active:scale-95 transition-all text-xs border border-rose-200/40"
+                                >
+                                  Tolak
+                                </button>
+                              </div>
+                            )}
+                            {b.renewal_requested && (
+                              <div className="flex items-center gap-2 ml-1">
+                                <button
+                                  type="button"
+                                  onClick={() => handleRenewalAction(b.id, 'approve')}
+                                  className="inline-flex items-center justify-center px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white font-bold rounded-xl cursor-pointer shadow-sm active:scale-95 transition-all text-xs border border-emerald-200/40"
+                                >
+                                  Setujui
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRenewalAction(b.id, 'reject')}
+                                  className="inline-flex items-center justify-center px-3 py-1.5 bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white font-bold rounded-xl cursor-pointer shadow-sm active:scale-95 transition-all text-xs border border-rose-200/40"
+                                >
+                                  Tolak
+                                </button>
+                              </div>
+                            )}
+                            <div className="flex items-center gap-1.5 border-l border-border pl-3">
+                              <button
+                                type="button"
+                                onClick={() => handleOpenBookingEditModal(b)}
+                                className="inline-flex items-center justify-center px-2.5 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded-lg cursor-pointer shadow-sm active:scale-95 transition-all text-[11px] border border-stone-200/40"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteBooking(b)}
+                                className="inline-flex items-center justify-center px-2.5 py-1.5 bg-destructive/10 text-destructive hover:bg-destructive hover:text-white font-bold rounded-lg cursor-pointer shadow-sm active:scale-95 transition-all text-[11px]"
+                              >
+                                Hapus
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <Pagination
+                    currentPage={bookingPage}
+                    totalItems={filteredBookings.length}
+                    itemsPerPage={5}
+                    onPageChange={setBookingPage}
+                  />
+                </div>
+              )}
+            </>
           )}
         </div>
       ) : activeTab === 'rooms' ? (

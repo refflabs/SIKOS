@@ -1,55 +1,10 @@
 import { useState, useEffect } from 'react'
 import { CheckCircle, ShieldCheck, ArrowLeft, RefreshCw } from 'lucide-react'
-import { useTheme } from '../../context/ThemeContext'
 import { verifyOTP, resendOTP } from '../../api/auth'
 
 export function VerificationPage() {
-  const { theme } = useTheme()
-  const isDark = theme === 'dark'
-
-  const T = isDark ? {
-    heading:          '#E1DCC9',
-    subtext:          '#9a8060',
-    label:            '#c8b89a',
-    inputBg:          '#1a1208',
-    inputBgFocus:     '#261b0d',
-    inputBorder:      '#4a3520',
-    inputFocusBorder: '#B0BA99',
-    inputText:        '#E1DCC9',
-    errorBg:          'rgba(180,50,40,0.15)',
-    errorText:        '#e08070',
-    errorBorder:      'rgba(180,50,40,0.3)',
-    btnBg:            'linear-gradient(135deg,#B0BA99 0%,#8a9478 100%)',
-    btnText:          '#1F150C',
-    btnShadow:        '0 4px 16px rgba(176,186,153,0.22)',
-    successBg:        'rgba(176,186,153,0.15)',
-    successText:      '#B0BA99',
-    dividerLine:      '#3a2a18',
-    linkColor:        '#B0BA99',
-  } : {
-    heading:          '#1F150C',
-    subtext:          '#7a6247',
-    label:            '#1F150C',
-    inputBg:          '#F7F4EE',
-    inputBgFocus:     '#FDFCF9',
-    inputBorder:      '#D8D0BE',
-    inputFocusBorder: '#412D15',
-    inputText:        '#1F150C',
-    errorBg:          'rgba(192,57,43,0.08)',
-    errorText:        '#c0392b',
-    errorBorder:      'rgba(192,57,43,0.2)',
-    btnBg:            'linear-gradient(135deg,#412D15 0%,#2e1e0a 100%)',
-    btnText:          '#E1DCC9',
-    btnShadow:        '0 4px 16px rgba(65,45,21,0.28)',
-    successBg:        'rgba(176,186,153,0.2)',
-    successText:      '#B0BA99',
-    dividerLine:      '#D8D0BE',
-    linkColor:        '#412D15',
-  }
-
   const [email, setEmail] = useState('')
   const [otp, setOtp] = useState('')
-  const [debugOtp, setDebugOtp] = useState('')
   const [loading, setLoading] = useState(false)
   const [resending, setResending] = useState(false)
   const [error, setError] = useState('')
@@ -58,11 +13,7 @@ export function VerificationPage() {
 
   useEffect(() => {
     const storedEmail = sessionStorage.getItem('sikos_verify_email') || ''
-    const storedDebugOtp = sessionStorage.getItem('sikos_verify_debug_otp') || ''
-    
     setEmail(storedEmail)
-    setDebugOtp(storedDebugOtp)
-    
     if (!storedEmail) {
       window.location.href = '/login'
     }
@@ -80,22 +31,21 @@ export function VerificationPage() {
     setLoading(true)
     try {
       const data = await verifyOTP(email, otp)
-      
-      // Save token and user info
       localStorage.setItem('token', data.token)
       localStorage.setItem('user', JSON.stringify(data.user))
       window.dispatchEvent(new CustomEvent('sikos:auth-changed'))
-
-      // Clear verify cache
       sessionStorage.removeItem('sikos_verify_email')
       sessionStorage.removeItem('sikos_verify_debug_otp')
-
       setSuccess(true)
       setTimeout(() => {
         window.location.href = data.user?.role === 'admin' ? '/dashboard' : '/'
       }, 1500)
     } catch (err) {
-      setError(err.response?.data?.message || err.response?.data?.errors?.otp?.[0] || 'Kode OTP tidak valid.')
+      setError(
+        err.response?.data?.message ||
+        err.response?.data?.errors?.otp?.[0] ||
+        'Kode OTP tidak valid atau sudah kedaluwarsa.'
+      )
     } finally {
       setLoading(false)
     }
@@ -106,12 +56,8 @@ export function VerificationPage() {
     setResendSuccess('')
     setResending(true)
     try {
-      const data = await resendOTP(email)
-      setResendSuccess('Kode OTP baru telah dikirim ke email Anda.')
-      if (data._debug_otp) {
-        setDebugOtp(data._debug_otp)
-        sessionStorage.setItem('sikos_verify_debug_otp', data._debug_otp)
-      }
+      await resendOTP(email)
+      setResendSuccess('Kode OTP baru telah dikirim ke email Anda. Periksa folder Spam jika tidak muncul.')
     } catch (err) {
       setError(err.response?.data?.message || 'Gagal mengirim ulang kode OTP.')
     } finally {
@@ -121,55 +67,85 @@ export function VerificationPage() {
 
   if (success) {
     return (
-      <div className="text-center py-8 space-y-4" style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}>
-        <div className="flex items-center justify-center h-16 w-16 mx-auto rounded-2xl"
-          style={{ background: T.successBg, color: T.successText }}>
+      <div className="text-center py-8 space-y-4">
+        <div
+          className="flex items-center justify-center h-16 w-16 mx-auto rounded-2xl"
+          style={{ background: 'rgba(107,143,113,0.15)', color: 'var(--primary)' }}
+        >
           <CheckCircle className="h-8 w-8" />
         </div>
-        <h2 className="text-xl font-extrabold" style={{ color: T.heading }}>Verifikasi Berhasil!</h2>
-        <p className="text-sm" style={{ color: T.subtext }}>Mempersiapkan beranda Anda…</p>
-        <div className="h-1 rounded-full mx-auto w-32 overflow-hidden" style={{ background: T.dividerLine }}>
-          <div className="h-full rounded-full animate-pulse" style={{ background: '#B0BA99', width: '60%' }} />
+        <h2 className="text-xl font-extrabold" style={{ color: 'var(--foreground)' }}>
+          Verifikasi Berhasil!
+        </h2>
+        <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
+          Mempersiapkan halaman Anda…
+        </p>
+        {/* Progress bar */}
+        <div
+          className="h-1 rounded-full mx-auto w-32 overflow-hidden"
+          style={{ background: 'var(--border)' }}
+        >
+          <div
+            className="h-full rounded-full animate-pulse"
+            style={{ background: 'var(--primary)', width: '70%' }}
+          />
         </div>
       </div>
     )
   }
 
   return (
-    <div style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}>
+    <div>
       {/* Heading */}
       <div className="mb-6">
-        <h1 className="text-2xl font-extrabold tracking-tight mb-1.5" style={{ color: T.heading }}>
+        <h1 className="text-2xl font-extrabold tracking-tight mb-1.5" style={{ color: 'var(--foreground)' }}>
           Verifikasi Akun
         </h1>
-        <p className="text-sm leading-relaxed" style={{ color: T.subtext }}>
-          Masukkan 6 digit kode verifikasi yang telah dikirim ke <span className="font-semibold" style={{ color: T.heading }}>{email}</span>.
+        <p className="text-sm leading-relaxed" style={{ color: 'var(--muted-foreground)' }}>
+          Masukkan 6 digit kode yang dikirim ke{' '}
+          <span className="font-semibold" style={{ color: 'var(--foreground)' }}>{email}</span>.
         </p>
       </div>
 
-      {/* Messages */}
+      {/* Error */}
       {error && (
-        <div className="mb-5 px-4 py-3 rounded-2xl text-xs font-medium flex items-center gap-2"
-          style={{ background: T.errorBg, color: T.errorText, border: `1px solid ${T.errorBorder}` }}>
+        <div
+          className="mb-5 px-4 py-3 rounded-xl text-xs font-medium flex items-center gap-2"
+          style={{
+            background: 'rgba(192,57,43,0.08)',
+            color: 'var(--destructive)',
+            border: '1px solid rgba(192,57,43,0.2)',
+          }}
+        >
           <span>⚠</span> {error}
         </div>
       )}
 
+      {/* Resend success */}
       {resendSuccess && (
-        <div className="mb-5 px-4 py-3 rounded-2xl text-xs font-medium flex items-center gap-2"
-          style={{ background: 'rgba(176,186,153,0.15)', color: '#B0BA99', border: '1px solid rgba(176,186,153,0.3)' }}>
-          <span>✓</span> {resendSuccess}
+        <div
+          className="mb-5 px-4 py-3 rounded-xl text-xs font-medium flex items-start gap-2"
+          style={{
+            background: 'rgba(107,143,113,0.1)',
+            color: 'var(--primary)',
+            border: '1px solid rgba(107,143,113,0.2)',
+          }}
+        >
+          <span className="shrink-0 mt-0.5">✓</span> {resendSuccess}
         </div>
       )}
 
-      {/* Form */}
+      {/* OTP Form */}
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label htmlFor="otp" className="block text-xs font-semibold mb-1.5" style={{ color: T.label }}>
+          <label htmlFor="otp" className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--foreground)' }}>
             Kode OTP
           </label>
           <div className="relative">
-            <ShieldCheck className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: isDark ? '#6a5040' : '#7a6247' }} />
+            <ShieldCheck
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4"
+              style={{ color: 'var(--muted-foreground)' }}
+            />
             <input
               id="otp"
               type="text"
@@ -180,56 +156,62 @@ export function VerificationPage() {
               onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
               placeholder="123456"
               required
-              className="w-full text-sm rounded-2xl py-3 pr-4 transition-all duration-200 focus:outline-none text-center font-mono text-lg tracking-[0.5em] pl-10"
+              className="w-full text-sm rounded-xl py-3 pr-4 transition-all duration-200 focus:outline-none text-center font-mono text-lg tracking-[0.5em] pl-10"
               style={{
-                background: T.inputBg,
-                border: `1.5px solid ${T.inputBorder}`,
-                color: T.inputText,
+                background: 'var(--background)',
+                border: '1.5px solid var(--border)',
+                color: 'var(--foreground)',
               }}
-              onFocus={e => { e.currentTarget.style.borderColor = T.inputFocusBorder; e.currentTarget.style.background = T.inputBgFocus }}
-              onBlur={e => { e.currentTarget.style.borderColor = T.inputBorder; e.currentTarget.style.background = T.inputBg }}
+              onFocus={e => { e.currentTarget.style.borderColor = 'var(--primary)' }}
+              onBlur={e => { e.currentTarget.style.borderColor = 'var(--border)' }}
             />
           </div>
         </div>
 
-        {/* Submit */}
         <button
           type="submit"
           disabled={loading || otp.length !== 6}
-          className="w-full py-3.5 rounded-2xl text-sm font-bold transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full py-3.5 rounded-xl text-sm font-bold transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           style={{
-            background: loading ? T.dividerLine : T.btnBg,
-            color: loading ? T.subtext : T.btnText,
-            boxShadow: loading ? 'none' : T.btnShadow,
+            background: 'var(--primary)',
+            color: '#ffffff',
           }}
-          onMouseEnter={e => { if (!loading && otp.length === 6) { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.filter = 'brightness(1.08)' } }}
-          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.filter = 'none' }}
+          onMouseEnter={e => { if (!loading && otp.length === 6) e.currentTarget.style.background = 'var(--primary-dark)' }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'var(--primary)' }}
         >
-          {loading ? 'Verifikasi...' : 'Verifikasi Akun'}
+          {loading ? 'Memverifikasi...' : 'Verifikasi Akun'}
         </button>
       </form>
 
-      {/* Resend & Back options */}
+      {/* Resend & Back */}
       <div className="mt-6 space-y-4">
         <button
           type="button"
           onClick={handleResend}
           disabled={resending}
-          className="w-full flex items-center justify-center gap-2 text-xs font-semibold py-2.5 rounded-2xl transition-colors duration-200"
-          style={{ color: T.linkColor }}
+          className="w-full flex items-center justify-center gap-2 text-xs font-semibold py-2.5 rounded-xl transition-colors duration-200 border cursor-pointer"
+          style={{
+            borderColor: 'var(--border)',
+            color: 'var(--muted-foreground)',
+            background: 'transparent',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.color = 'var(--primary)'; e.currentTarget.style.borderColor = 'var(--primary)' }}
+          onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted-foreground)'; e.currentTarget.style.borderColor = 'var(--border)' }}
         >
           <RefreshCw className={`h-3 w-3 ${resending ? 'animate-spin' : ''}`} />
           {resending ? 'Mengirim ulang...' : 'Kirim ulang kode OTP'}
         </button>
 
-        <div className="flex items-center gap-3 my-4">
-          <div className="flex-1 h-px" style={{ background: T.dividerLine }} />
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-px" style={{ background: 'var(--border)' }} />
         </div>
 
         <a
           href="/login"
-          className="flex items-center justify-center gap-2 text-xs font-semibold py-1 hover:underline underline-offset-4"
-          style={{ color: T.subtext }}
+          className="flex items-center justify-center gap-2 text-xs font-semibold py-1 transition-colors duration-200"
+          style={{ color: 'var(--muted-foreground)' }}
+          onMouseEnter={e => e.currentTarget.style.color = 'var(--foreground)'}
+          onMouseLeave={e => e.currentTarget.style.color = 'var(--muted-foreground)'}
         >
           <ArrowLeft className="h-3 w-3" /> Kembali ke halaman masuk
         </a>

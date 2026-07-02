@@ -7,6 +7,7 @@ import {
   Settings,
   MessageSquare,
   Users,
+  CreditCard,
 } from 'lucide-react'
 import { Button } from '../components/Button'
 import { useAuth } from '../../context/AuthContext'
@@ -17,6 +18,7 @@ const NAV = [
   { name: 'Overview', href: '/dashboard', icon: LayoutDashboard, id: 'overview' },
   { name: 'Kamar', href: '/dashboard?tab=rooms', icon: Building2, id: 'rooms' },
   { name: 'Booking', href: '/dashboard?tab=bookings', icon: CalendarDays, id: 'bookings' },
+  { name: 'Pembayaran', href: '/dashboard?tab=payments', icon: CreditCard, id: 'payments' },
   { name: 'User', href: '/dashboard?tab=users', icon: Users, id: 'users' },
   { name: 'Chat', href: '/dashboard?tab=chats', icon: MessageSquare, id: 'chats' },
   { name: 'Pengaturan', href: '/dashboard?tab=settings', icon: Settings, id: 'settings' },

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Calendar } from 'lucide-react'
+import { Calendar, CheckCircle, ChevronRight } from 'lucide-react'
 import { Button } from '../components/Button'
 import { LazyImage } from '../../components/LazyImage'
 import {
@@ -107,32 +107,69 @@ export function BookingPage({ search = '' }) {
 
   return (
     <div className="pb-20">
+      {/* Header + step breadcrumb */}
       <div
         className="border-b"
-        style={{
-          background: isDark
-            ? 'linear-gradient(160deg, #27312b 0%, #1f2722 100%)'
-            : 'linear-gradient(160deg, #f0f4ee 0%, #f8f7f2 100%)',
-          borderColor: 'var(--border)'
-        }}
+        style={{ background: 'var(--surface-alt)', borderColor: 'var(--border)' }}
       >
         <div className="container-app py-8 md:py-10 max-w-5xl">
-          <p className="text-xs uppercase tracking-widest font-semibold mb-2" style={{ color: '#c79a63' }}>Reservasi</p>
-          <h1 className="text-2xl sm:text-3xl font-extrabold mb-2" style={{ color: 'var(--foreground)' }}>Form Booking</h1>
-          <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>Lengkapi data — proses cepat & aman.</p>
+          <p className="section-label mb-2">Reservasi</p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold mb-3" style={{ color: 'var(--foreground)' }}>Form Booking</h1>
+
+          {/* Step breadcrumb */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {['Pilih Kamar', 'Isi Formulir', 'Upload Bukti Bayar', 'Konfirmasi Admin'].map((step, i) => (
+              <div key={step} className="flex items-center gap-1.5">
+                <span
+                  className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
+                  style={{
+                    background: i <= 1 ? 'var(--primary)' : 'var(--secondary)',
+                    color: i <= 1 ? '#ffffff' : 'var(--muted-foreground)',
+                  }}
+                >
+                  {step}
+                </span>
+                {i < 3 && <ChevronRight className="h-3 w-3" style={{ color: 'var(--muted-foreground)' }} />}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       <div className="container-app py-8 max-w-5xl">
         {message.text && (
           <div
-            className={`mb-8 px-4 py-3 rounded-xl text-sm border ${
+            className={`mb-8 px-4 py-3.5 rounded-xl text-sm border ${
               message.type === 'success'
-                ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                : 'bg-red-50 border-red-200 text-red-700'
+                ? 'border-emerald-200'
+                : 'border-red-200'
             }`}
+            style={{
+              background: message.type === 'success' ? 'rgba(107,143,113,0.08)' : 'rgba(192,57,43,0.08)',
+              color: message.type === 'success' ? 'var(--primary)' : 'var(--destructive)',
+              borderColor: message.type === 'success' ? 'rgba(107,143,113,0.2)' : 'rgba(192,57,43,0.2)',
+            }}
           >
-            {message.text}
+            {message.type === 'success' ? (
+              <div className="flex items-start gap-2.5">
+                <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold">{message.text}</p>
+                  <p className="text-xs mt-1 opacity-80">
+                    Langkah berikutnya:{' '}
+                    <a
+                      href="/?tab=payments"
+                      className="underline font-bold"
+                      style={{ color: 'var(--accent)' }}
+                    >
+                      Upload bukti transfer di Histori Pembayaran →
+                    </a>
+                  </p>
+                </div>
+              </div>
+            ) : (
+              message.text
+            )}
           </div>
         )}
 
@@ -209,12 +246,13 @@ export function BookingPage({ search = '' }) {
               </div>
 
               <div>
-                <label className="text-xs uppercase tracking-wider font-bold block mb-2" style={{ color: 'var(--foreground)' }}>Catatan</label>
+                <label className="text-xs uppercase tracking-wider font-bold block mb-2" style={{ color: 'var(--foreground)' }}>Catatan (opsional)</label>
                 <textarea
                   name="notes"
                   value={form.notes}
                   onChange={handleChange}
                   rows={3}
+                  placeholder="Contoh: saya mahasiswa, lebih suka lingkungan tenang, butuh parkir motor..."
                   className="input-field resize-none outline-none"
                   style={{
                     background: 'var(--secondary)',

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Eye, EyeOff, User, Mail, Phone, Lock, CheckCircle } from 'lucide-react'
+import { parsePhoneNumber, isValidPhoneNumber } from 'libphonenumber-js'
 import { useAuth } from '../../context/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
 
@@ -119,7 +120,9 @@ export function RegisterPage() {
     // Realtime validations
     if (name === 'name') {
       const nameRegex = /^[a-zA-Z\s]*$/
-      if (!nameRegex.test(value)) {
+      if (value.length > 0 && value.trim().length < 2) {
+        setErrors(prev => ({ ...prev, name: 'Nama lengkap minimal 2 karakter.' }))
+      } else if (!nameRegex.test(value)) {
         setErrors(prev => ({ ...prev, name: 'Nama lengkap hanya boleh berisi huruf alfabet dan spasi.' }))
       } else {
         setErrors(prev => ({ ...prev, name: '' }))
@@ -127,9 +130,19 @@ export function RegisterPage() {
     }
 
     if (name === 'phone') {
-      const phoneRegex = /^\+?[0-9]*$/
-      if (!phoneRegex.test(value)) {
-        setErrors(prev => ({ ...prev, phone: 'Nomor WhatsApp hanya boleh berisi angka (opsional diawali \'+\').' }))
+      if (value) {
+        try {
+          // Accept both 08xx and +628xx formats for Indonesia
+          const normalised = value.startsWith('0') ? '+62' + value.slice(1) : value
+          const valid = isValidPhoneNumber(normalised, 'ID')
+          if (!valid) {
+            setErrors(prev => ({ ...prev, phone: 'Format: 08123456789 atau +6281234567890 (nomor Indonesia).' }))
+          } else {
+            setErrors(prev => ({ ...prev, phone: '' }))
+          }
+        } catch {
+          setErrors(prev => ({ ...prev, phone: 'Nomor tidak valid.' }))
+        }
       } else {
         setErrors(prev => ({ ...prev, phone: '' }))
       }
@@ -165,33 +178,81 @@ export function RegisterPage() {
     // Clear all general errors
     setErrors({ name: '', email: '', phone: '', password: '', password_confirmation: '' })
 
-    // Name check
+    // Name check — letters + spaces only, min 2 chars
     const nameRegex = /^[a-zA-Z\s]+$/
-    if (!nameRegex.test(form.name)) {
+    if (!nameRegex.test(form.name.trim())) {
       setErrors(prev => ({ ...prev, name: 'Nama lengkap hanya boleh mengandung huruf alfabet dan spasi.' }))
       setError('Nama Lengkap tidak valid.')
       return
     }
+    if (form.name.trim().length < 2) {
+      setErrors(prev => ({ ...prev, name: 'Nama lengkap minimal 2 karakter.' }))
+      setError('Nama Lengkap terlalu pendek.')
+      return
+    }
 
-    // Disposable email check
+    // Disposable / temporary email blocklist
     const disposableDomains = [
-      'mailinator.com', 'yopmail.com', '10minutemail.com', 'temp-mail.org', 
-      'guerrillamail.com', 'sharklasers.com', 'dispostable.com', 'getairmail.com', 
-      'maildrop.cc', 'mintemail.com', 'throwawaymail.com', 'tempmail.com', 
-      'emailondash.com', 'generator.email', 'tempr.email', 'mailnesia.com', 'mailcatch.com'
+      // Common disposable services
+      'mailinator.com', 'yopmail.com', '10minutemail.com', 'temp-mail.org',
+      'guerrillamail.com', 'sharklasers.com', 'dispostable.com', 'getairmail.com',
+      'maildrop.cc', 'mintemail.com', 'throwawaymail.com', 'tempmail.com',
+      'emailondash.com', 'generator.email', 'tempr.email', 'mailnesia.com',
+      'mailcatch.com', 'trashmail.com', 'trashmail.net', 'trashmail.me',
+      'trashmail.at', 'trashmail.io', 'guerrillamailblock.com', 'fakeinbox.com',
+      'getnada.com', 'spamgourmet.com', 'mailnull.com', 'spamgourmet.net',
+      'spamgourmet.org', 'discard.email', 'spam4.me', 'binkmail.com',
+      'bob.email', 'clrmail.com', 'drdrb.net', 'fakemail.net',
+      'filzmail.com', 'herp.in', 'incognitomail.com', 'jetable.fr.nf',
+      'junk.to', 'kasmail.com', 'klzlk.com', 'kurzepost.de',
+      'lookugly.com', 'lovemeleaveme.com', 'mailbidon.com', 'mailexpire.com',
+      'mailfreeonline.com', 'mailguard.me', 'mailin8r.com', 'mailmate.com',
+      'mailme24.com', 'mailmetrash.com', 'mailnew.com', 'mailnow.top',
+      'mailnull.com', 'mailscrap.com', 'mailslapping.com', 'mailszip.com',
+      'mailzilla.com', 'meltmail.com', 'momentics.ru', 'mt2009.com',
+      'mt2014.com', 'nada.email', 'nomail.pw', 'nowmymail.com',
+      'objectmail.com', 'oneoffmail.com', 'onewaymail.com', 'owlpic.com',
+      'pookmail.com', 'proxymail.eu.org', 'rcpt.at', 'rklips.com',
+      'rmqkr.net', 'rtrtr.com', 's0ny.net', 'safetymail.info',
+      'sendspamhere.com', 'shieldedmail.com', 'shiftmail.com', 'skeefmail.com',
+      'sl.pt', 'slopsbox.com', 'smellfear.com', 'snkmail.com',
+      'sofimail.com', 'sogetthis.com', 'solopilenadores.com', 'spam.la',
+      'spamfree24.org', 'spamgob.com', 'spaml.de', 'spamspot.com',
+      'spamthis.co.uk', 'spamthisplease.com', 'superrito.com', 'suremail.info',
+      'sweetxxx.de', 'tempalias.com', 'tempinbox.co.uk', 'tempinbox.com',
+      'temporaryemail.net', 'temporaryinbox.com', 'thanksnospam.info',
+      'thisisnotmyrealemail.com', 'throwam.com', 'throwam.net', 'tmail.com',
+      'tmailinator.com', 'trash-mail.at', 'trash-mail.com', 'trash-mail.de',
+      'trash-mail.io', 'trash-mail.net', 'trash2009.com', 'trash2010.com',
+      'trash2011.com', 'trashdevil.com', 'trashdevil.de', 'trashemail.de',
+      'trashimail.de', 'trashmail.at', 'trashmail.com', 'trashmail.de',
+      'trashmail.io', 'trashmail.me', 'trashmail.net', 'trashmailer.com',
+      'trillianpro.com', 'twinmail.de', 'tyldd.com', 'uggsrock.com',
+      'umail.net', 'uroid.com', 'wegwerfmail.de', 'wegwerfmail.net',
+      'wegwerfmail.org', 'willhackforfood.biz', 'wuzupmail.net',
+      'xagloo.com', 'xemaps.com', 'xents.com', 'xmaily.com',
+      'ybmwukt.com', 'yepmail.net', 'yopmail.fr', 'yopmail.gq',
+      'za.com', 'zehnminuten.de', 'zehnminutenmail.de', 'zoemail.org',
+      'zomg.info',
     ]
     const emailParts = form.email.split('@')
     const domain = emailParts[1]?.toLowerCase()
-    if (disposableDomains.includes(domain)) {
+    if (!domain || disposableDomains.includes(domain)) {
       setErrors(prev => ({ ...prev, email: 'Email menggunakan domain temporary/disposable yang tidak diizinkan.' }))
       setError('Email domain tidak diizinkan.')
       return
     }
 
-    // Phone WhatsApp Check
-    const phoneRegex = /^\+?[0-9]{9,15}$/
-    if (!phoneRegex.test(form.phone)) {
-      setErrors(prev => ({ ...prev, phone: 'Nomor WhatsApp hanya boleh berisi angka (opsional diawali "+") dengan panjang 9-15 digit.' }))
+    // Phone — Indonesian format via libphonenumber-js
+    try {
+      const normalised = form.phone.startsWith('0') ? '+62' + form.phone.slice(1) : form.phone
+      if (!isValidPhoneNumber(normalised, 'ID')) {
+        setErrors(prev => ({ ...prev, phone: 'Nomor harus format Indonesia: 08123456789 atau +6281234567890.' }))
+        setError('Nomor WhatsApp tidak valid.')
+        return
+      }
+    } catch {
+      setErrors(prev => ({ ...prev, phone: 'Nomor WhatsApp tidak dapat diverifikasi.' }))
       setError('Nomor WhatsApp tidak valid.')
       return
     }

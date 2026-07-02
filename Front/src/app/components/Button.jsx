@@ -2,12 +2,15 @@ import { forwardRef } from "react";
 
 const variants = {
   primary:
-    "bg-primary text-primary-foreground hover:bg-primary-dark shadow-sm shadow-primary/20",
-  secondary: "bg-slate-900 text-white hover:bg-slate-800",
+    "bg-primary text-primary-foreground hover:bg-primary-dark shadow-sm",
+  secondary:
+    "bg-foreground text-background hover:opacity-90",
   outline:
-    "border border-border bg-white text-foreground hover:bg-secondary hover:border-slate-300",
-  ghost: "text-foreground hover:bg-secondary",
-  link: "text-foreground underline-offset-4 hover:underline p-0",
+    "border border-border bg-card text-foreground hover:bg-secondary hover:border-primary/40",
+  ghost:
+    "text-foreground hover:bg-secondary",
+  link:
+    "text-foreground underline-offset-4 hover:underline p-0",
 };
 
 const sizes = {
