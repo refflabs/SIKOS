@@ -38,7 +38,7 @@ export function LedgerView({ bookings = [] }) {
       })
 
       // ── Credit row (bayar terkonfirmasi) ──
-      const isPaid = ['confirmed', 'approved', 'active'].includes(b.status)
+      const isPaid = ['confirmed', 'approved', 'active', 'accepted'].includes(b.status)
       if (isPaid && charge > 0) {
         runningBalance -= charge
         result.push({
