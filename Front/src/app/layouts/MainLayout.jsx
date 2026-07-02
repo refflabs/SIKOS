@@ -49,35 +49,37 @@ export function MainLayout({ children }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: isDark ? '#1f2722' : '#f8f7f2', transition: 'background 0.3s ease' }}>
-
+    <div
+      className="min-h-screen flex flex-col transition-colors duration-300"
+      style={{ background: 'var(--background)' }}
+    >
       {/* ───── FLOATING NAVBAR ───── */}
       <header
         className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pt-4 pointer-events-none"
       >
         <nav
-          className="pointer-events-auto w-full max-w-5xl flex items-center justify-between gap-4 px-5 py-3 rounded-2xl transition-all duration-300"
+          className="pointer-events-auto w-full max-w-5xl flex items-center justify-between gap-4 px-5 py-3 rounded-2xl transition-all duration-300 border"
           style={{
-            background: isDark
-              ? (scrolled ? 'rgba(39,49,43,0.97)' : 'rgba(39,49,43,0.92)')
-              : (scrolled ? 'rgba(248,247,242,0.97)' : 'rgba(248,247,242,0.92)'),
+            background: 'var(--card)',
+            borderColor: 'var(--border)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
-            boxShadow: scrolled ? '0 8px 40px rgba(47,58,52,0.12), 0 1.5px 0 rgba(107,143,113,0.08) inset' : '0 4px 24px rgba(47,58,52,0.08)',
-            border: isDark ? '1px solid rgba(107,143,113,0.22)' : '1px solid rgba(107,143,113,0.12)',
+            boxShadow: scrolled
+              ? '0 10px 30px -10px rgba(0,0,0,0.1)'
+              : '0 4px 20px -10px rgba(0,0,0,0.05)',
           }}
         >
           {/* Logo */}
-          <a href="/" className="flex items-center gap-2.5 shrink-0 group">
+          <a href="/" className="flex items-center gap-2.5 shrink-0 group pointer-events-auto" aria-label="Kost Pak RT Beranda">
             <span
               className="flex h-9 w-9 items-center justify-center rounded-xl transition-transform duration-200 group-hover:scale-105"
-              style={{ background: 'linear-gradient(135deg,#6b8f71,#56745c)', boxShadow: '0 2px 8px rgba(107,143,113,0.3)' }}
+              style={{ background: 'var(--primary)' }}
             >
               <Building2 className="h-4 w-4 text-white" />
             </span>
             <span className="hidden sm:block">
-              <span className="block text-sm font-bold leading-none" style={{ color: isDark ? '#f8f7f2' : '#2f3a34' }}>Kost Pak RT</span>
-              <span className="block text-[10px] mt-0.5" style={{ color: '#6b8f71' }}>Sewa kost syariah</span>
+              <span className="block text-sm font-bold leading-none" style={{ color: 'var(--foreground)' }}>Kost Pak RT</span>
+              <span className="block text-[10px] mt-0.5" style={{ color: 'var(--primary)' }}>Sewa kost syariah</span>
             </span>
           </a>
 
@@ -89,12 +91,12 @@ export function MainLayout({ children }) {
                 href={item.href}
                 className="relative px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200"
                 style={{
-                  color: isActive(item) ? '#6b8f71' : (isDark ? '#f8f7f2' : '#2f3a34'),
+                  color: isActive(item) ? 'var(--primary)' : 'var(--foreground)',
                   background: isActive(item) ? 'rgba(107,143,113,0.12)' : 'transparent',
                   fontWeight: isActive(item) ? '600' : '500',
                 }}
-                onMouseEnter={e => { if (!isActive(item)) { e.currentTarget.style.color = '#6b8f71' } }}
-                onMouseLeave={e => { if (!isActive(item)) { e.currentTarget.style.color = isDark ? '#f8f7f2' : '#2f3a34' } }}
+                onMouseEnter={e => { if (!isActive(item)) { e.currentTarget.style.color = 'var(--primary)' } }}
+                onMouseLeave={e => { if (!isActive(item)) { e.currentTarget.style.color = 'var(--foreground)' } }}
               >
                 {item.name}
               </a>
@@ -106,14 +108,14 @@ export function MainLayout({ children }) {
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="flex items-center justify-center h-9 w-9 rounded-xl transition-all duration-200 cursor-pointer"
+              className="flex items-center justify-center h-9 w-9 rounded-xl transition-all duration-200 cursor-pointer border"
               style={{
-                color: isDark ? '#f8f7f2' : '#2f3a34',
-                background: 'rgba(107,143,113,0.06)',
-                border: isDark ? '1px solid rgba(107,143,113,0.22)' : '1px solid rgba(107,143,113,0.12)',
+                color: 'var(--foreground)',
+                background: 'var(--secondary)',
+                borderColor: 'var(--border)',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(107,143,113,0.14)'; e.currentTarget.style.color = '#6b8f71' }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(107,143,113,0.06)'; e.currentTarget.style.color = isDark ? '#f8f7f2' : '#2f3a34' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--border)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--secondary)' }}
               aria-label={isDark ? 'Aktifkan mode terang' : 'Aktifkan mode gelap'}
               title={isDark ? 'Mode Terang' : 'Mode Gelap'}
             >
@@ -124,12 +126,12 @@ export function MainLayout({ children }) {
               <>
                 <span
                   className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium"
-                  style={{ color: isDark ? '#f8f7f2' : '#2f3a34' }}
+                  style={{ color: 'var(--foreground)' }}
                 >
                   <span className="h-6 w-6 rounded-full flex items-center justify-center text-xs font-bold"
                     style={{
                       background: 'rgba(107,143,113,0.15)',
-                      color: isDark ? '#f8f7f2' : '#2f3a34',
+                      color: 'var(--primary)',
                     }}
                   >
                     {user.name?.[0]?.toUpperCase() || 'U'}
@@ -138,10 +140,10 @@ export function MainLayout({ children }) {
                 </span>
                 <button
                   onClick={logout}
-                  className="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer"
-                  style={{ color: '#c0392b', background: 'rgba(192,57,43,0.1)', border: '1px solid rgba(192,57,43,0.2)' }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(192,57,43,0.18)'}
-                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(192,57,43,0.1)'}
+                  className="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer border"
+                  style={{ color: 'var(--destructive)', background: 'transparent', borderColor: 'var(--destructive)' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(192,57,43,0.08)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
                 >
                   Keluar
                 </button>
@@ -151,28 +153,26 @@ export function MainLayout({ children }) {
                 {/* Masuk — outline */}
                 <a
                   href="/login"
-                  className="px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200"
+                  className="px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 border"
                   style={{
-                    color: isDark ? '#f8f7f2' : '#2f3a34',
-                    border: `1px solid rgba(107,143,113,${isDark ? '0.3' : '0.2'})`,
-                    background: `rgba(107,143,113,${isDark ? '0.08' : '0.05'})`,
+                    color: 'var(--foreground)',
+                    borderColor: 'var(--border)',
+                    background: 'transparent',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(107,143,113,0.18)'; e.currentTarget.style.color = '#6b8f71' }}
-                  onMouseLeave={e => { e.currentTarget.style.background = `rgba(107,143,113,${isDark ? '0.08' : '0.05'})`; e.currentTarget.style.color = isDark ? '#f8f7f2' : '#2f3a34' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--secondary)'; e.currentTarget.style.color = 'var(--primary)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--foreground)' }}
                 >
                   Masuk
                 </a>
                 {/* Daftar — solid */}
                 <a
                   href="/register"
-                  className="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200"
+                  className="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 text-white"
                   style={{
-                    background: 'linear-gradient(135deg,#6b8f71,#56745c)',
-                    color: '#ffffff',
-                    boxShadow: '0 2px 12px rgba(107,143,113,0.2)',
+                    background: 'var(--primary)',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.filter = 'brightness(1.08)' }}
-                  onMouseLeave={e => { e.currentTarget.style.filter = 'none' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--primary-dark)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--primary)' }}
                 >
                   Daftar
                 </a>
@@ -184,11 +184,11 @@ export function MainLayout({ children }) {
           <div className="lg:hidden flex items-center gap-3">
             <button
               onClick={toggleTheme}
-              className="flex items-center justify-center h-9 w-9 rounded-xl transition-all duration-200 cursor-pointer"
+              className="flex items-center justify-center h-9 w-9 rounded-xl transition-all duration-200 cursor-pointer border"
               style={{
-                color: isDark ? '#f8f7f2' : '#2f3a34',
-                background: `rgba(107,143,113,${isDark ? '0.1' : '0.06'})`,
-                border: `1px solid rgba(107,143,113,${isDark ? '0.25' : '0.12'})`,
+                color: 'var(--foreground)',
+                background: 'var(--secondary)',
+                borderColor: 'var(--border)',
               }}
               aria-label={isDark ? 'Mode terang' : 'Mode gelap'}
             >
@@ -196,11 +196,11 @@ export function MainLayout({ children }) {
             </button>
             <button
               type="button"
-              className="flex items-center justify-center h-9 w-9 rounded-xl transition-all duration-200 cursor-pointer"
+              className="flex items-center justify-center h-9 w-9 rounded-xl transition-all duration-200 cursor-pointer border"
               style={{
-                color: isDark ? '#f8f7f2' : '#2f3a34',
-                background: `rgba(107,143,113,${isDark ? '0.1' : '0.06'})`,
-                border: `1px solid rgba(107,143,113,${isDark ? '0.25' : '0.12'})`,
+                color: 'var(--foreground)',
+                background: 'var(--secondary)',
+                borderColor: 'var(--border)',
               }}
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Menu"
@@ -213,12 +213,11 @@ export function MainLayout({ children }) {
         {/* Mobile Menu */}
         {mobileOpen && (
           <div
-            className="pointer-events-auto absolute top-[76px] left-4 right-4 rounded-2xl p-4 space-y-1"
+            className="pointer-events-auto absolute top-[76px] left-4 right-4 rounded-2xl p-4 space-y-1 border"
             style={{
-              background: isDark ? 'rgba(39,49,43,0.97)' : 'rgba(248,247,242,0.97)',
-              backdropFilter: 'blur(20px)',
-              border: `1px solid ${isDark ? 'rgba(107,143,113,0.25)' : '#d9e2d3'}`,
-              boxShadow: isDark ? '0 16px 40px rgba(0,0,0,0.3)' : '0 16px 40px rgba(31,21,12,0.12)',
+              background: 'var(--card)',
+              borderColor: 'var(--border)',
+              boxShadow: '0 10px 30px -10px rgba(0,0,0,0.15)',
             }}
           >
             {links.map((item) => (
@@ -227,7 +226,7 @@ export function MainLayout({ children }) {
                 href={item.href}
                 className="block px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
                 style={{
-                  color: isActive(item) ? '#6b8f71' : (isDark ? '#f8f7f2' : '#2f3a34'),
+                  color: isActive(item) ? 'var(--primary)' : 'var(--foreground)',
                   background: isActive(item) ? 'rgba(107,143,113,0.12)' : 'transparent',
                 }}
                 onClick={() => setMobileOpen(false)}
@@ -235,12 +234,12 @@ export function MainLayout({ children }) {
                 {item.name}
               </a>
             ))}
-            <div className="pt-3 flex gap-2 border-t" style={{ borderColor: isDark ? 'rgba(107,143,113,0.25)' : '#d9e2d3' }}>
+            <div className="pt-3 flex gap-2 border-t" style={{ borderColor: 'var(--border)' }}>
               {user ? (
                 <button
                   onClick={() => { setMobileOpen(false); logout() }}
-                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-center cursor-pointer"
-                  style={{ color: '#c0392b', background: 'rgba(192,57,43,0.1)', border: '1px solid rgba(192,57,43,0.2)' }}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-center cursor-pointer border"
+                  style={{ color: 'var(--destructive)', background: 'transparent', borderColor: 'var(--destructive)' }}
                 >
                   Keluar
                 </button>
@@ -248,10 +247,10 @@ export function MainLayout({ children }) {
                 <>
                   <a
                     href="/login"
-                    className="flex-1 py-2.5 rounded-xl text-sm font-medium text-center"
+                    className="flex-1 py-2.5 rounded-xl text-sm font-medium text-center border"
                     style={{
-                      color: isDark ? '#f8f7f2' : '#2f3a34',
-                      border: `1px solid rgba(107,143,113,${isDark ? '0.3' : '0.2'})`,
+                      color: 'var(--foreground)',
+                      borderColor: 'var(--border)',
                     }}
                     onClick={() => setMobileOpen(false)}
                   >
@@ -259,10 +258,9 @@ export function MainLayout({ children }) {
                   </a>
                   <a
                     href="/register"
-                    className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-center"
+                    className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-center text-white"
                     style={{
-                      background: 'linear-gradient(135deg,#6b8f71,#56745c)',
-                      color: '#ffffff',
+                      background: 'var(--primary)',
                     }}
                     onClick={() => setMobileOpen(false)}
                   >
@@ -283,9 +281,8 @@ export function MainLayout({ children }) {
       {/* ───── FOOTER ───── */}
       <footer
         style={{
-          background: isDark ? '#1c2520' : '#f2f5f0',
-          borderTop: `1px solid ${isDark ? 'rgba(107,143,113,0.2)' : '#d9e2d3'}`,
-          transition: 'background 0.3s ease',
+          background: 'var(--secondary)',
+          borderTop: '1px solid var(--border)',
         }}
         className="mt-16"
       >

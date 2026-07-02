@@ -92,7 +92,7 @@ export function ListingCard({
           {room.size ? ` · ${room.size}` : ''}
         </p>
 
-        <p className="text-xs font-semibold" style={{ color: room.stock > 0 ? 'var(--primary)' : '#c0392b' }}>
+        <p className="text-xs font-semibold" style={{ color: room.stock > 0 ? 'var(--primary)' : 'var(--destructive)' }}>
           {room.stock > 0 ? `${room.stock} kamar tersedia` : 'Tidak tersedia'}
         </p>
 

@@ -681,6 +681,7 @@ export function ChatWidget() {
                   style={{ background: 'var(--primary)', color: '#ffffff' }}
                   onMouseEnter={e => { if (!e.currentTarget.disabled) e.currentTarget.style.background = 'var(--primary-dark)' }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'var(--primary)' }}
+                  aria-label="Kirim pesan"
                 >
                   <Send className="h-3.5 w-3.5" />
                 </button>
