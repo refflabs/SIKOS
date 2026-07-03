@@ -197,6 +197,7 @@ export function LandingPage({ search = '' }) {
                 style={{
                   aspectRatio: '4/3',
                   border: '1.5px solid var(--border)',
+                  background: 'var(--secondary)',
                 }}
               >
                 <img
@@ -204,6 +205,9 @@ export function LandingPage({ search = '' }) {
                   alt="Tampak Depan Kost"
                   className="h-full w-full object-cover"
                   loading="eager"
+                  fetchpriority="high"
+                  width="900"
+                  height="675"
                 />
               </div>
 
@@ -211,24 +215,28 @@ export function LandingPage({ search = '' }) {
               <div className="grid grid-cols-2 gap-3 mt-3">
                 <div
                   className="rounded-xl overflow-hidden"
-                  style={{ aspectRatio: '4/3', border: '1.5px solid var(--border)' }}
+                  style={{ aspectRatio: '4/3', border: '1.5px solid var(--border)', background: 'var(--secondary)' }}
                 >
                   <img
                     src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=500&q=80"
                     alt="Interior Kamar"
                     className="h-full w-full object-cover"
                     loading="lazy"
+                    width="500"
+                    height="375"
                   />
                 </div>
                 <div
                   className="rounded-xl overflow-hidden"
-                  style={{ aspectRatio: '4/3', border: '1.5px solid var(--border)' }}
+                  style={{ aspectRatio: '4/3', border: '1.5px solid var(--border)', background: 'var(--secondary)' }}
                 >
                   <img
                     src="https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=500&q=80"
                     alt="Ruang Bersama"
                     className="h-full w-full object-cover"
                     loading="lazy"
+                    width="500"
+                    height="375"
                   />
                 </div>
               </div>
