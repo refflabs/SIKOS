@@ -32,6 +32,7 @@ import { Button } from './Button'
 import { EmptyState } from './EmptyState'
 import { LedgerView } from './LedgerView'
 import { toast } from 'sonner'
+import { getBookingById } from '../../api/bookings'
 
 export function AdminPaymentsReport() {
   const [search, setSearch] = useState('')
@@ -44,6 +45,18 @@ export function AdminPaymentsReport() {
 
   // Modal detail state
   const [selectedPayment, setSelectedPayment] = useState(null)
+
+  const handleViewDetails = async (payment) => {
+    setSelectedPayment({ ...payment, _loading: true })
+    try {
+      const fullBooking = await getBookingById(payment.id)
+      setSelectedPayment({ ...fullBooking, _loading: false })
+    } catch (err) {
+      console.error(err)
+      toast.error('Gagal mengambil detail bukti bayar')
+      setSelectedPayment({ ...payment, _loading: false, _error: true })
+    }
+  }
 
   // Fetch Rooms for filter dropdown
   const { data: roomsData } = useRoomsQuery()
@@ -146,7 +159,7 @@ export function AdminPaymentsReport() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 print:hidden">
             {/* Omzet Kas */}
             <div className="rounded-2xl border border-border p-4 bg-card shadow-sm flex items-center gap-4">
-              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                 <DollarSign className="h-6 w-6" />
               </span>
               <div>
@@ -157,12 +170,12 @@ export function AdminPaymentsReport() {
 
             {/* Menunggu Verifikasi */}
             <div className="rounded-2xl border border-border p-4 bg-card shadow-sm flex items-center gap-4">
-              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
                 <Clock className="h-6 w-6" />
               </span>
               <div>
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Perlu Verifikasi</p>
-                <p className="text-lg font-black text-amber-700 mt-0.5">
+                <p className="text-lg font-black text-amber-600 dark:text-amber-400 mt-0.5">
                   {formatPrice(summary.pending_amount)}
                   <span className="text-[10px] font-normal text-muted-foreground ml-1">({summary.pending_count} trans)</span>
                 </p>
@@ -171,7 +184,7 @@ export function AdminPaymentsReport() {
 
             {/* Belum Dibayar */}
             <div className="rounded-2xl border border-border p-4 bg-card shadow-sm flex items-center gap-4">
-              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-stone-50 text-stone-600">
+              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-stone-500/10 text-stone-600 dark:text-stone-400">
                 <Info className="h-6 w-6" />
               </span>
               <div>
@@ -349,7 +362,7 @@ export function AdminPaymentsReport() {
                           <td className="p-4 text-center">
                             <button
                               type="button"
-                              onClick={() => setSelectedPayment(payment)}
+                              onClick={() => handleViewDetails(payment)}
                               className="inline-flex items-center justify-center p-1.5 rounded-xl border border-border bg-background hover:bg-secondary hover:text-primary transition-all cursor-pointer"
                             >
                               <Eye className="h-4 w-4" />
@@ -421,75 +434,84 @@ export function AdminPaymentsReport() {
 
             {/* Modal Body */}
             <div className="space-y-4 flex-1 overflow-y-auto max-h-[70vh]">
-              {/* Tenant info */}
-              <div className="grid grid-cols-2 gap-3 text-xs bg-secondary/30 p-3.5 rounded-xl border border-border/40">
-                <div>
-                  <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Penyewa</p>
-                  <p className="font-bold text-foreground mt-0.5">{selectedPayment.user?.name || 'N/A'}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{selectedPayment.user?.email}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{selectedPayment.user?.phone}</p>
-                </div>
-                <div>
-                  <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Kamar</p>
-                  <p className="font-bold text-foreground mt-0.5">{selectedPayment.room?.name || 'N/A'}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">Tipe: {selectedPayment.room?.type}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">Durasi: {selectedPayment.duration_months} Bulan</p>
-                </div>
-              </div>
-
-              {/* Payment Details */}
-              <div className="grid grid-cols-2 gap-3 text-xs">
-                <div>
-                  <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Tanggal Masuk</p>
-                  <p className="font-semibold text-foreground mt-0.5">
-                    {selectedPayment.check_in ? new Date(selectedPayment.check_in).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : '—'}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Tanggal Keluar</p>
-                  <p className="font-semibold text-foreground mt-0.5">
-                    {selectedPayment.check_out ? new Date(selectedPayment.check_out).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : '—'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Accounting details */}
-              <div className="border-t border-b py-3 flex justify-between items-center text-xs">
-                <span className="font-bold text-muted-foreground uppercase text-[9px] tracking-wider">Total Tagihan</span>
-                <span className="text-base font-black text-primary">{formatPrice(selectedPayment.total_price)}</span>
-              </div>
-
-              {/* Bukti Transfer Image */}
-              {selectedPayment.payment_receipt ? (
-                <div className="space-y-1.5 print:hidden">
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground block">Bukti Transfer</span>
-                  <div className="rounded-xl overflow-hidden border border-border aspect-[4/3] bg-stone-100 flex items-center justify-center relative group">
-                    <img
-                      src={selectedPayment.payment_receipt}
-                      alt="Bukti Transfer"
-                      className="max-h-full max-w-full object-contain"
-                    />
-                    <a
-                      href={selectedPayment.payment_receipt}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="absolute bottom-2 right-2 bg-black/60 text-white p-2 rounded-lg text-xs flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <Eye className="h-3.5 w-3.5" />
-                      Lihat Asli ↗
-                    </a>
-                  </div>
+              {selectedPayment._loading ? (
+                <div className="flex flex-col items-center justify-center py-20 gap-3">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  <p className="text-xs text-muted-foreground font-semibold">Memuat detail transaksi...</p>
                 </div>
               ) : (
-                <div className="p-4 rounded-xl border border-dashed border-amber-200 bg-amber-50/50 text-amber-800 text-xs flex items-start gap-2 print:hidden">
-                  <Info className="h-4 w-4 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-semibold">Bukti Pembayaran Belum Diunggah</p>
-                    <p className="text-[10px] mt-0.5 opacity-80">
-                      Penyewa belum mengirimkan foto bukti transfer via aplikasi.
-                    </p>
+                <>
+                  {/* Tenant info */}
+                  <div className="grid grid-cols-2 gap-3 text-xs bg-secondary/30 p-3.5 rounded-xl border border-border/40">
+                    <div>
+                      <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Penyewa</p>
+                      <p className="font-bold text-foreground mt-0.5">{selectedPayment.user?.name || 'N/A'}</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">{selectedPayment.user?.email}</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">{selectedPayment.user?.phone}</p>
+                    </div>
+                    <div>
+                      <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Kamar</p>
+                      <p className="font-bold text-foreground mt-0.5">{selectedPayment.room?.name || 'N/A'}</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">Tipe: {selectedPayment.room?.type}</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">Durasi: {selectedPayment.duration_months} Bulan</p>
+                    </div>
                   </div>
-                </div>
+
+                  {/* Payment Details */}
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div>
+                      <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Tanggal Masuk</p>
+                      <p className="font-semibold text-foreground mt-0.5">
+                        {selectedPayment.check_in ? new Date(selectedPayment.check_in).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : '—'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Tanggal Keluar</p>
+                      <p className="font-semibold text-foreground mt-0.5">
+                        {selectedPayment.check_out ? new Date(selectedPayment.check_out).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : '—'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Accounting details */}
+                  <div className="border-t border-b py-3 flex justify-between items-center text-xs">
+                    <span className="font-bold text-muted-foreground uppercase text-[9px] tracking-wider">Total Tagihan</span>
+                    <span className="text-base font-black text-primary">{formatPrice(selectedPayment.total_price)}</span>
+                  </div>
+
+                  {/* Bukti Transfer Image */}
+                  {selectedPayment.payment_receipt ? (
+                    <div className="space-y-1.5 print:hidden">
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground block">Bukti Transfer</span>
+                      <div className="rounded-xl overflow-hidden border border-border aspect-[4/3] bg-stone-100 flex items-center justify-center relative group">
+                        <img
+                          src={selectedPayment.payment_receipt}
+                          alt="Bukti Transfer"
+                          className="max-h-full max-w-full object-contain"
+                        />
+                        <a
+                          href={selectedPayment.payment_receipt}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="absolute bottom-2 right-2 bg-black/60 text-white p-2 rounded-lg text-xs flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          Lihat Asli ↗
+                        </a>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-4 rounded-xl border border-dashed border-amber-500/20 bg-amber-500/5 text-amber-600 dark:text-amber-400 text-xs flex items-start gap-2 print:hidden">
+                      <Info className="h-4 w-4 shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-semibold">Bukti Pembayaran Belum Diunggah</p>
+                        <p className="text-[10px] mt-0.5 opacity-80">
+                          Penyewa belum mengirimkan foto bukti transfer via aplikasi.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
 

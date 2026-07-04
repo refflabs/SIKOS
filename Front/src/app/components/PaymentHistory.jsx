@@ -6,6 +6,7 @@ import { QueryError } from '../../components/QueryError'
 import { useBookingsQuery } from '../../hooks/queries'
 import { formatPrice } from '../../api/roomUtils'
 import { toast } from 'sonner'
+import { getBookingById } from '../../api/bookings'
 
 /**
  * PaymentHistory — shows payment/transaction records and allows receipt upload.
@@ -102,13 +103,35 @@ export function PaymentHistory({ user }) {
 function PaymentRow({ booking: b, refetch }) {
   const [isUploading, setIsUploading] = useState(false)
 
+  const handleViewReceipt = async (bookingId) => {
+    const toastId = toast.loading('Memuat bukti pembayaran...')
+    try {
+      const data = await getBookingById(bookingId)
+      toast.dismiss(toastId)
+      if (data.payment_receipt) {
+        const w = window.open()
+        if (w) {
+          w.document.write(`<img src="${data.payment_receipt}" style="max-width:100%; max-height:100vh; display:block; margin:auto; border-radius:8px; box-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1);" />`)
+        } else {
+          toast.error('Pop-up terblokir oleh browser Anda')
+        }
+      } else {
+        toast.error('Bukti pembayaran tidak ditemukan')
+      }
+    } catch (err) {
+      toast.dismiss(toastId)
+      console.error(err)
+      toast.error('Gagal mengambil data bukti bayar')
+    }
+  }
+
   const totalPrice = b.room ? Number(b.room.price) * Number(b.duration_months || 1) : 0
 
   // Payment status logic
   let statusLabel = 'Belum Upload Bukti'
   let statusVariant = 'pending' // 'pending' | 'waiting' | 'verified' | 'rejected'
 
-  if (b.payment_receipt) {
+  if (b.payment_receipt || b.has_payment_receipt) {
     if (b.status === 'accepted' || b.status === 'confirmed') {
       statusLabel = 'Lunas / Terverifikasi'
       statusVariant = 'verified'
@@ -215,19 +238,17 @@ function PaymentRow({ booking: b, refetch }) {
       {/* Right: actions */}
       <div className="flex items-center gap-2 flex-wrap">
         {/* View existing receipt */}
-        {b.payment_receipt && (
-          <a
-            href={b.payment_receipt}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold transition-colors duration-200"
+        {(b.has_payment_receipt || b.payment_receipt) && (
+          <button
+            onClick={() => handleViewReceipt(b.id)}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold transition-colors duration-200 cursor-pointer bg-transparent border-none p-0"
             style={{ color: 'var(--primary)' }}
             onMouseEnter={e => e.currentTarget.style.color = 'var(--primary-dark)'}
             onMouseLeave={e => e.currentTarget.style.color = 'var(--primary)'}
           >
             Lihat Bukti
             <ExternalLink className="h-3 w-3" />
-          </a>
+          </button>
         )}
 
         {/* Upload receipt — only for pending bookings */}
@@ -251,7 +272,7 @@ function PaymentRow({ booking: b, refetch }) {
             ) : (
               <>
                 <Upload className="h-3 w-3" />
-                {b.payment_receipt ? 'Ganti Bukti' : 'Upload Bukti Bayar'}
+                {(b.has_payment_receipt || b.payment_receipt) ? 'Ganti Bukti' : 'Upload Bukti Bayar'}
               </>
             )}
             <input

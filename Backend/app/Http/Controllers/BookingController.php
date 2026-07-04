@@ -18,9 +18,14 @@ class BookingController extends Controller
 
         // Admin bisa lihat semua, user hanya punyanya sendiri
         if ($user->role === 'admin') {
-            $bookings = Booking::with(['user', 'room'])->get();
+            $bookings = Booking::select('id', 'user_id', 'room_id', 'check_in', 'check_out', 'duration_months', 'total_price', 'status', 'notes', 'created_at', 'updated_at', 'renewal_requested', 'renewal_months')
+                ->selectRaw('CASE WHEN payment_receipt IS NOT NULL AND payment_receipt != \'\' THEN 1 ELSE 0 END as has_payment_receipt')
+                ->with(['user', 'room'])
+                ->get();
         } else {
-            $bookings = Booking::with('room')
+            $bookings = Booking::select('id', 'user_id', 'room_id', 'check_in', 'check_out', 'duration_months', 'total_price', 'status', 'notes', 'created_at', 'updated_at', 'renewal_requested', 'renewal_months')
+                ->selectRaw('CASE WHEN payment_receipt IS NOT NULL AND payment_receipt != \'\' THEN 1 ELSE 0 END as has_payment_receipt')
+                ->with('room')
                 ->where('user_id', $user->id)
                 ->get();
         }

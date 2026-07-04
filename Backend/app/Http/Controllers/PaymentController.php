@@ -61,7 +61,9 @@ class PaymentController extends Controller
     // GET /api/admin/payments
     public function index(Request $request)
     {
-        $query = Booking::with(['user', 'room']);
+        $query = Booking::select('id', 'user_id', 'room_id', 'check_in', 'check_out', 'duration_months', 'total_price', 'status', 'notes', 'created_at', 'updated_at', 'renewal_requested', 'renewal_months')
+            ->selectRaw('CASE WHEN payment_receipt IS NOT NULL AND payment_receipt != \'\' THEN 1 ELSE 0 END as has_payment_receipt')
+            ->with(['user', 'room']);
 
         // Search by User Name or Booking ID
         if ($request->filled('search')) {

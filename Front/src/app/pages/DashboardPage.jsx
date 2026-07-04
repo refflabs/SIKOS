@@ -28,6 +28,7 @@ import { AdminChatPanel } from '../components/AdminChatPanel'
 import { AdminPaymentsReport } from '../components/AdminPaymentsReport'
 import { toast } from 'sonner'
 import { uploadRoomImage } from '../../api/rooms'
+import { getBookingById } from '../../api/bookings'
 
 function Pagination({ currentPage, totalItems, itemsPerPage, onPageChange }) {
   const totalPages = Math.ceil(totalItems / itemsPerPage)
@@ -83,6 +84,18 @@ export function DashboardPage({ search = '' }) {
   const { user } = useAuth()
   const { refreshSubscriptions, connected } = useSocket()
   const [viewingReceipt, setViewingReceipt] = useState(null)
+
+  const handleViewReceipt = async (bookingId) => {
+    setViewingReceipt('loading')
+    try {
+      const data = await getBookingById(bookingId)
+      setViewingReceipt(data.payment_receipt || 'no_receipt')
+    } catch (err) {
+      console.error(err)
+      toast.error('Gagal memuat bukti pembayaran')
+      setViewingReceipt(null)
+    }
+  }
 
   // State for filtering
   const [roomFilter, setRoomFilter] = useState('all')
@@ -623,8 +636,8 @@ export function DashboardPage({ search = '' }) {
                         <td className="p-4">
                           <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold ${
                             onlineUserIds.has(usr.id)
-                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                              : 'bg-secondary text-stone-500 border border-stone-200'
+                              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                              : 'bg-secondary text-stone-500 border border-border'
                           }`}>
                             <span className={`h-1.5 w-1.5 rounded-full ${
                               onlineUserIds.has(usr.id) ? 'bg-emerald-500 animate-pulse' : 'bg-stone-400'
@@ -842,14 +855,14 @@ export function DashboardPage({ search = '' }) {
                           <div>
                             <div className="flex items-center gap-2 flex-wrap">
                               <p className="font-semibold text-sm text-foreground">{b.user?.name || `Penghuni #${b.user_id}`}</p>
-                              <span className="text-[10px] text-muted-foreground font-medium px-2 py-0.5 rounded-full bg-stone-100 border border-stone-200">{b.user?.phone || 'No telp -'}</span>
+                              <span className="text-[10px] text-muted-foreground font-medium px-2 py-0.5 rounded-full bg-secondary border border-border">{b.user?.phone || 'No telp -'}</span>
                             </div>
                             <p className="text-xs text-muted-foreground mt-1">
                               Kamar: <span className="font-medium text-foreground">{b.room?.name || 'Kamar -'}</span> &bull; Check-in: <span className="font-medium text-foreground">{String(b.check_in).slice(0, 10)}</span>
                             </p>
                             {b.renewal_requested && (
                               <div className="mt-1.5">
-                                <span className="inline-flex items-center gap-1 text-[10px] bg-amber-50 text-amber-800 border border-amber-200/50 px-2.5 py-1 rounded-lg font-bold animate-pulse">
+                                <span className="inline-flex items-center gap-1 text-[10px] bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 px-2.5 py-1 rounded-lg font-bold animate-pulse">
                                   Minta Perpanjangan: {b.renewal_months} Bulan
                                 </span>
                               </div>
@@ -868,18 +881,18 @@ export function DashboardPage({ search = '' }) {
                                : b.status === 'rejected' ? 'ditolak' 
                                : b.status}
                             </Badge>
-                            {b.payment_receipt ? (
+                            {b.has_payment_receipt || b.payment_receipt ? (
                               <button
                                 type="button"
-                                onClick={() => setViewingReceipt(b.payment_receipt)}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white font-bold rounded-xl cursor-pointer shadow-sm text-xs border border-blue-200/40 transition-colors"
+                                onClick={() => handleViewReceipt(b.id)}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white font-bold rounded-xl cursor-pointer shadow-sm text-xs border border-blue-500/20 transition-colors"
                               >
                                 <Eye className="h-3.5 w-3.5" />
                                 Bukti Bayar
                               </button>
                             ) : (
                               b.status === 'pending' && (
-                                <span className="text-[10px] text-amber-700 font-semibold italic bg-amber-50 border border-amber-200/30 px-2.5 py-1 rounded-lg">
+                                <span className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold italic bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-lg">
                                   Belum Upload Bukti
                                 </span>
                               )
@@ -889,14 +902,14 @@ export function DashboardPage({ search = '' }) {
                                 <button
                                   type="button"
                                   onClick={() => handleUpdateBookingStatus(b.id, 'accepted')}
-                                  className="inline-flex items-center justify-center px-3.5 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white font-bold rounded-xl cursor-pointer shadow-sm active:scale-95 transition-all text-xs border border-emerald-200/40"
+                                  className="inline-flex items-center justify-center px-3.5 py-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white font-bold rounded-xl cursor-pointer shadow-sm active:scale-95 transition-all text-xs border border-emerald-500/20"
                                 >
                                   Setujui
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => handleUpdateBookingStatus(b.id, 'rejected')}
-                                  className="inline-flex items-center justify-center px-3.5 py-1.5 bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white font-bold rounded-xl cursor-pointer shadow-sm active:scale-95 transition-all text-xs border border-rose-200/40"
+                                  className="inline-flex items-center justify-center px-3.5 py-1.5 bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white font-bold rounded-xl cursor-pointer shadow-sm active:scale-95 transition-all text-xs border border-rose-500/20"
                                 >
                                   Tolak
                                 </button>
@@ -907,14 +920,14 @@ export function DashboardPage({ search = '' }) {
                                 <button
                                   type="button"
                                   onClick={() => handleRenewalAction(b.id, 'approve')}
-                                  className="inline-flex items-center justify-center px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white font-bold rounded-xl cursor-pointer shadow-sm active:scale-95 transition-all text-xs border border-emerald-200/40"
+                                  className="inline-flex items-center justify-center px-3 py-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white font-bold rounded-xl cursor-pointer shadow-sm active:scale-95 transition-all text-xs border border-emerald-500/20"
                                 >
                                   Setujui
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => handleRenewalAction(b.id, 'reject')}
-                                  className="inline-flex items-center justify-center px-3 py-1.5 bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white font-bold rounded-xl cursor-pointer shadow-sm active:scale-95 transition-all text-xs border border-rose-200/40"
+                                  className="inline-flex items-center justify-center px-3 py-1.5 bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white font-bold rounded-xl cursor-pointer shadow-sm active:scale-95 transition-all text-xs border border-rose-500/20"
                                 >
                                   Tolak
                                 </button>
@@ -1106,13 +1119,13 @@ export function DashboardPage({ search = '' }) {
                           </div>
                         </div>
                          <div className="flex items-center gap-4">
-                          {b.payment_receipt && (
+                          {(b.has_payment_receipt || b.payment_receipt) && (
                             <button
                               type="button"
-                              onClick={() => setViewingReceipt(b.payment_receipt)}
-                              className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white font-bold rounded-lg cursor-pointer shadow-sm text-[10px] border border-blue-200/40 transition-colors"
+                              onClick={() => handleViewReceipt(b.id)}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white font-bold rounded-lg cursor-pointer shadow-sm text-[10px] border border-blue-500/20 transition-colors"
                             >
-                              <Eye className="h-3 w-3" />
+                              <Eye className="h-3.5 w-3.5" />
                               Bukti
                             </button>
                           )}
@@ -1600,12 +1613,23 @@ export function DashboardPage({ search = '' }) {
                   Tutup
                 </button>
               </div>
-              <div className="flex justify-center bg-secondary dark:bg-stone-900 rounded-xl p-2 border border-border/20 overflow-hidden max-h-[60vh]">
-                <img
-                  src={viewingReceipt}
-                  alt="Bukti Transfer"
-                  className="max-w-full max-h-full object-contain rounded-lg shadow-sm"
-                />
+              <div className="flex justify-center bg-secondary dark:bg-stone-900 rounded-xl p-2 border border-border/20 overflow-hidden max-h-[60vh] min-h-[200px] items-center w-full">
+                {viewingReceipt === 'loading' ? (
+                  <div className="flex flex-col items-center justify-center py-10 gap-3 w-full">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    <p className="text-xs text-muted-foreground font-semibold">Memuat bukti transfer...</p>
+                  </div>
+                ) : viewingReceipt === 'no_receipt' ? (
+                  <div className="p-10 text-center text-xs text-muted-foreground font-semibold">
+                    Bukti transfer tidak ditemukan.
+                  </div>
+                ) : (
+                  <img
+                    src={viewingReceipt}
+                    alt="Bukti Transfer"
+                    className="max-w-full max-h-full object-contain rounded-lg shadow-sm"
+                  />
+                )}
               </div>
             </div>
           </div>
