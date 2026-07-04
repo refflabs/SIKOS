@@ -8,6 +8,7 @@ import {
   MessageSquare,
   Users,
   CreditCard,
+  Home,
 } from 'lucide-react'
 import { Button } from '../components/Button'
 import { useAuth } from '../../context/AuthContext'
@@ -22,6 +23,7 @@ const NAV = [
   { name: 'User', href: '/dashboard?tab=users', icon: Users, id: 'users' },
   { name: 'Chat', href: '/dashboard?tab=chats', icon: MessageSquare, id: 'chats' },
   { name: 'Pengaturan', href: '/dashboard?tab=settings', icon: Settings, id: 'settings' },
+  { name: 'Kembali ke Beranda', href: '/', icon: Home, id: 'home' },
 ]
 
 export function AdminLayout({ children, activeTab = 'overview' }) {
