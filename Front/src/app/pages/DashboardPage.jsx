@@ -601,21 +601,21 @@ export function DashboardPage({ search = '' }) {
                 placeholder="Cari nama, email, WA..."
                 value={userSearch}
                 onChange={(e) => setUserSearch(e.target.value)}
-                className="text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-white w-56 shadow-sm"
+                className="text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-[var(--input-background)] text-foreground w-56 shadow-sm"
               />
             </div>
           </div>
 
           {filteredUsers.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-border shadow-sm p-8 text-center text-xs text-muted-foreground">
+            <div className="bg-card rounded-2xl border border-border shadow-sm p-8 text-center text-xs text-muted-foreground">
               Tidak ada penyewa ditemukan.
             </div>
           ) : (
-            <div className="bg-white rounded-2xl border border-border p-5 shadow-sm space-y-4">
+            <div className="bg-card rounded-2xl border border-border p-5 shadow-sm space-y-4">
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-secondary border-b border-border text-xs font-bold text-[#2f3a34] uppercase tracking-wider">
+                    <tr className="bg-secondary border-b border-border text-xs font-bold text-primary uppercase tracking-wider">
                       <th className="p-4 pl-6">Nama / Email</th>
                       <th className="p-4">WhatsApp / Telp</th>
                       <th className="p-4">Status</th>
@@ -625,7 +625,7 @@ export function DashboardPage({ search = '' }) {
                   </thead>
                   <tbody className="divide-y divide-border/60 text-xs">
                     {paginatedUsers.map((usr) => (
-                      <tr key={usr.id} className="hover:bg-surface-warm/20 transition-colors">
+                      <tr key={usr.id} className="hover:bg-secondary/35 transition-colors">
                         <td className="p-4 pl-6">
                           <div>
                             <span className="font-bold text-foreground block">{usr.name}</span>
@@ -680,7 +680,7 @@ export function DashboardPage({ search = '' }) {
       ) : activeTab === 'chats' ? (
         <AdminChatPanel />
       ) : activeTab === 'settings' ? (
-        <div className="max-w-3xl bg-white rounded-3xl border border-border shadow-sm overflow-hidden">
+        <div className="max-w-3xl bg-card rounded-3xl border border-border shadow-sm overflow-hidden">
           <div className="px-6 py-5 border-b border-border bg-secondary/50 flex items-center justify-between">
             <div>
               <h2 className="font-bold text-base text-primary">Pengaturan Kost & Sistem</h2>
@@ -803,13 +803,13 @@ export function DashboardPage({ search = '' }) {
           </div>
 
           {bookingsSubTab === 'ledger' ? (
-            <div className="bg-white rounded-2xl border border-border p-6 shadow-sm">
+            <div className="bg-card rounded-2xl border border-border p-6 shadow-sm">
               <LedgerView bookings={bookingsQuery.data || []} />
             </div>
           ) : (
             <>
               <div className="flex justify-end">
-                <div className="flex items-center gap-1.5 bg-stone-200/50 p-1 rounded-xl border border-border/50 shrink-0">
+                <div className="flex items-center gap-1.5 bg-secondary p-1 rounded-xl border border-border shrink-0">
                   {['all', 'pending', 'accepted', 'rejected'].map((status) => (
                     <button
                       key={status}
@@ -831,7 +831,7 @@ export function DashboardPage({ search = '' }) {
               </div>
 
               {filteredBookings.length === 0 ? (
-                <div className="bg-white rounded-2xl border border-border shadow-sm">
+                <div className="bg-card rounded-2xl border border-border shadow-sm">
                   <EmptyState
                     icon={Inbox}
                     title="Tidak ada booking ditemukan"
@@ -841,15 +841,15 @@ export function DashboardPage({ search = '' }) {
                   />
                 </div>
               ) : (
-                <div className="bg-white rounded-2xl border border-border p-5 shadow-sm space-y-4">
+                <div className="bg-card rounded-2xl border border-border p-5 shadow-sm space-y-4">
                   <div className="divide-y divide-border">
                     {paginatedBookings.map((b) => (
                       <div
                         key={b.id}
-                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 hover:bg-surface-warm/30 transition-colors duration-200"
+                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 hover:bg-secondary/30 transition-colors duration-200"
                       >
                         <div className="flex items-start gap-4">
-                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#2f3a34]/10 to-[#6b8f71]/35 text-[#2f3a34] font-extrabold text-sm shadow-inner">
+                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary font-extrabold text-sm shadow-inner border border-border">
                             {(b.user?.name || 'P').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                           </span>
                           <div>
@@ -1003,7 +1003,7 @@ export function DashboardPage({ search = '' }) {
           </div>
 
           {filteredRooms.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-border shadow-sm p-8 text-center text-xs text-muted-foreground">
+            <div className="bg-card rounded-2xl border border-border shadow-sm p-8 text-center text-xs text-muted-foreground">
               Tidak ada kamar dengan status yang dipilih.
             </div>
           ) : (
@@ -1012,11 +1012,11 @@ export function DashboardPage({ search = '' }) {
                 {paginatedRooms.map((r) => (
                   <div 
                     key={r.id} 
-                    className="rounded-2xl border border-border bg-white overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
+                    className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
                   >
                     <div>
                       {/* Room Image */}
-                      <div className="aspect-[16/10] overflow-hidden bg-[#d9e2d3] relative">
+                      <div className="aspect-[16/10] overflow-hidden bg-secondary relative">
                         <img 
                           src={r.image || 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800&q=80'} 
                           alt={r.name}
@@ -1083,11 +1083,11 @@ export function DashboardPage({ search = '' }) {
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 bg-white rounded-2xl border border-border overflow-hidden shadow-sm flex flex-col justify-between">
+            <div className="lg:col-span-2 bg-card rounded-2xl border border-border overflow-hidden shadow-sm flex flex-col justify-between">
               <div>
                 <div className="px-5 py-4 border-b border-border bg-secondary/50 flex items-center justify-between">
-                  <h3 className="font-bold text-sm text-[#2f3a34] flex items-center gap-2">
-                    <CalendarDays className="h-4 w-4 text-[#6b8f71]" />
+                  <h3 className="font-bold text-sm text-primary flex items-center gap-2">
+                    <CalendarDays className="h-4 w-4 text-primary" />
                     Pemesanan Kamar Terbaru
                   </h3>
                   <span className="text-[9px] bg-primary/10 text-primary font-bold px-2 py-0.5 rounded-full">{bookings.length} total</span>
@@ -1105,10 +1105,10 @@ export function DashboardPage({ search = '' }) {
                     {bookings.slice(0, 5).map((b) => (
                       <div
                         key={b.id}
-                        className="flex items-center justify-between gap-4 px-5 py-4 hover:bg-surface-warm/20 transition-colors"
+                        className="flex items-center justify-between gap-4 px-5 py-4 hover:bg-secondary/30 transition-colors"
                       >
                         <div className="flex items-center gap-3">
-                          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-stone-100 text-primary text-xs font-extrabold shadow-inner">
+                          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary text-primary text-xs font-extrabold shadow-inner">
                             {(b.user?.name || 'P').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                           </span>
                           <div>
@@ -1129,7 +1129,7 @@ export function DashboardPage({ search = '' }) {
                               Bukti
                             </button>
                           )}
-                          <span className="text-xs font-bold text-[#2f3a34]">{formatPrice(b.total_price)}</span>
+                          <span className="text-xs font-bold text-foreground">{formatPrice(b.total_price)}</span>
                           <Badge variant={b.status === 'confirmed' || b.status === 'accepted' ? 'available' : b.status === 'pending' ? 'maintenance' : 'default'}>
                             {b.status === 'confirmed' || b.status === 'accepted' ? 'disetujui' 
                              : b.status === 'pending' ? 'menunggu' 
@@ -1145,7 +1145,7 @@ export function DashboardPage({ search = '' }) {
               <div className="p-4.5 border-t border-border bg-secondary/40 flex justify-center">
                 <a 
                   href="/dashboard?tab=bookings" 
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-extrabold text-primary border border-primary/20 bg-white hover:bg-primary hover:text-primary-foreground hover:border-primary shadow-sm hover:shadow transition-all duration-300 cursor-pointer group"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-extrabold text-primary border border-primary/20 bg-card hover:bg-primary hover:text-primary-foreground hover:border-primary shadow-sm hover:shadow transition-all duration-300 cursor-pointer group"
                 >
                   <span>Lihat Semua Booking</span>
                   <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
@@ -1154,19 +1154,19 @@ export function DashboardPage({ search = '' }) {
             </div>
 
             <div className="space-y-6">
-              <div className="bg-white rounded-2xl border border-border p-5 shadow-sm space-y-4">
+              <div className="bg-card rounded-2xl border border-border p-5 shadow-sm space-y-4">
                 <h3 className="font-bold text-xs uppercase tracking-wider text-muted-foreground">Aksi Pengelola</h3>
                 <div className="grid grid-cols-2 gap-3">
                   <a
                     href="/dashboard?tab=chats"
-                    className="flex flex-col items-center justify-center p-4 rounded-xl border border-border/80 bg-surface-sage/35 text-[#4a7c59] hover:bg-surface-sage/60 transition-colors text-center gap-2 cursor-pointer group"
+                    className="flex flex-col items-center justify-center p-4 rounded-xl border border-border/80 bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-center gap-2 cursor-pointer group"
                   >
                     <MessageSquare className="h-5 w-5 transition-transform group-hover:scale-110" />
                     <span className="text-[10px] font-bold">Buka Chat</span>
                   </a>
                   <a
                     href="/dashboard?tab=settings"
-                    className="flex flex-col items-center justify-center p-4 rounded-xl border border-border/80 bg-surface-mocca/40 text-primary hover:bg-surface-mocca/70 transition-colors text-center gap-2 cursor-pointer group"
+                    className="flex flex-col items-center justify-center p-4 rounded-xl border border-border/80 bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-center gap-2 cursor-pointer group"
                   >
                     <Settings className="h-5 w-5 transition-transform group-hover:scale-110" />
                     <span className="text-[10px] font-bold">Pengaturan</span>
@@ -1202,7 +1202,7 @@ export function DashboardPage({ search = '' }) {
 
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1f2722]/60 backdrop-blur-sm transition-opacity">
-          <div className="bg-white rounded-3xl border border-border max-w-md w-full shadow-2xl overflow-hidden transform transition-all duration-300 scale-100">
+          <div className="bg-card rounded-3xl border border-border max-w-md w-full shadow-2xl overflow-hidden transform transition-all duration-300 scale-100">
             <div className="px-6 py-4.5 border-b border-border bg-secondary/50 flex items-center justify-between">
               <h3 className="font-bold text-base text-primary">
                 {modalMode === 'add' ? 'Tambah Kamar Baru' : 'Edit Info Kamar'}
@@ -1210,7 +1210,7 @@ export function DashboardPage({ search = '' }) {
               <button 
                 type="button" 
                 onClick={handleCloseModal}
-                className="text-muted-foreground hover:text-foreground cursor-pointer text-sm font-semibold p-1 hover:bg-stone-100 rounded-lg transition-colors"
+                className="text-muted-foreground hover:text-foreground cursor-pointer text-sm font-semibold p-1 hover:bg-secondary rounded-lg transition-colors"
               >
                 Tutup
               </button>
@@ -1373,7 +1373,7 @@ export function DashboardPage({ search = '' }) {
                   <button
                     type="button"
                     onClick={handleCloseModal}
-                    className="px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer bg-white border border-border text-foreground hover:bg-secondary transition-colors"
+                    className="px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer bg-card border border-border text-foreground hover:bg-secondary transition-colors"
                   >
                     Batal
                   </button>
@@ -1393,13 +1393,13 @@ export function DashboardPage({ search = '' }) {
         {/* Modal Edit User */}
         {isUserModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1f2722]/60 backdrop-blur-sm transition-opacity">
-            <div className="bg-white rounded-3xl border border-border max-w-md w-full shadow-2xl overflow-hidden transform transition-all duration-300 scale-100 animate-in">
+            <div className="bg-card rounded-3xl border border-border max-w-md w-full shadow-2xl overflow-hidden transform transition-all duration-300 scale-100 animate-in">
               <div className="px-6 py-4.5 border-b border-border bg-secondary/50 flex items-center justify-between">
                 <h3 className="font-bold text-base text-primary">Edit Profil Pengguna</h3>
                 <button 
                   type="button" 
                   onClick={handleCloseUserModal}
-                  className="text-muted-foreground hover:text-foreground cursor-pointer text-sm font-semibold p-1 hover:bg-stone-100 rounded-lg transition-colors"
+                  className="text-muted-foreground hover:text-foreground cursor-pointer text-sm font-semibold p-1 hover:bg-secondary rounded-lg transition-colors"
                 >
                   Tutup
                 </button>
@@ -1466,7 +1466,7 @@ export function DashboardPage({ search = '' }) {
                   <button
                     type="button"
                     onClick={handleCloseUserModal}
-                    className="px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer bg-white border border-border text-foreground hover:bg-secondary transition-colors"
+                    className="px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer bg-card border border-border text-foreground hover:bg-secondary transition-colors"
                   >
                     Batal
                   </button>
@@ -1485,13 +1485,13 @@ export function DashboardPage({ search = '' }) {
         {/* Modal Edit Booking */}
         {isBookingModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1f2722]/60 backdrop-blur-sm transition-opacity">
-            <div className="bg-white rounded-3xl border border-border max-w-md w-full shadow-2xl overflow-hidden transform transition-all duration-300 scale-100 animate-in">
+            <div className="bg-card rounded-3xl border border-border max-w-md w-full shadow-2xl overflow-hidden transform transition-all duration-300 scale-100 animate-in">
               <div className="px-6 py-4.5 border-b border-border bg-secondary/50 flex items-center justify-between">
                 <h3 className="font-bold text-base text-primary">Edit Detail Pemesanan</h3>
                 <button 
                   type="button" 
                   onClick={handleCloseBookingModal}
-                  className="text-muted-foreground hover:text-foreground cursor-pointer text-sm font-semibold p-1 hover:bg-stone-100 rounded-lg transition-colors"
+                  className="text-muted-foreground hover:text-foreground cursor-pointer text-sm font-semibold p-1 hover:bg-secondary rounded-lg transition-colors"
                 >
                   Tutup
                 </button>
@@ -1577,7 +1577,7 @@ export function DashboardPage({ search = '' }) {
                   <button
                     type="button"
                     onClick={handleCloseBookingModal}
-                    className="px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer bg-white border border-border text-foreground hover:bg-secondary transition-colors"
+                    className="px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer bg-card border border-border text-foreground hover:bg-secondary transition-colors"
                   >
                     Batal
                   </button>
