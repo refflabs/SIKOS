@@ -8,30 +8,33 @@ export function ForgotPasswordPage() {
   const isDark = theme === 'dark'
 
   const T = isDark ? {
-    heading:        '#E1DCC9',
-    subtext:        '#9a8060',
-    label:          '#c8b89a',
+    heading:        '#F3EFE0',          // teks heading — putih krem terang
+    subtext:        '#C2B29F',          // teks subtitle — abu krem
+    label:          '#D4C4A4',          // label input — krem terang
+    iconColor:      '#a8927e',          // warna ikon input — krem abu terang (sebelumnya #6a5040)
     inputBg:        '#1a1208',
     inputBgFocus:   '#261b0d',
     inputBorder:    '#4a3520',
     inputBorderFocus: '#B0BA99',
-    inputText:      '#E1DCC9',
+    inputText:      '#F3EFE0',
     errorBg:        'rgba(180,50,40,0.15)',
     errorText:      '#e08070',
     errorBorder:    'rgba(180,50,40,0.3)',
     btnBg:          'linear-gradient(135deg,#B0BA99 0%,#8a9478 100%)',
     btnText:        '#1F150C',
     btnShadow:      '0 4px 16px rgba(176,186,153,0.22)',
-    outlineBorder:  '#3a2a18',
+    outlineBorder:  '#5a4228',          // outline border — cokelat sedang (sebelumnya #3a2a18)
     outlineBg:      'transparent',
     outlineBgHov:   'rgba(176,186,153,0.07)',
-    outlineBordHov: '#8a7060',
-    outlineText:    '#8a7060',
-    outlineTextHov: '#E1DCC9',
+    outlineBordHov: '#B0BA99',
+    outlineText:    '#B0BA99',          // teks outline — hijau terang (sebelumnya #8a7060)
+    outlineTextHov: '#F3EFE0',
+    forgotHover:    '#F3EFE0',          // hover link — putih krem terang
   } : {
     heading:        '#1F150C',
     subtext:        '#7a6247',
     label:          '#1F150C',
+    iconColor:      '#7a6247',          // warna ikon input — cokelat
     inputBg:        '#F7F4EE',
     inputBgFocus:   '#FDFCF9',
     inputBorder:    '#D8D0BE',
@@ -49,6 +52,7 @@ export function ForgotPasswordPage() {
     outlineBordHov: '#b8a898',
     outlineText:    '#7a6247',
     outlineTextHov: '#1F150C',
+    forgotHover:    '#412D15',
   }
 
   const [step, setStep] = useState('request') // 'request' | 'reset'
@@ -175,7 +179,7 @@ export function ForgotPasswordPage() {
               Email Terdaftar
             </label>
             <div className="relative">
-              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: isDark ? '#6a5040' : '#7a6247' }} />
+              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: T.iconColor }} />
               <input
                 id="email" type="email" value={email}
                 onChange={e => setEmail(e.target.value)}
@@ -216,7 +220,7 @@ export function ForgotPasswordPage() {
               Kode OTP
             </label>
             <div className="relative">
-              <KeyRound className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: isDark ? '#6a5040' : '#7a6247' }} />
+              <KeyRound className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: T.iconColor }} />
               <input
                 id="otp" type="text" maxLength={6} value={otp}
                 onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
@@ -241,7 +245,7 @@ export function ForgotPasswordPage() {
               Password Baru
             </label>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: isDark ? '#6a5040' : '#7a6247' }} />
+              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: T.iconColor }} />
               <input
                 id="password" type={showPassword ? 'text' : 'password'} value={password}
                 onChange={e => setPassword(e.target.value)}
@@ -259,9 +263,9 @@ export function ForgotPasswordPage() {
               <button type="button" tabIndex={-1}
                 onClick={() => setShowPassword(v => !v)}
                 className="absolute right-3.5 top-1/2 -translate-y-1/2 cursor-pointer p-0.5 rounded-lg transition-colors duration-200"
-                style={{ color: isDark ? '#6a5040' : '#7a6247' }}
-                onMouseEnter={e => e.currentTarget.style.color = isDark ? '#E1DCC9' : '#412D15'}
-                onMouseLeave={e => e.currentTarget.style.color = isDark ? '#6a5040' : '#7a6247'}>
+                style={{ color: T.iconColor }}
+                onMouseEnter={e => e.currentTarget.style.color = T.forgotHover}
+                onMouseLeave={e => e.currentTarget.style.color = T.iconColor}>
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
@@ -276,7 +280,7 @@ export function ForgotPasswordPage() {
               Konfirmasi Password
             </label>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: isDark ? '#6a5040' : '#7a6247' }} />
+              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: T.iconColor }} />
               <input
                 id="passwordConfirmation" type={showPassword ? 'text' : 'password'} value={passwordConfirmation}
                 onChange={e => setPasswordConfirmation(e.target.value)}

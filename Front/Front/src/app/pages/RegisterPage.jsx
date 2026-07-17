@@ -51,29 +51,29 @@ export function RegisterPage() {
 
   // ── Token kontras tinggi untuk kedua mode ──
   const T = isDark ? {
-    heading:          '#E1DCC9',
-    subtext:          '#9a8060',
-    label:            '#c8b89a',
-    iconColor:        '#6a5040',
+    heading:          '#F3EFE0',          // teks heading — putih krem terang
+    subtext:          '#C2B29F',          // teks subtitle — abu krem
+    label:            '#D4C4A4',          // label input — krem terang
+    iconColor:        '#a8927e',          // warna ikon input — krem abu terang (sebelumnya #6a5040)
     inputBg:          '#1a1208',
     inputBgFocus:     '#261b0d',
     inputBorder:      '#4a3520',
     inputFocusBorder: '#B0BA99',
-    inputText:        '#E1DCC9',
+    inputText:        '#F3EFE0',
     errorBg:          'rgba(180,50,40,0.15)',
     errorText:        '#e08070',
     errorBorder:      'rgba(180,50,40,0.3)',
     btnBg:            'linear-gradient(135deg,#B0BA99 0%,#8a9478 100%)',
     btnText:          '#1F150C',
     btnShadow:        '0 4px 16px rgba(176,186,153,0.22)',
-    dividerLine:      '#3a2a18',
-    dividerText:      '#5a4030',
-    outlineBorder:    '#3a2a18',
+    dividerLine:      '#4a3520',          // garis divider — cokelat gelap
+    dividerText:      '#8a7060',          // teks divider — cokelat terang (sebelumnya #5a4030)
+    outlineBorder:    '#5a4228',          // outline border — cokelat sedang (sebelumnya #3a2a18)
     outlineBg:        'transparent',
     outlineBgHov:     'rgba(176,186,153,0.08)',
-    outlineBordHov:   '#8a7060',
-    outlineText:      '#8a7060',
-    outlineTextHov:   '#E1DCC9',
+    outlineBordHov:   '#B0BA99',
+    outlineText:      '#B0BA99',          // teks outline — hijau terang (sebelumnya #8a7060)
+    outlineTextHov:   '#F3EFE0',
     linkColor:        '#B0BA99',
     successBg:        'rgba(176,186,153,0.15)',
     successText:      '#B0BA99',

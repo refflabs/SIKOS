@@ -16,39 +16,40 @@ export function LoginPage() {
 
   // ── Token kontras tinggi untuk kedua mode ──
   const T = isDark ? {
-    heading:        '#E1DCC9',          // teks heading — putih krem
-    subtext:        '#9a8060',          // teks subtitle
-    label:          '#c8b89a',          // label input
-    roleLabel:      '#D4C4A4',          // nama role — terang
-    roleDesc:       '#6a5040',          // deskripsi role — abu gelap
+    heading:        '#F3EFE0',          // teks heading — putih krem terang
+    subtext:        '#C2B29F',          // teks subtitle — abu krem
+    label:          '#D4C4A4',          // label input — krem terang
+    roleLabel:      '#EAE0C8',          // nama role — krem putih terang
+    roleDesc:       '#a8927e',          // deskripsi role — abu terang (sebelumnya #6a5040)
     roleBgIdle:     '#261b0d',          // bg role card tidak aktif
     roleBgActive:   '#2e1e0a',          // bg role card aktif
     roleBorderIdle: '#3a2a18',
     roleBorderAct:  '#B0BA99',
-    roleIconIdle:   { bg: '#1d1409', color: '#8a7060', border: '1px solid #3a2a18' },
+    roleIconIdle:   { bg: '#1d1409', color: '#a8927e', border: '1px solid #3a2a18' },
     roleIconActive: { bg: 'linear-gradient(135deg,#B0BA99,#8a9478)', color: '#1F150C' },
+    iconColor:      '#a8927e',          // warna ikon input — krem abu terang (sebelumnya #6a5040)
     inputBg:        '#1a1208',          // input bg — sedikit lebih gelap dari card
     inputBgFocus:   '#261b0d',
     inputBorder:    '#4a3520',
     inputBorderFocus: '#B0BA99',
-    inputText:      '#E1DCC9',
-    inputPlaceholder: '#6a5040',
-    forgotColor:    '#8a7060',
-    forgotHover:    '#c8b89a',
+    inputText:      '#F3EFE0',
+    inputPlaceholder: '#8c7460',        // placeholder — cokelat terang (sebelumnya #6a5040)
+    forgotColor:    '#B0BA99',          // link lupa password — hijau terang (sebelumnya #8a7060)
+    forgotHover:    '#F3EFE0',          // hover link — putih krem terang
     errorBg:        'rgba(180,50,40,0.15)',
     errorText:      '#e08070',
     errorBorder:    'rgba(180,50,40,0.3)',
     btnBg:          'linear-gradient(135deg,#B0BA99 0%,#8a9478 100%)',
     btnText:        '#1F150C',
     btnShadow:      '0 4px 16px rgba(176,186,153,0.22)',
-    dividerLine:    '#3a2a18',
-    dividerText:    '#5a4030',
-    outlineBorder:  '#3a2a18',
+    dividerLine:    '#4a3520',          // garis divider — cokelat gelap
+    dividerText:    '#8a7060',          // teks divider — cokelat terang (sebelumnya #5a4030)
+    outlineBorder:  '#5a4228',          // outline border — cokelat sedang (sebelumnya #3a2a18)
     outlineBg:      'transparent',
     outlineBgHov:   'rgba(176,186,153,0.07)',
-    outlineBordHov: '#8a7060',
-    outlineText:    '#8a7060',
-    outlineTextHov: '#E1DCC9',
+    outlineBordHov: '#B0BA99',
+    outlineText:    '#B0BA99',          // teks outline — hijau terang (sebelumnya #8a7060)
+    outlineTextHov: '#F3EFE0',
     linkColor:      '#B0BA99',
   } : {
     heading:        '#1F150C',
@@ -62,6 +63,7 @@ export function LoginPage() {
     roleBorderAct:  '#412D15',
     roleIconIdle:   { bg: '#FDFCF9', color: '#7a6247', border: '1px solid #D8D0BE' },
     roleIconActive: { bg: 'linear-gradient(135deg,#412D15,#2e1e0a)', color: '#E1DCC9' },
+    iconColor:      '#7a6247',          // warna ikon input — cokelat
     inputBg:        '#F7F4EE',
     inputBgFocus:   '#FDFCF9',
     inputBorder:    '#D8D0BE',
@@ -279,7 +281,7 @@ export function LoginPage() {
             Email
           </label>
           <div className="relative">
-            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: isDark ? '#6a5040' : '#7a6247' }} />
+            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: T.iconColor }} />
             <input
               id="email" type="email" value={email}
               onChange={e => setEmail(e.target.value)}
@@ -304,7 +306,7 @@ export function LoginPage() {
             </a>
           </div>
           <div className="relative">
-            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: isDark ? '#6a5040' : '#7a6247' }} />
+            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: T.iconColor }} />
             <input
               id="password" type={showPassword ? 'text' : 'password'} value={password}
               onChange={e => setPassword(e.target.value)}
@@ -316,9 +318,9 @@ export function LoginPage() {
             <button type="button" tabIndex={-1}
               onClick={() => setShowPassword(v => !v)}
               className="absolute right-3.5 top-1/2 -translate-y-1/2 cursor-pointer p-0.5 rounded-lg transition-colors duration-200"
-              style={{ color: isDark ? '#6a5040' : '#7a6247' }}
-              onMouseEnter={e => e.currentTarget.style.color = isDark ? '#E1DCC9' : '#412D15'}
-              onMouseLeave={e => e.currentTarget.style.color = isDark ? '#6a5040' : '#7a6247'}>
+              style={{ color: T.iconColor }}
+              onMouseEnter={e => e.currentTarget.style.color = T.forgotHover}
+              onMouseLeave={e => e.currentTarget.style.color = T.iconColor}>
               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
