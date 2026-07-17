@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Eye, EyeOff, User, Mail, Phone, Lock, CheckCircle } from 'lucide-react'
 import { parsePhoneNumber, isValidPhoneNumber } from 'libphonenumber-js'
 import { useAuth } from '../../context/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
+import { toast } from 'sonner'
 
 // ── InputField mengambil token T dari parent ──
 function InputField({ id, name, type = 'text', value, onChange, placeholder, required, autoComplete, icon: Icon, label, minLength, error, T }) {
@@ -112,6 +113,62 @@ export function RegisterPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+
+  const handleGoogleLogin = async (response) => {
+    setError('')
+    setLoading(true)
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/google`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: response.credential })
+      })
+
+      if (!res.ok) {
+        const errData = await res.json()
+        throw new Error(errData.message || 'Gagal mendaftar menggunakan Google.')
+      }
+
+      const data = await res.json()
+      
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('user', JSON.stringify(data.user))
+      window.dispatchEvent(new CustomEvent('sikos:auth-changed'))
+
+      toast.success('Berhasil mendaftar menggunakan Google!')
+      window.location.href = data.user?.role === 'admin' ? '/dashboard' : '/'
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    const initGoogle = () => {
+      /* global google */
+      if (typeof google !== 'undefined') {
+        google.accounts.id.initialize({
+          client_id: "1014355694630-6qd7gfhm24afa1vm67ddprcrg9g508ia.apps.googleusercontent.com",
+          callback: handleGoogleLogin
+        });
+        
+        google.accounts.id.renderButton(
+          document.getElementById("googleBtn"),
+          { 
+            theme: isDark ? "filled_black" : "outline", 
+            size: "large", 
+            width: 320,
+            text: "signup_with",
+            shape: "pill"
+          }
+        );
+      }
+    }
+    
+    const timer = setTimeout(initGoogle, 100)
+    return () => clearTimeout(timer)
+  }, [isDark])
 
   const handleChange = e => {
     const { name, value } = e.target
@@ -443,6 +500,11 @@ export function RegisterPage() {
           ) : 'Daftar Sekarang'}
         </button>
       </form>
+
+      {/* Google Sign-in Button */}
+      <div className="mt-4 flex flex-col items-center gap-2.5">
+        <div id="googleBtn" className="w-full flex justify-center" />
+      </div>
 
       {/* Divider */}
       <div className="flex items-center gap-3 my-5">

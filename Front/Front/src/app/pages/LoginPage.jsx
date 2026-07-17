@@ -130,7 +130,7 @@ export function LoginPage() {
         /* global google */
         if (typeof google !== 'undefined') {
           google.accounts.id.initialize({
-            client_id: "1014355694630-6qd7ghm2afa1vm67ddprcrg9g508ia.apps.googleusercontent.com",
+            client_id: "1014355694630-6qd7gfhm24afa1vm67ddprcrg9g508ia.apps.googleusercontent.com",
             callback: handleGoogleLogin
           });
           
