@@ -252,29 +252,36 @@ class AuthController extends Controller
     }
 
     /**
-     * Mengajukan kode OTP lupa password.
-     * Memverifikasi keberadaan email pengguna, meng-generate OTP baru, dan mengirimkannya lewat email.
+     * FUNGSI: Mengirimkan kode OTP Lupa Password.
+     * KEGUNAAN: Fungsi ini dipanggil saat penyewa memasukkan email di halaman lupa password.
+     *           Fungsi ini akan memvalidasi apakah email terdaftar, meng-generate 6-digit OTP acak,
+     *           menyimpan OTP dan masa berlakunya ke DB, lalu mengirimkannya lewat Email.
      */
     public function forgotPassword(Request $request)
     {
+        // 1. Validasi input email agar berformat email yang benar
         $request->validate([
             'email' => 'required|string|email|max:255',
         ]);
 
+        // 2. Cari data user berdasarkan email
         $user = User::where('email', $request->email)->first();
 
+        // Jika email tidak terdaftar, lemparkan error validasi
         if (!$user) {
             throw ValidationException::withMessages([
                 'email' => ['Alamat email tidak ditemukan.'],
             ]);
         }
 
+        // 3. Generate 6-digit OTP acak dan simpan ke database dengan masa kedaluwarsa 15 menit
         $otp = (string) random_int(100000, 999999);
         $user->update([
             'verification_otp' => $otp,
             'verification_otp_expires_at' => now()->addMinutes(15),
         ]);
 
+        // 4. Kirim email OTP menggunakan template SendResetPasswordOTPMail
         try {
             \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\SendResetPasswordOTPMail($otp, $user->name));
         } catch (\Throwable $e) {
@@ -286,6 +293,7 @@ class AuthController extends Controller
             'email' => $user->email,
         ];
 
+        // Jika dalam mode debug/lokal, lampirkan OTP di response untuk mempermudah testing
         if (app()->environment('local', 'testing')) {
             $response['_debug_otp'] = $otp;
         }
@@ -294,17 +302,21 @@ class AuthController extends Controller
     }
 
     /**
-     * Mereset password lama ke password baru dengan validasi OTP keamanan.
-     * Secara otomatis menandai email terverifikasi setelah reset password berhasil.
+     * FUNGSI: Mereset password lama menjadi password baru.
+     * KEGUNAAN: Fungsi ini dipanggil setelah pengguna mengisi kode OTP, password baru, dan konfirmasi password baru.
+     *           Fungsi ini memverifikasi kecocokan OTP, memeriksa masa berlaku OTP, memvalidasi aturan kekuatan sandi baru,
+     *           lahu meng-hash password baru dan menyimpannya ke database.
      */
     public function resetPassword(Request $request)
     {
+        // 1. Validasi input: email wajib, OTP harus 6 digit, password harus kuat (min 8 karakter, ada huruf besar/kecil & simbol)
         $request->validate([
             'email'    => 'required|string|email|max:255',
             'otp'      => 'required|string|size:6',
             'password' => ['required', 'string', 'confirmed', Password::min(8)->mixedCase()->symbols()],
         ]);
 
+        // 2. Cari user berdasarkan email
         $user = User::where('email', $request->email)->first();
 
         if (!$user) {
@@ -313,6 +325,7 @@ class AuthController extends Controller
             ]);
         }
 
+        // 3. Verifikasi OTP (lakukan casting string agar tipe data cocok) dan cek masa kedaluwarsa
         if (is_null($user->verification_otp) || 
             (string) $user->verification_otp !== (string) $request->otp || 
             now()->greaterThan($user->verification_otp_expires_at)) {
@@ -321,6 +334,7 @@ class AuthController extends Controller
             ]);
         }
 
+        // 4. Update password baru (di-hash menggunakan bcrypt), hapus OTP di DB, dan verifikasi email secara otomatis
         $user->update([
             'password' => Hash::make($request->password),
             'verification_otp' => null,
