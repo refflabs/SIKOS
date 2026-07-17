@@ -1,38 +1,10 @@
 {
-  "name": "@sikos",
+  "name": "sikos",
   "private": true,
-  "version": "0.0.1",
-  "type": "module",
   "scripts": {
-    "build": "vite build",
-    "dev": "vite"
-  },
-  "dependencies": {
-    "@tanstack/react-query": "^5.101.0",
-    "axios": "^1.17.0",
-    "libphonenumber-js": "^1.13.7",
-    "lucide-react": "0.487.0",
-    "socket.io-client": "^4.8.3",
-    "sonner": "2.0.3",
-    "tw-animate-css": "1.3.8"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.29.7",
-    "@tailwindcss/vite": "4.1.12",
-    "@vitejs/plugin-react": "4.7.0",
-    "tailwindcss": "4.1.12",
-    "vite": "^6.4.3"
-  },
-  "peerDependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
-  },
-  "peerDependenciesMeta": {
-    "react": {
-      "optional": true
-    },
-    "react-dom": {
-      "optional": true
-    }
+    "dev:api": "cd Backend && php artisan serve",
+    "dev:front": "cd Front && npm run dev",
+    "dev:socket": "cd realtime-server && npm run dev",
+    "dev": "echo Run in 3 terminals: npm run dev:api, npm run dev:socket, npm run dev:front"
   }
 }

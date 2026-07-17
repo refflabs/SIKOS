@@ -1,32 +1,37 @@
-﻿# Dependencies
+# Dependencies
 node_modules/
-.pnp
-.pnp.js
+Front/node_modules/
+realtime-server/node_modules/
+Backend/node_modules/
+Backend/vendor/
 
-# Build output
-dist/
-dist-ssr/
-*.local
-
-# Environment files
+# Local env files
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+Front/.env
+realtime-server/.env
+Backend/.env
 
-# Editor directories
+# Production builds
+dist/
+Front/dist/
+Backend/public/build/
+
+# IDE / System files
 .vscode/
 .idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# OS
 .DS_Store
 Thumbs.db
 
-# Vercel
-.vercel/
+# App data
+realtime-server/messages.json
+Backend/storage/*.key
+Backend/storage/logs/
+Backend/storage/framework/sessions/
+Backend/storage/framework/views/
+Backend/storage/framework/cache/
+
+.vercel
+.env*
+.agent/
+
+.vercel

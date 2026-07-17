@@ -1,0 +1,9 @@
+Backend/vendor/
+Front/node_modules/
+realtime-server/node_modules/
+.git/
+.vscode/
+.idea/
+.agent/
+.agents/
+.ai/

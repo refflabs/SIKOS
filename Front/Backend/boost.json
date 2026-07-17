@@ -1,0 +1,11 @@
+{
+    "agents": [
+        "antigravity"
+    ],
+    "cloud": true,
+    "skills": [
+        "laravel-best-practices",
+        "pest-testing",
+        "deploying-laravel-cloud"
+    ]
+}
