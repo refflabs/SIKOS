@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useSocket } from '../../context/SocketContext'
 import { getSocket } from '../../realtime/socketClient'
 import { RealtimeEvents } from '../../realtime/events'
+import { useRoomsQuery } from '../../hooks/queries'
 
 /* ─── Config ─── */
 const MAX_MESSAGE_LENGTH = 500
@@ -13,62 +14,32 @@ const AI_KB = [
   {
     id: 'harga',
     question: 'Berapa harga kamar per bulan?',
-    answer: 'Harga kamar bervariasi sesuai tipe dan fasilitas:\n• Tipe Kosongan: mulai Rp 500.000/bulan\n• Tipe Isian (lengkap): mulai Rp 750.000/bulan\nSilakan cek halaman Cari Kost untuk harga terkini setiap unit.',
+    answer: 'Harga sewa kamar bervariasi sesuai tipe:\n• Tipe Kosongan: mulai Rp 500.000/bulan\n• Tipe Isian (lengkap): mulai Rp 750.000/bulan\nSilakan cek rekomendasi kamar di bawah ini atau buka halaman Cari Kost.',
     keywords: ['harga', 'biaya', 'tarif', 'bayar', 'sewa', 'mahal', 'murah', 'berapa', 'cost', 'price'],
   },
   {
     id: 'fasilitas',
     question: 'Fasilitas apa saja yang tersedia?',
-    answer: 'Fasilitas standar setiap kamar:\n• WiFi gratis\n• Kamar mandi dalam\n• Lemari pakaian\n• Meja belajar\n• Listrik & air sudah termasuk\n\nTipe Isian menambah: kasur, bantal, guling, dan cermin.',
+    answer: 'Fasilitas standar setiap kamar:\n• WiFi gratis cepat\n• Kamar mandi dalam\n• Lemari pakaian\n• Meja belajar\n• Listrik & air sudah termasuk\n\nTipe Isian menambah: kasur springbed, bantal, guling, dan cermin.',
     keywords: ['fasilitas', 'fasiliti', 'lengkap', 'wifi', 'kasur', 'ac', 'air', 'listrik', 'lemari', 'meja', 'kamar mandi', 'apa saja'],
   },
   {
     id: 'booking',
     question: 'Bagaimana cara booking kamar?',
-    answer: 'Cara booking kamar:\n1. Buka halaman "Cari Kost"\n2. Pilih kamar yang tersedia\n3. Klik tombol "Booking Sekarang"\n4. Isi formulir (tanggal masuk, durasi, catatan)\n5. Upload bukti transfer di tab Histori Pembayaran\n6. Tunggu konfirmasi admin (max 1x24 jam)',
+    answer: 'Alur booking kamar di SIKOS:\n1. Cari kamar di halaman Cari Kost.\n2. Klik Booking Sekarang.\n3. Isi data pengontrak.\n4. Lakukan transfer dan upload bukti bayar di tab Histori Pembayaran.',
     keywords: ['booking', 'pesan', 'cara', 'gimana', 'bagaimana', 'reservasi', 'daftar', 'mendaftar', 'sewa'],
   },
   {
     id: 'perempuan',
     question: 'Apakah ada kost untuk perempuan?',
-    answer: 'Ya! Kami menyediakan kost untuk:\n• Penghuni putra\n• Penghuni putri\n• Campuran\n\nAturan syariah tetap berlaku: tamu lawan jenis non-muhrim tidak diizinkan masuk kamar.',
+    answer: 'Ya! Kami menyediakan kost syariah untuk putra dan putri secara terpisah. Tamu lawan jenis non-muhrim dilarang masuk kamar demi ketertiban bersama.',
     keywords: ['perempuan', 'putri', 'wanita', 'cewek', 'laki', 'putra', 'cowok', 'syariah', 'aturan', 'gender'],
   },
   {
     id: 'lokasi',
     question: 'Lokasi kost di mana?',
-    answer: 'Lokasi kost kami:\nJl. Letjend. S.Parman, Gg. Al-Khalish No.18A\nCinta Raja, Sail, Kota Pekanbaru, Riau 28127\n\nDekat dengan kampus-kampus utama di Pekanbaru. Tersedia parkir motor.',
+    answer: 'Lokasi Kost Pak RT:\nJl. Letjend. S.Parman, Gg. Al-Khalish No.18A, Cinta Raja, Sail, Kota Pekanbaru, Riau 28127. Dekat dengan pusat pendidikan dan kuliner.',
     keywords: ['lokasi', 'alamat', 'dimana', 'di mana', 'jalan', 'maps', 'peta', 'parkir', 'jauh', 'dekat', 'tempat'],
-  },
-  {
-    id: 'pembayaran',
-    question: 'Bagaimana cara melakukan pembayaran?',
-    answer: 'Metode pembayaran:\n• Transfer bank (konfirmasi admin via WhatsApp)\n• Tunai langsung ke pengelola\n\nSetelah transfer, upload bukti bayar di tab Histori Pembayaran di akun Anda. Admin akan verifikasi dalam 1x24 jam.',
-    keywords: ['bayar', 'transfer', 'pembayaran', 'rekening', 'bank', 'tunai', 'cash', 'kirim', 'bukti'],
-  },
-  {
-    id: 'durasi',
-    question: 'Minimum sewa berapa bulan?',
-    answer: 'Minimum sewa adalah 1 bulan. Kami juga melayani sewa jangka panjang (3, 6, atau 12 bulan) dengan kemungkinan harga lebih hemat. Hubungi Pak RT untuk negosiasi harga sewa tahunan.',
-    keywords: ['durasi', 'lama', 'bulan', 'tahun', 'minimum', 'kontrak', 'lama sewa', 'berapa lama'],
-  },
-  {
-    id: 'kontak',
-    question: 'Bagaimana cara menghubungi pengelola?',
-    answer: 'Cara menghubungi Pak RT:\n• WhatsApp: +62 812-3456-7890\n• Email: support@kostpakrt.com\n• Chat langsung di aplikasi ini (saat Pak RT online)\n\nJam operasional: 08.00 – 21.00 WIB.',
-    keywords: ['kontak', 'hubungi', 'telepon', 'phone', 'wa', 'whatsapp', 'email', 'admin', 'pengelola', 'pak rt'],
-  },
-  {
-    id: 'syarat',
-    question: 'Apa syarat untuk menjadi penghuni?',
-    answer: 'Syarat menjadi penghuni Kost Pak RT:\n1. Mengisi formulir registrasi online\n2. Menyertakan identitas diri (KTP/KTM)\n3. Menyetujui tata tertib kost syariah\n4. Membayar uang muka (DP) minimal 1 bulan',
-    keywords: ['syarat', 'ketentuan', 'dokumen', 'ktp', 'ktm', 'identitas', 'peraturan', 'tata tertib', 'deposit', 'dp'],
-  },
-  {
-    id: 'ketersediaan',
-    question: 'Apakah masih ada kamar yang tersedia?',
-    answer: 'Ketersediaan kamar berubah setiap saat. Silakan cek halaman Cari Kost untuk melihat status kamar secara real-time. Kamar dengan label "Tersedia" bisa langsung di-booking.',
-    keywords: ['tersedia', 'kosong', 'ada', 'masih', 'available', 'stock', 'kamar kosong', 'penuh'],
   },
 ]
 
@@ -83,7 +54,7 @@ function findAIResponse(input) {
   for (const item of AI_KB) {
     let score = 0
     for (const kw of item.keywords) {
-      if (text.includes(kw)) score += kw.split(' ').length // multi-word kw weighs more
+      if (text.includes(kw)) score += kw.split(' ').length
     }
     if (score > bestScore) {
       bestScore = score
@@ -94,7 +65,26 @@ function findAIResponse(input) {
   return bestScore > 0 ? bestMatch : null
 }
 
-/* ─── Simple Markdown Formatter Helper ─── */
+/* ─── Parser Tag Widget ─── */
+function parseWidgetTag(text) {
+  let cleanText = text || '';
+  let activeWidget = null;
+
+  if (cleanText.includes('[ROOMS_CAROUSEL]')) {
+    cleanText = cleanText.replace('[ROOMS_CAROUSEL]', '').trim();
+    activeWidget = 'ROOMS_CAROUSEL';
+  } else if (cleanText.includes('[CONTACT_CARD]')) {
+    cleanText = cleanText.replace('[CONTACT_CARD]', '').trim();
+    activeWidget = 'CONTACT_CARD';
+  } else if (cleanText.includes('[BOOKING_WIDGET]')) {
+    cleanText = cleanText.replace('[BOOKING_WIDGET]', '').trim();
+    activeWidget = 'BOOKING_WIDGET';
+  }
+
+  return { cleanText, activeWidget };
+}
+
+/* ─── Simple Markdown Formatter ─── */
 function renderFormattedText(text) {
   if (!text) return ''
   const parts = text.split(/(\*\*.*?\*\*)/g)
@@ -133,6 +123,138 @@ function OnlineDot({ online }) {
   )
 }
 
+/* ─── Interactive Widget 1: Rooms Carousel ─── */
+function RoomsCarouselWidget() {
+  const { data, isLoading } = useRoomsQuery()
+  const rooms = Array.isArray(data) ? data.filter(r => r.stock > 0) : []
+
+  if (isLoading) {
+    return (
+      <div className="flex gap-2.5 py-2 overflow-x-auto shrink-0 w-full scrollbar-none mt-2">
+        {[1, 2].map(i => (
+          <div key={i} className="w-[190px] h-[140px] rounded-2xl animate-pulse bg-gray-200 dark:bg-zinc-800 shrink-0" />
+        ))}
+      </div>
+    )
+  }
+
+  if (rooms.length === 0) {
+    return (
+      <div className="text-[10px] p-4 text-center rounded-2xl border border-dashed border-border mt-2" style={{ color: 'var(--muted-foreground)' }}>
+        Kamar penuh atau tidak tersedia saat ini.
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex gap-2.5 py-2 overflow-x-auto shrink-0 w-full scrollbar-none mt-2" style={{ scrollSnapType: 'x mandatory' }}>
+      {rooms.map(room => (
+        <div
+          key={room.id}
+          className="w-[190px] bg-card rounded-2xl border overflow-hidden shrink-0 shadow-sm transition-transform duration-200 hover:-translate-y-0.5 flex flex-col"
+          style={{ borderColor: 'var(--border)', scrollSnapAlign: 'start' }}
+        >
+          {room.image ? (
+            <img src={room.image} alt={room.name} className="h-20 w-full object-cover shrink-0" />
+          ) : (
+            <div className="h-20 w-full bg-secondary flex items-center justify-center text-[10px] text-muted-foreground shrink-0">No Image</div>
+          )}
+          <div className="p-2.5 flex-1 flex flex-col justify-between">
+            <div>
+              <h5 className="font-bold text-[11px] truncate text-foreground leading-tight">{room.name}</h5>
+              <p className="text-[9px] text-muted-foreground mt-0.5 capitalize">{room.type} · Lantai {room.floor || 1}</p>
+            </div>
+            <div className="flex items-center justify-between mt-3 pt-2 border-t border-border">
+              <span className="font-bold text-[10px] text-primary">
+                Rp {Number(room.price).toLocaleString('id-ID')}/bln
+              </span>
+              <a
+                href={`/rooms/${room.id}`}
+                className="text-[10px] font-bold px-2 py-1 rounded-lg transition-colors cursor-pointer"
+                style={{ background: 'var(--primary)', color: '#ffffff' }}
+              >
+                Pesan
+              </a>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+/* ─── Interactive Widget 2: Contact Card ─── */
+function ContactCardWidget() {
+  return (
+    <div className="p-3 bg-card border rounded-2xl shadow-sm w-full space-y-2 mt-2" style={{ borderColor: 'var(--border)' }}>
+      <div className="flex items-center gap-2">
+        <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 font-bold text-xs shrink-0 border border-emerald-100 dark:border-emerald-900/30">
+          WA
+        </span>
+        <div>
+          <h5 className="font-bold text-[11px] text-foreground leading-tight">Pak RT (Pengelola Kost)</h5>
+          <p className="text-[9px] text-muted-foreground mt-0.5">Operasional: 08.00 - 21.00 WIB</p>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-2 pt-1">
+        <a
+          href="https://wa.me/6281234567890?text=Halo%20Pak%20RT,%20saya%20tertarik%20dengan%20Kost%20Pak%20RT."
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-1.5 py-2 rounded-xl text-[10px] font-bold bg-green-600 hover:bg-green-700 text-white transition-colors cursor-pointer"
+        >
+          WhatsApp ↗
+        </a>
+        <a
+          href="https://maps.google.com/?q=Gang+Al-Khalish+No.18A,+Cinta+Raja,+Sail,+Pekanbaru"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-1.5 py-2 rounded-xl text-[10px] font-bold border transition-colors hover:bg-secondary cursor-pointer"
+          style={{ borderColor: 'var(--border)', color: 'var(--foreground)' }}
+        >
+          Google Maps ↗
+        </a>
+      </div>
+    </div>
+  )
+}
+
+/* ─── Interactive Widget 3: Booking Steps ─── */
+function BookingWidget() {
+  return (
+    <div className="p-3.5 bg-card border rounded-2xl shadow-sm w-full space-y-3.5 mt-2" style={{ borderColor: 'var(--border)' }}>
+      <h5 className="font-bold text-[11px] text-foreground flex items-center gap-1.5">
+        <span>Alur Booking Kamar SIKOS</span>
+      </h5>
+      <div className="relative pl-3.5 border-l border-primary/30 space-y-3.5">
+        <div className="relative">
+          <div className="absolute -left-[20px] top-0.5 h-2.5 w-2.5 rounded-full bg-primary border border-card" />
+          <p className="text-[10px] font-bold text-foreground">1. Cari Kamar</p>
+          <p className="text-[9px] text-muted-foreground mt-0.5">Buka halaman Cari Kost dan pilih kamar kosong.</p>
+        </div>
+        <div className="relative">
+          <div className="absolute -left-[20px] top-0.5 h-2.5 w-2.5 rounded-full bg-primary border border-card" />
+          <p className="text-[10px] font-bold text-foreground">2. Ajukan Booking</p>
+          <p className="text-[9px] text-muted-foreground mt-0.5">Klik Booking Sekarang dan isi tanggal masuk & durasi.</p>
+        </div>
+        <div className="relative">
+          <div className="absolute -left-[20px] top-0.5 h-2.5 w-2.5 rounded-full bg-primary border border-card" />
+          <p className="text-[10px] font-bold text-foreground">3. Pembayaran & Verifikasi</p>
+          <p className="text-[9px] text-muted-foreground mt-0.5">Upload bukti bayar di tab Histori Pembayaran.</p>
+        </div>
+      </div>
+      <a href="/" className="block">
+        <button
+          className="w-full py-2 rounded-xl text-[10px] font-bold cursor-pointer transition-colors text-white"
+          style={{ background: 'var(--primary)' }}
+        >
+          Cari Kamar Kost
+        </button>
+      </a>
+    </div>
+  )
+}
+
 export function ChatWidget() {
   const { user } = useAuth()
   const { connected } = useSocket()
@@ -158,7 +280,7 @@ export function ChatWidget() {
       setAiMessages([
         {
           id: 'welcome-ai',
-          text: 'Halo! Saya adalah **Asisten AI Kost Pak RT**. Saya bisa menjawab pertanyaan seputar harga kamar, fasilitas, aturan kost, lokasi, dan cara booking secara otomatis. Ada yang ingin Anda tanyakan? 😊',
+          text: 'Halo! Saya adalah **Asisten AI Kost Pak RT**. Saya bisa mencarikan kamar kosong, memberi tahu info seputar harga sewa, fasilitas, lokasi, hingga memandu Anda cara melakukan booking secara otomatis. Ada yang ingin ditanyakan? 😊',
           role: 'admin',
           timestamp: new Date().toISOString(),
           isAutoReply: true,
@@ -338,11 +460,22 @@ export function ChatWidget() {
     } catch (err) {
       // Offline / Error fallback to keyword engine
       const match = findAIResponse(trimmed)
+      
+      let fallbackText = 'Maaf, saya tidak begitu mengerti pertanyaan tersebut. Silakan tanyakan informasi seputar harga sewa, fasilitas, lokasi, atau tata cara booking kost Pak RT.'
+      if (match) {
+        fallbackText = match.answer
+        if (match.id === 'harga' || match.id === 'ketersediaan') {
+          fallbackText += ' [ROOMS_CAROUSEL]'
+        } else if (match.id === 'lokasi' || match.id === 'kontak') {
+          fallbackText += ' [CONTACT_CARD]'
+        } else if (match.id === 'booking') {
+          fallbackText += ' [BOOKING_WIDGET]'
+        }
+      }
+
       setAiMessages(prev => [...prev, {
         id: `ai-reply-fallback-${Date.now()}`,
-        text: match
-          ? match.answer
-          : 'Maaf, saya tidak begitu mengerti pertanyaan tersebut. Silakan tanyakan informasi seputar harga sewa, fasilitas, lokasi, atau tata cara booking kost Pak RT.',
+        text: fallbackText,
         role: 'admin',
         timestamp: new Date().toISOString(),
         isAutoReply: true,
@@ -438,7 +571,7 @@ export function ChatWidget() {
     }
   }
 
-  const statusLabel = chatMode === 'ai' ? 'Asisten AI Aktif' : adminOnline ? 'Owner Online' : 'Owner Offline'
+  const statusLabel = chatMode === 'ai' ? 'Copilot AI Aktif' : adminOnline ? 'Owner Online' : 'Owner Offline'
   const charsLeft = MAX_MESSAGE_LENGTH - inputText.length
   const isNearLimit = charsLeft <= 80
 
@@ -473,9 +606,9 @@ export function ChatWidget() {
       {/* ── Chat Panel ── */}
       {isOpen && (
         <div
-          className="absolute bottom-18 right-0 w-[340px] sm:w-[380px] flex flex-col rounded-2xl overflow-hidden"
+          className="absolute bottom-18 right-0 w-[345px] sm:w-[390px] flex flex-col rounded-2xl overflow-hidden"
           style={{
-            height: '540px',
+            height: '560px',
             maxHeight: '82vh',
             boxShadow: '0 8px 40px rgba(0,0,0,0.15)',
             border: '1px solid var(--border)',
@@ -488,6 +621,8 @@ export function ChatWidget() {
               from { opacity: 0; transform: translateY(12px) scale(0.97); }
               to   { opacity: 1; transform: translateY(0) scale(1); }
             }
+            .scrollbar-none::-webkit-scrollbar { display: none; }
+            .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
           `}</style>
 
           {/* ── Header ── */}
@@ -741,9 +876,10 @@ export function ChatWidget() {
               /* Message List */
               (chatMode === 'owner' ? messages : aiMessages).map((msg) => {
                 const isAdmin = msg.role === 'admin'
+                const { cleanText, activeWidget } = parseWidgetTag(msg.text)
                 return (
                   <div key={msg.id} className={`flex ${isAdmin ? 'justify-start' : 'justify-end'}`}>
-                    <div className={`max-w-[80%] flex flex-col ${isAdmin ? 'items-start' : 'items-end'}`}>
+                    <div className={`max-w-[85%] flex flex-col ${isAdmin ? 'items-start' : 'items-end'}`}>
                       {msg.isAutoReply && (
                         <span className="text-[9px] mb-0.5 px-1 font-semibold flex items-center gap-1" style={{ color: 'var(--primary)' }}>
                           Asisten AI
@@ -760,8 +896,13 @@ export function ChatWidget() {
                           whiteSpace: 'pre-line',
                         }}
                       >
-                        {renderFormattedText(msg.text)}
+                        {renderFormattedText(cleanText)}
                       </div>
+
+                      {/* Render Interactive Actions Widget below message bubble */}
+                      {activeWidget === 'ROOMS_CAROUSEL' && <RoomsCarouselWidget />}
+                      {activeWidget === 'CONTACT_CARD' && <ContactCardWidget />}
+                      {activeWidget === 'BOOKING_WIDGET' && <BookingWidget />}
 
                       {/* Time + Receipt */}
                       <div className="flex items-center gap-1 mt-0.5 px-1">
