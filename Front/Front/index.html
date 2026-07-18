@@ -86,6 +86,10 @@
   </head>
 
     <body>
+      <script>
+        // Hangatkan instansi backend serverless lebih awal untuk meminimalkan jeda loading (cold start)
+        fetch('/api/ping').catch(function(){});
+      </script>
       <div id="root"></div>
       <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="%VITE_MIDTRANS_CLIENT_KEY%"></script>
       <script type="module" src="/src/main.jsx"></script>

@@ -85,6 +85,10 @@
   </head>
 
     <body>
+      <script>
+        // Hangatkan instansi backend serverless lebih awal untuk meminimalkan jeda loading (cold start)
+        fetch('/api/ping').catch(function(){});
+      </script>
       <div id="root"></div>
       <script type="module" src="/src/main.jsx"></script>
     </body>
