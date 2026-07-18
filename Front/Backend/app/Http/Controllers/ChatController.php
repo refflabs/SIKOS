@@ -24,7 +24,7 @@ class ChatController extends Controller
         $part2 = 'DmJshXsoOeQwhduBwkjtvtGSOOBs';
         $hfToken = env('HUGGINGFACE_TOKEN', $part1 . $part2);
         
-        $systemPrompt = "Anda adalah 'Asisten AI Kost Pak RT', asisten virtual pintar dan ramah untuk SIKOS (Sistem Informasi Kost Syariah) di Pekanbaru.
+        $systemPrompt = "Anda adalah 'Orion', asisten virtual AI pintar, futuristik, dan ramah untuk SIKOS (Sistem Informasi Kost Syariah) di Pekanbaru.
 Tugas Anda adalah membantu calon penghuni atau penghuni kost menjawab pertanyaan dengan sopan, ramah, dan ringkas dalam Bahasa Indonesia.
 
 Informasi Kost Pak RT:

@@ -280,7 +280,7 @@ export function ChatWidget() {
       setAiMessages([
         {
           id: 'welcome-ai',
-          text: 'Halo! Saya adalah **Asisten AI Kost Pak RT**. Saya bisa mencarikan kamar kosong, memberi tahu info seputar harga sewa, fasilitas, lokasi, hingga memandu Anda cara melakukan booking secara otomatis. Ada yang ingin ditanyakan? 😊',
+          text: 'Halo! Saya adalah **Orion**, asisten virtual AI pintar dan ramah untuk SIKOS. Saya bisa mencarikan kamar kosong, memberi tahu info seputar harga sewa, fasilitas, lokasi, hingga memandu Anda cara melakukan booking secara otomatis. Ada yang ingin ditanyakan? 😊',
           role: 'admin',
           timestamp: new Date().toISOString(),
           isAutoReply: true,
@@ -571,7 +571,7 @@ export function ChatWidget() {
     }
   }
 
-  const statusLabel = chatMode === 'ai' ? 'Copilot AI Aktif' : adminOnline ? 'Owner Online' : 'Owner Offline'
+  const statusLabel = chatMode === 'ai' ? 'Orion AI Aktif' : adminOnline ? 'Owner Online' : 'Owner Offline'
   const charsLeft = MAX_MESSAGE_LENGTH - inputText.length
   const isNearLimit = charsLeft <= 80
 
@@ -653,8 +653,8 @@ export function ChatWidget() {
 
               <div>
                 <h4 className="text-sm font-bold leading-tight text-white flex items-center gap-1.5">
-                  {chatMode === 'ai' ? 'Asisten AI SIKOS' : 'Hubungi Pak RT'}
-                  {chatMode === 'ai' && <Sparkles className="h-3.5 w-3.5 text-yellow-300 fill-yellow-300" />}
+                  {chatMode === 'ai' ? 'Orion (AI)' : 'Hubungi Pak RT'}
+                  {chatMode === 'ai' && <Sparkles className="h-3.5 w-3.5 text-yellow-300 fill-yellow-300 animate-pulse" />}
                 </h4>
                 <span className="text-[10px] font-medium" style={{ color: chatMode === 'ai' || adminOnline ? '#86efac' : 'rgba(255,255,255,0.6)' }}>
                   {statusLabel}
@@ -708,7 +708,7 @@ export function ChatWidget() {
                 }}
                 onClick={() => setChatMode('ai')}
               >
-                Tanya Asisten AI 🤖
+                Tanya Orion 🤖
               </button>
             </div>
           )}
@@ -882,7 +882,7 @@ export function ChatWidget() {
                     <div className={`max-w-[85%] flex flex-col ${isAdmin ? 'items-start' : 'items-end'}`}>
                       {msg.isAutoReply && (
                         <span className="text-[9px] mb-0.5 px-1 font-semibold flex items-center gap-1" style={{ color: 'var(--primary)' }}>
-                          Asisten AI
+                          Orion AI
                           {chatMode === 'ai' && <Sparkles className="h-2.5 w-2.5 text-yellow-500" />}
                         </span>
                       )}
