@@ -7,6 +7,8 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PaymentController;
 
+use App\Http\Controllers\ChatController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -21,6 +23,7 @@ Route::post('/verify/resend', [AuthController::class, 'resendOtp']);
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::post('/auth/google', [AuthController::class, 'googleLogin']);
+Route::post('/chat/ai', [ChatController::class, 'chatWithAi']);
 Route::get('/ping', function () { return ['ping' => 'pong']; });
 
 // Rooms - public (bisa dilihat tanpa login)
