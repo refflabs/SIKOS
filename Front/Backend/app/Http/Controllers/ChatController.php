@@ -53,7 +53,8 @@ PENTING: Anda dapat memicu widget UI interaktif di aplikasi frontend dengan mela
 
         try {
             // Panggil API HuggingFace Serverless Inference (menggunakan model Qwen2.5-7B yang sangat cepat)
-            $response = Http::withHeaders([
+            $response = Http::withoutVerifying()
+            ->withHeaders([
                 'Authorization' => 'Bearer ' . $hfToken,
             ])
             ->timeout(12)
@@ -73,9 +74,18 @@ PENTING: Anda dapat memicu widget UI interaktif di aplikasi frontend dengan mela
                         'source' => 'ai_model'
                     ]);
                 }
+            } else {
+                return response()->json([
+                    'reply' => 'Maaf, API HuggingFace memberikan respons gagal (Status: ' . $response->status() . '). Detail: ' . $response->body(),
+                    'source' => 'api_error'
+                ]);
             }
         } catch (\Throwable $e) {
             Log::error('AI Chat Error: ' . $e->getMessage());
+            return response()->json([
+                'reply' => 'Maaf, koneksi AI terputus: ' . $e->getMessage(),
+                'source' => 'exception'
+            ]);
         }
 
         // Fallback: Jika HuggingFace gagal atau timeout, gunakan pencarian kata kunci cerdas secara lokal
