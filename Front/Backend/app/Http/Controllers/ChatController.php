@@ -58,7 +58,7 @@ PENTING: Anda dapat memicu widget UI interaktif di aplikasi frontend dengan mela
                 'Authorization' => 'Bearer ' . $hfToken,
             ])
             ->timeout(12)
-            ->post('https://api-inference.huggingface.co/models/Qwen/Qwen2.5-7B-Instruct/v1/chat/completions', [
+            ->post('https://router.huggingface.co/v1/chat/completions', [
                 'model' => 'Qwen/Qwen2.5-7B-Instruct',
                 'messages' => $formattedMessages,
                 'temperature' => 0.6,
