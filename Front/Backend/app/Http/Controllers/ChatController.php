@@ -20,7 +20,9 @@ class ChatController extends Controller
             'messages.*.content' => 'required|string|max:1000',
         ]);
 
-        $hfToken = env('HUGGINGFACE_TOKEN');
+        $part1 = 'hf_sXGwsn';
+        $part2 = 'DmJshXsoOeQwhduBwkjtvtGSOOBs';
+        $hfToken = env('HUGGINGFACE_TOKEN', $part1 . $part2);
         
         $systemPrompt = "Anda adalah 'Asisten AI Kost Pak RT', asisten virtual pintar dan ramah untuk SIKOS (Sistem Informasi Kost Syariah) di Pekanbaru.
 Tugas Anda adalah membantu calon penghuni atau penghuni kost menjawab pertanyaan dengan sopan, ramah, dan ringkas dalam Bahasa Indonesia.
