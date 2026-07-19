@@ -262,7 +262,7 @@ export function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState([])
   const [aiMessages, setAiMessages] = useState([])
-  const [chatMode, setChatMode] = useState('owner') // 'owner' | 'ai'
+  const [chatMode, setChatMode] = useState(user ? 'owner' : 'ai') // Default 'owner' if logged in, 'ai' if guest
   const [inputText, setInputText] = useState('')
   const [unreadCount, setUnreadCount] = useState(0)
   const [adminOnline, setAdminOnline] = useState(false)
@@ -678,40 +678,38 @@ export function ChatWidget() {
           </div>
 
           {/* ── Mode Segmented Control ── */}
-          {user && (
-            <div
-              className="flex p-1 shrink-0"
+          <div
+            className="flex p-1 shrink-0"
+            style={{
+              background: 'var(--secondary)',
+              borderBottom: '1px solid var(--border)',
+            }}
+          >
+            <button
+              type="button"
+              className="flex-1 text-center py-2 text-[11px] font-bold rounded-xl transition-all duration-200 cursor-pointer"
               style={{
-                background: 'var(--secondary)',
-                borderBottom: '1px solid var(--border)',
+                background: chatMode === 'owner' ? 'var(--card)' : 'transparent',
+                color: chatMode === 'owner' ? 'var(--primary)' : 'var(--muted-foreground)',
+                boxShadow: chatMode === 'owner' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
               }}
+              onClick={() => { setChatMode('owner'); setUnreadCount(0) }}
             >
-              <button
-                type="button"
-                className="flex-1 text-center py-2 text-[11px] font-bold rounded-xl transition-all duration-200 cursor-pointer"
-                style={{
-                  background: chatMode === 'owner' ? 'var(--card)' : 'transparent',
-                  color: chatMode === 'owner' ? 'var(--primary)' : 'var(--muted-foreground)',
-                  boxShadow: chatMode === 'owner' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
-                }}
-                onClick={() => { setChatMode('owner'); setUnreadCount(0) }}
-              >
-                Tanya Pemilik (RT)
-              </button>
-              <button
-                type="button"
-                className="flex-1 text-center py-2 text-[11px] font-bold rounded-xl transition-all duration-200 cursor-pointer"
-                style={{
-                  background: chatMode === 'ai' ? 'var(--card)' : 'transparent',
-                  color: chatMode === 'ai' ? 'var(--primary)' : 'var(--muted-foreground)',
-                  boxShadow: chatMode === 'ai' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
-                }}
-                onClick={() => setChatMode('ai')}
-              >
-                Tanya Orion 🤖
-              </button>
-            </div>
-          )}
+              Tanya Pemilik (RT)
+            </button>
+            <button
+              type="button"
+              className="flex-1 text-center py-2 text-[11px] font-bold rounded-xl transition-all duration-200 cursor-pointer"
+              style={{
+                background: chatMode === 'ai' ? 'var(--card)' : 'transparent',
+                color: chatMode === 'ai' ? 'var(--primary)' : 'var(--muted-foreground)',
+                boxShadow: chatMode === 'ai' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
+              }}
+              onClick={() => setChatMode('ai')}
+            >
+              Tanya Orion 🤖
+            </button>
+          </div>
 
           {/* ── Owner Mode: Offline Banner ── */}
           {chatMode === 'owner' && user && !adminOnline && connected && (
@@ -815,7 +813,7 @@ export function ChatWidget() {
             className="flex-1 overflow-y-auto p-4 space-y-3"
             style={{ background: 'var(--background)' }}
           >
-            {!user ? (
+            {!user && chatMode === 'owner' ? (
               /* Guest mode */
               <div className="flex flex-col items-center justify-center h-full text-center px-4 space-y-4">
                 <div
@@ -947,7 +945,7 @@ export function ChatWidget() {
           </div>
 
           {/* ── Input Footer ── */}
-          {user && (
+          {(user || chatMode === 'ai') && (
             <div
               className="shrink-0"
               style={{ borderTop: '1px solid var(--border)', background: 'var(--card)' }}
