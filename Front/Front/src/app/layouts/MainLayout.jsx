@@ -83,14 +83,15 @@ export function MainLayout({ children }) {
           </a>
 
           {/* Desktop Nav Links */}
-          <div className="hidden lg:flex items-center gap-0.5 xl:gap-1 min-w-0 overflow-hidden">
+          <div className="hidden lg:flex items-center gap-1 xl:gap-2 shrink-0">
             {links.map((item) => {
               const Icon = item.icon
               return (
                 <a
                   key={item.name}
                   href={item.href}
-                  className="relative flex items-center gap-1 lg:gap-1.5 px-1.5 py-1.5 lg:px-2 xl:px-3 xl:py-2 rounded-xl text-[9px] lg:text-[10px] xl:text-xs font-bold tracking-wider uppercase transition-all duration-300 whitespace-nowrap"
+                  title={item.name}
+                  className="relative flex items-center justify-center gap-1.5 p-2 xl:px-3 xl:py-2 rounded-xl text-[10px] xl:text-xs font-bold tracking-wider uppercase transition-all duration-300 whitespace-nowrap"
                   style={{
                     color: isActive(item) ? 'var(--primary)' : 'var(--muted-foreground)',
                     background: isActive(item) ? 'var(--secondary)' : 'transparent',
@@ -109,8 +110,8 @@ export function MainLayout({ children }) {
                     }
                   }}
                 >
-                  {Icon && <Icon className="h-3.5 w-3.5" />}
-                  <span>{item.name}</span>
+                  {Icon && <Icon className="h-4 w-4 xl:h-3.5 xl:w-3.5 shrink-0" />}
+                  <span className="hidden xl:inline">{item.name}</span>
                 </a>
               )
             })}
