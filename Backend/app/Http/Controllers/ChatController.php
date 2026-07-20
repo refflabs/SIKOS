@@ -20,9 +20,7 @@ class ChatController extends Controller
             'messages.*.content' => 'required|string|max:1000',
         ]);
 
-        $part1 = 'hf_sXGwsn';
-        $part2 = 'DmJshXsoOeQwhduBwkjtvtGSOOBs';
-        $hfToken = env('HUGGINGFACE_TOKEN', $part1 . $part2);
+        $hfToken = env('HUGGINGFACE_TOKEN');
         
         $systemPrompt = <<<EOT
 Anda adalah 'Orion', asisten virtual AI pintar, futuristik, dan ramah untuk SIKOS (Sistem Informasi Kost Syariah) di Pekanbaru.

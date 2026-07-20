@@ -394,9 +394,46 @@ class BookingController extends Controller
         ]);
 
         $booking = Booking::findOrFail($id);
+        $base64Image = $request->image;
+        $url = null;
+
+        if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
+            $base64Image = substr($base64Image, strpos($base64Image, ',') + 1);
+            $type = strtolower($type[1]); // png, jpg, jpeg, gif, webp
+
+            if (!in_array($type, ['jpg', 'jpeg', 'gif', 'png', 'webp'])) {
+                return response()->json(['message' => 'Format gambar tidak valid. Hanya menerima jpg, jpeg, png, gif, webp'], 422);
+            }
+
+            $base64Image = str_replace(' ', '+', $base64Image);
+            $decodedData = base64_decode($base64Image);
+
+            if ($decodedData === false) {
+                return response()->json(['message' => 'Gagal membaca gambar'], 422);
+            }
+
+            // Batasi ukuran file maksimal 5MB
+            if (strlen($decodedData) > 5 * 1024 * 1024) {
+                return response()->json(['message' => 'Ukuran file maksimal adalah 5MB'], 422);
+            }
+
+            $filename = 'receipt_' . time() . '_' . uniqid() . '.' . $type;
+            
+            // Pastikan folder uploads ada
+            if (!file_exists(public_path('uploads'))) {
+                mkdir(public_path('uploads'), 0755, true);
+            }
+
+            file_put_contents(public_path('uploads/' . $filename), $decodedData);
+
+            $url = $request->getSchemeAndHttpHost() . '/uploads/' . $filename;
+        } else {
+            // Jika dikirim sebagai URL biasa
+            $url = $base64Image;
+        }
 
         $booking->update([
-            'payment_receipt' => $request->image
+            'payment_receipt' => $url
         ]);
 
         // Broadcast real-time update

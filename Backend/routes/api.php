@@ -23,7 +23,7 @@ Route::post('/verify/resend', [AuthController::class, 'resendOtp']);
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::post('/auth/google', [AuthController::class, 'googleLogin']);
-Route::post('/chat/ai', [ChatController::class, 'chatWithAi']);
+Route::post('/chat/ai', [ChatController::class, 'chatWithAi'])->middleware('throttle:30,1');
 Route::get('/ping', function () { return ['ping' => 'pong']; });
 
 // Rooms - public (bisa dilihat tanpa login)
