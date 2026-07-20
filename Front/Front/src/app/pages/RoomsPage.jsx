@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Search, SlidersHorizontal } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { ListingCard } from '../components/ListingCard'
 import { EmptyState } from '../components/EmptyState'
 import { useRoomsQuery } from '../../hooks/queries'

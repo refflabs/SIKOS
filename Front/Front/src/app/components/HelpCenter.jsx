@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { HelpCircle, ChevronDown, ChevronUp, MessageCircle, Mail, MapPin } from 'lucide-react'
-import { useTheme } from '../../context/ThemeContext'
+import { CONTACT_WHATSAPP } from '../../constants'
 
 const FAQS = [
   {
@@ -22,8 +22,6 @@ const FAQS = [
 ]
 
 export function HelpCenter() {
-  const { theme } = useTheme()
-  const isDark = theme === 'dark'
 
   const [openIndex, setOpenIndex] = useState(null)
   const toggle = (i) => setOpenIndex(openIndex === i ? null : i)
@@ -91,7 +89,7 @@ export function HelpCenter() {
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: 'var(--muted-foreground)' }}>WhatsApp</p>
                 <a
-                  href="https://wa.me/6281234567890?text=Halo%20Pak%20RT,%20saya%20butuh%20bantuan%20terkait%20kost."
+                  href={`https://wa.me/${CONTACT_WHATSAPP}?text=Halo%20Pak%20RT,%20saya%20butuh%20bantuan%20terkait%20kost.`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs font-semibold transition-colors duration-200"

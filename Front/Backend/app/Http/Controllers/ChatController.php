@@ -53,8 +53,7 @@ PENTING: Anda dapat memicu widget UI interaktif di aplikasi frontend dengan mela
 
         try {
             // Panggil API HuggingFace Serverless Inference (menggunakan model Qwen2.5-7B yang sangat cepat)
-            $response = Http::withoutVerifying()
-            ->withHeaders([
+            $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $hfToken,
             ])
             ->timeout(12)
@@ -87,37 +86,5 @@ PENTING: Anda dapat memicu widget UI interaktif di aplikasi frontend dengan mela
                 'source' => 'exception'
             ]);
         }
-
-        // Fallback: Jika HuggingFace gagal atau timeout, gunakan pencarian kata kunci cerdas secara lokal
-        $lastMessage = end($request->messages)['content'];
-        $fallbackReply = $this->findLocalResponse($lastMessage);
-
-        return response()->json([
-            'reply' => $fallbackReply,
-            'source' => 'local_kb'
-        ]);
-    }
-
-    /**
-     * Pencarian berbasis kata kunci lokal sebagai fallback jika API AI offline.
-     */
-    private function findLocalResponse($input)
-    {
-        $text = strtolower($input);
-        
-        if (str_contains($text, 'harga') || str_contains($text, 'biaya') || str_contains($text, 'sewa') || str_contains($text, 'berapa')) {
-            return "Harga kamar bervariasi sesuai tipe:\n• Tipe Kosongan: mulai Rp 500.000/bulan\n• Tipe Isian (lengkap): mulai Rp 750.000/bulan.\nSilakan cek tab 'Cari Kost' untuk info detail.";
-        }
-        if (str_contains($text, 'fasilitas') || str_contains($text, 'wifi') || str_contains($text, 'kamar mandi')) {
-            return "Fasilitas standar setiap kamar di Kost Pak RT meliputi:\n• Kamar mandi dalam\n• WiFi gratis cepat\n• Air bersih & listrik gratis\n• Lemari pakaian & meja belajar.";
-        }
-        if (str_contains($text, 'lokasi') || str_contains($text, 'alamat') || str_contains($text, 'jalan') || str_contains($text, 'dimana')) {
-            return "Lokasi Kost Pak RT:\nJl. Letjend. S.Parman, Gg. Al-Khalish No.18A, Cinta Raja, Sail, Kota Pekanbaru, Riau 28127. Dekat dengan kampus-kampus di Pekanbaru.";
-        }
-        if (str_contains($text, 'booking') || str_contains($text, 'pesan') || str_contains($text, 'cara')) {
-            return "Cara booking kamar kost:\n1. Pilih kamar di tab 'Cari Kost'.\n2. Klik 'Booking Sekarang'.\n3. Isi form pemesanan.\n4. Bayar via transfer dan unggah buktinya di tab 'Histori Pembayaran'.";
-        }
-        
-        return "Halo! Saya adalah Asisten AI Kost Pak RT. Maaf, saat ini koneksi AI saya sedang sibuk. Silakan tanyakan hal seputar harga kamar, fasilitas, lokasi, atau cara booking, atau Anda bisa beralih chat ke Pemilik Kost (Pak RT) langsung melalui tombol di atas.";
     }
 }

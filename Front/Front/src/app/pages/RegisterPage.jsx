@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Eye, EyeOff, User, Mail, Phone, Lock, CheckCircle } from 'lucide-react'
 import { parsePhoneNumber, isValidPhoneNumber } from 'libphonenumber-js'
 import { useAuth } from '../../context/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
-import { toast } from 'sonner'
+import { getAuthThemeTokens } from '../../styles/authThemeTokens'
+import { useGoogleAuth } from '../../hooks/useGoogleAuth'
 
 // ── InputField mengambil token T dari parent ──
 function InputField({ id, name, type = 'text', value, onChange, placeholder, required, autoComplete, icon: Icon, label, minLength, error, T }) {
@@ -49,62 +50,7 @@ export function RegisterPage() {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
-  // ── Token kontras tinggi untuk kedua mode ──
-  const T = isDark ? {
-    heading:          '#F3EFE0',          // teks heading — putih krem terang
-    subtext:          '#C2B29F',          // teks subtitle — abu krem
-    label:            '#D4C4A4',          // label input — krem terang
-    iconColor:        '#a8927e',          // warna ikon input — krem abu terang (sebelumnya #6a5040)
-    inputBg:          '#1a1208',
-    inputBgFocus:     '#261b0d',
-    inputBorder:      '#4a3520',
-    inputFocusBorder: '#B0BA99',
-    inputText:        '#F3EFE0',
-    errorBg:          'rgba(180,50,40,0.15)',
-    errorText:        '#e08070',
-    errorBorder:      'rgba(180,50,40,0.3)',
-    btnBg:            'linear-gradient(135deg,#B0BA99 0%,#8a9478 100%)',
-    btnText:          '#1F150C',
-    btnShadow:        '0 4px 16px rgba(176,186,153,0.22)',
-    dividerLine:      '#4a3520',          // garis divider — cokelat gelap
-    dividerText:      '#8a7060',          // teks divider — cokelat terang (sebelumnya #5a4030)
-    outlineBorder:    '#5a4228',          // outline border — cokelat sedang (sebelumnya #3a2a18)
-    outlineBg:        'transparent',
-    outlineBgHov:     'rgba(176,186,153,0.08)',
-    outlineBordHov:   '#B0BA99',
-    outlineText:      '#B0BA99',          // teks outline — hijau terang (sebelumnya #8a7060)
-    outlineTextHov:   '#F3EFE0',
-    linkColor:        '#B0BA99',
-    successBg:        'rgba(176,186,153,0.15)',
-    successText:      '#B0BA99',
-  } : {
-    heading:          '#1F150C',
-    subtext:          '#7a6247',
-    label:            '#1F150C',
-    iconColor:        '#7a6247',
-    inputBg:          '#F7F4EE',
-    inputBgFocus:     '#FDFCF9',
-    inputBorder:      '#D8D0BE',
-    inputFocusBorder: '#412D15',
-    inputText:        '#1F150C',
-    errorBg:          'rgba(192,57,43,0.08)',
-    errorText:        '#c0392b',
-    errorBorder:      'rgba(192,57,43,0.2)',
-    btnBg:            'linear-gradient(135deg,#412D15 0%,#2e1e0a 100%)',
-    btnText:          '#E1DCC9',
-    btnShadow:        '0 4px 16px rgba(65,45,21,0.28)',
-    dividerLine:      '#D8D0BE',
-    dividerText:      '#b8a898',
-    outlineBorder:    '#D8D0BE',
-    outlineBg:        'transparent',
-    outlineBgHov:     'rgba(65,45,21,0.05)',
-    outlineBordHov:   '#b8a898',
-    outlineText:      '#7a6247',
-    outlineTextHov:   '#1F150C',
-    linkColor:        '#412D15',
-    successBg:        'rgba(176,186,153,0.2)',
-    successText:      '#B0BA99',
-  }
+  const T = getAuthThemeTokens(isDark)
 
   const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', password_confirmation: '' })
   const [errors, setErrors] = useState({ name: '', email: '', phone: '', password: '', password_confirmation: '' })
@@ -114,61 +60,15 @@ export function RegisterPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
 
-  const handleGoogleLogin = async (response) => {
-    setError('')
-    setLoading(true)
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/google`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: response.credential })
-      })
-
-      if (!res.ok) {
-        const errData = await res.json()
-        throw new Error(errData.message || 'Gagal mendaftar menggunakan Google.')
-      }
-
-      const data = await res.json()
-      
-      localStorage.setItem('token', data.token)
-      localStorage.setItem('user', JSON.stringify(data.user))
-      window.dispatchEvent(new CustomEvent('sikos:auth-changed'))
-
-      toast.success('Berhasil mendaftar menggunakan Google!')
-      window.location.href = data.user?.role === 'admin' ? '/dashboard' : '/'
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    const initGoogle = () => {
-      /* global google */
-      if (typeof google !== 'undefined') {
-        google.accounts.id.initialize({
-          client_id: "1014355694630-6qd7gfhm24afa1vm67ddprcrg9g508ia.apps.googleusercontent.com",
-          callback: handleGoogleLogin
-        });
-        
-        google.accounts.id.renderButton(
-          document.getElementById("googleBtn"),
-          { 
-            theme: isDark ? "filled_black" : "outline", 
-            size: "large", 
-            width: 320,
-            text: "signup_with",
-            shape: "pill"
-          }
-        );
-      }
-    }
-    
-    const timer = setTimeout(initGoogle, 100)
-    return () => clearTimeout(timer)
-  }, [isDark])
+  // Gunakan hook Google Auth hasil deduplikasi
+  useGoogleAuth({
+    buttonId: 'googleBtn',
+    isDark,
+    mode: 'daftar',
+    isEnabled: true,
+    setError,
+    setLoading
+  })
 
   const handleChange = e => {
     const { name, value } = e.target

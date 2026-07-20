@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
+use App\Mail\SendOTPMail;
+use App\Mail\SendResetPasswordOTPMail;
 
 class AuthController extends Controller
 {
@@ -48,27 +54,17 @@ class AuthController extends Controller
             ]);
         }
 
-        // 4. Generate 6-digit OTP kriptografis aman dan atur waktu kedaluwarsa 15 menit
-        $otp = (string) random_int(100000, 999999);
-        $expiresAt = now()->addMinutes(15);
-
-        // 5. Menyimpan data user baru ke database (status email_verified_at masih null)
+        // 4. Menyimpan data user baru ke database (status email_verified_at masih null)
         $user = User::create([
             'name'                        => $request->name,
             'email'                       => $request->email,
             'password'                    => Hash::make($request->password),
             'phone'                       => $request->phone,
-            'verification_otp'            => $otp,
-            'verification_otp_expires_at' => $expiresAt,
             'email_verified_at'           => null,
         ]);
 
-        // 6. Mengirim kode OTP ke alamat email terdaftar menggunakan Mailable class
-        try {
-            \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\SendOTPMail($otp, $user->name));
-        } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error("Gagal mengirim email OTP: " . $e->getMessage());
-        }
+        // 5. Generate OTP & kirim email menggunakan helper
+        $otp = $this->generateAndSendOtp($user, SendOTPMail::class);
 
         $response = [
             'message' => 'Registrasi berhasil. Silakan verifikasi akun Anda.',
@@ -108,17 +104,7 @@ class AuthController extends Controller
         if (is_null($user->email_verified_at)) {
             Auth::logout();
 
-            $otp = (string) random_int(100000, 999999);
-            $user->update([
-                'verification_otp'            => $otp,
-                'verification_otp_expires_at' => now()->addMinutes(15),
-            ]);
-
-            try {
-                \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\SendOTPMail($otp, $user->name));
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error("Gagal mengirim email OTP: " . $e->getMessage());
-            }
+            $otp = $this->generateAndSendOtp($user, SendOTPMail::class);
 
             $response = [
                 'message'    => 'Akun Anda belum terverifikasi. Silakan lakukan verifikasi.',
@@ -205,17 +191,7 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $otp = (string) random_int(100000, 999999);
-        $user->update([
-            'verification_otp'            => $otp,
-            'verification_otp_expires_at' => now()->addMinutes(15),
-        ]);
-
-        try {
-            \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\SendOTPMail($otp, $user->name));
-        } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error("Gagal mengirim email OTP: " . $e->getMessage());
-        }
+        $otp = $this->generateAndSendOtp($user, SendOTPMail::class);
 
         $response = [
             'message' => 'Kode OTP baru berhasil dikirim.',
@@ -269,17 +245,7 @@ class AuthController extends Controller
             ]);
         }
 
-        $otp = (string) random_int(100000, 999999);
-        $user->update([
-            'verification_otp' => $otp,
-            'verification_otp_expires_at' => now()->addMinutes(15),
-        ]);
-
-        try {
-            \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\SendResetPasswordOTPMail($otp, $user->name));
-        } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error("Gagal mengirim email OTP Reset Password: " . $e->getMessage());
-        }
+        $otp = $this->generateAndSendOtp($user, SendResetPasswordOTPMail::class);
 
         $response = [
             'message' => 'Kode OTP reset password telah dikirim ke email Anda.',
@@ -343,10 +309,10 @@ class AuthController extends Controller
         ]);
 
         // Verifikasi ID Token langsung ke server autentikasi Google
-        $response = \Illuminate\Support\Facades\Http::get("https://oauth2.googleapis.com/tokeninfo?id_token=" . $request->token);
+        $response = Http::get("https://oauth2.googleapis.com/tokeninfo?id_token=" . $request->token);
 
         if (!$response->successful()) {
-            throw \Illuminate\Validation\ValidationException::withMessages([
+            throw ValidationException::withMessages([
                 'token' => ['Kredensial login Google tidak valid atau kedaluwarsa.'],
             ]);
         }
@@ -355,7 +321,7 @@ class AuthController extends Controller
         
         // Pastikan email telah diverifikasi oleh Google
         if (!isset($googleUser['email_verified']) || ($googleUser['email_verified'] !== 'true' && $googleUser['email_verified'] !== true)) {
-            throw \Illuminate\Validation\ValidationException::withMessages([
+            throw ValidationException::withMessages([
                 'token' => ['Alamat email Google Anda belum terverifikasi.'],
             ]);
         }
@@ -367,7 +333,7 @@ class AuthController extends Controller
             ['email' => $email],
             [
                 'name'              => $googleUser['name'],
-                'password'          => Hash::make(\Illuminate\Support\Str::random(24)),
+                'password'          => Hash::make(Str::random(24)),
                 'phone'             => '—',
                 'email_verified_at' => now(),
             ]
@@ -380,5 +346,25 @@ class AuthController extends Controller
             'token' => $token,
             'user'  => $user,
         ]);
+    }
+
+    /**
+     * Helper privat untuk meng-generate OTP dan mengirimkannya via email.
+     */
+    private function generateAndSendOtp(User $user, string $mailClass)
+    {
+        $otp = (string) random_int(100000, 999999);
+        $user->update([
+            'verification_otp'            => $otp,
+            'verification_otp_expires_at' => now()->addMinutes(15),
+        ]);
+
+        try {
+            Mail::to($user->email)->send(new $mailClass($otp, $user->name));
+        } catch (\Throwable $e) {
+            Log::error("Gagal mengirim email OTP: " . $e->getMessage());
+        }
+
+        return $otp;
     }
 }

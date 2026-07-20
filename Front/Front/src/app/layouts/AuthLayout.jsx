@@ -1,5 +1,4 @@
-import { Building2, ArrowLeft } from 'lucide-react'
-import { useTheme } from '../../context/ThemeContext'
+import { ArrowLeft } from 'lucide-react'
 
 const QUOTES = [
   { text: 'Hunian nyaman dimulai dari pilihan yang tepat.', author: 'Pak RT' },
@@ -9,8 +8,6 @@ const QUOTES = [
 const randomQuote = QUOTES[Math.floor(Math.random() * QUOTES.length)]
 
 export function AuthLayout({ children }) {
-  const { theme } = useTheme()
-  const isDark = theme === 'dark'
 
   return (
     <div

@@ -1,4 +1,4 @@
-import { ArrowRight, Shield, Wifi, MapPin, Star, Users, Home, CheckCircle, Search, Calendar, Key } from 'lucide-react'
+import { ArrowRight, Shield, Wifi, MapPin, Star, Users, Home, Search, Calendar, Key } from 'lucide-react'
 import { useRoomsQuery } from '../../hooks/queries'
 import { isRoomAvailable } from '../../api/roomUtils'
 import { ListingCard } from '../components/ListingCard'
@@ -10,6 +10,7 @@ import { BookingHistory } from '../components/BookingHistory'
 import { PaymentHistory } from '../components/PaymentHistory'
 import { ProfileView } from '../components/ProfileView'
 import { HelpCenter } from '../components/HelpCenter'
+import { CONTACT_WHATSAPP } from '../../constants'
 
 /* ─── Static Data ─── */
 const TRUST_ITEMS = [
@@ -347,7 +348,7 @@ export function LandingPage({ search = '' }) {
               style={{ background: 'var(--card)', borderColor: 'var(--border)' }}
             >
               <p className="text-sm mb-4" style={{ color: 'var(--muted-foreground)' }}>Maaf, saat ini seluruh kamar sedang terisi penuh.</p>
-              <a href="https://wa.me/6281234567890?text=Halo%20Pak%20RT,%20apakah%20ada%20daftar%20tunggu%20untuk%20kamar%20kost?">
+              <a href={`https://wa.me/${CONTACT_WHATSAPP}?text=Halo%20Pak%20RT,%20apakah%20ada%20daftar%20tunggu%20untuk%20kamar%20kost?`}>
                 <button
                   className="px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 cursor-pointer"
                   style={{ background: 'var(--accent)', color: '#ffffff' }}

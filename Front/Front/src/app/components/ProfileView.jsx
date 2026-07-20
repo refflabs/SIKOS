@@ -1,9 +1,7 @@
 import { User, Mail, Phone, Shield } from 'lucide-react'
-import { useTheme } from '../../context/ThemeContext'
+import { CONTACT_WHATSAPP } from '../../constants'
 
 export function ProfileView({ user }) {
-  const { theme } = useTheme()
-  const isDark = theme === 'dark'
 
   if (!user) return null
 
@@ -81,7 +79,7 @@ export function ProfileView({ user }) {
         <span>ℹ️</span>
         <span>Untuk mengubah data profil, hubungi pengelola via{' '}
           <a
-            href="https://wa.me/6281234567890?text=Halo%20Pak%20RT,%20saya%20ingin%20mengubah%20data%20profil%20saya."
+            href={`https://wa.me/${CONTACT_WHATSAPP}?text=Halo%20Pak%20RT,%20saya%20ingin%20mengubah%20data%20profil%20saya.`}
             target="_blank"
             rel="noopener noreferrer"
             className="font-semibold underline"

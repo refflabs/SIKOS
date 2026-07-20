@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Eye, EyeOff, User, Shield, Mail, Lock } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
-import { toast } from 'sonner'
+import { getAuthThemeTokens } from '../../styles/authThemeTokens'
+import { useGoogleAuth } from '../../hooks/useGoogleAuth'
 
 const ROLES = [
   { id: 'tenant', label: 'Penghuni Kost', desc: 'Booking, profil & bantuan', icon: User },
@@ -14,145 +15,25 @@ export function LoginPage() {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
-  // ── Token kontras tinggi untuk kedua mode ──
-  const T = isDark ? {
-    heading:        '#F3EFE0',          // teks heading — putih krem terang
-    subtext:        '#C2B29F',          // teks subtitle — abu krem
-    label:          '#D4C4A4',          // label input — krem terang
-    roleLabel:      '#EAE0C8',          // nama role — krem putih terang
-    roleDesc:       '#a8927e',          // deskripsi role — abu terang (sebelumnya #6a5040)
-    roleBgIdle:     '#261b0d',          // bg role card tidak aktif
-    roleBgActive:   '#2e1e0a',          // bg role card aktif
-    roleBorderIdle: '#3a2a18',
-    roleBorderAct:  '#B0BA99',
-    roleIconIdle:   { bg: '#1d1409', color: '#a8927e', border: '1px solid #3a2a18' },
-    roleIconActive: { bg: 'linear-gradient(135deg,#B0BA99,#8a9478)', color: '#1F150C' },
-    iconColor:      '#a8927e',          // warna ikon input — krem abu terang (sebelumnya #6a5040)
-    inputBg:        '#1a1208',          // input bg — sedikit lebih gelap dari card
-    inputBgFocus:   '#261b0d',
-    inputBorder:    '#4a3520',
-    inputBorderFocus: '#B0BA99',
-    inputText:      '#F3EFE0',
-    inputPlaceholder: '#8c7460',        // placeholder — cokelat terang (sebelumnya #6a5040)
-    forgotColor:    '#B0BA99',          // link lupa password — hijau terang (sebelumnya #8a7060)
-    forgotHover:    '#F3EFE0',          // hover link — putih krem terang
-    errorBg:        'rgba(180,50,40,0.15)',
-    errorText:      '#e08070',
-    errorBorder:    'rgba(180,50,40,0.3)',
-    btnBg:          'linear-gradient(135deg,#B0BA99 0%,#8a9478 100%)',
-    btnText:        '#1F150C',
-    btnShadow:      '0 4px 16px rgba(176,186,153,0.22)',
-    dividerLine:    '#4a3520',          // garis divider — cokelat gelap
-    dividerText:    '#8a7060',          // teks divider — cokelat terang (sebelumnya #5a4030)
-    outlineBorder:  '#5a4228',          // outline border — cokelat sedang (sebelumnya #3a2a18)
-    outlineBg:      'transparent',
-    outlineBgHov:   'rgba(176,186,153,0.07)',
-    outlineBordHov: '#B0BA99',
-    outlineText:    '#B0BA99',          // teks outline — hijau terang (sebelumnya #8a7060)
-    outlineTextHov: '#F3EFE0',
-    linkColor:      '#B0BA99',
-  } : {
-    heading:        '#1F150C',
-    subtext:        '#7a6247',
-    label:          '#1F150C',
-    roleLabel:      '#1F150C',
-    roleDesc:       '#9a8060',
-    roleBgIdle:     '#F7F4EE',
-    roleBgActive:   'rgba(65,45,21,0.06)',
-    roleBorderIdle: '#D8D0BE',
-    roleBorderAct:  '#412D15',
-    roleIconIdle:   { bg: '#FDFCF9', color: '#7a6247', border: '1px solid #D8D0BE' },
-    roleIconActive: { bg: 'linear-gradient(135deg,#412D15,#2e1e0a)', color: '#E1DCC9' },
-    iconColor:      '#7a6247',          // warna ikon input — cokelat
-    inputBg:        '#F7F4EE',
-    inputBgFocus:   '#FDFCF9',
-    inputBorder:    '#D8D0BE',
-    inputBorderFocus: '#412D15',
-    inputText:      '#1F150C',
-    inputPlaceholder: '#b8a898',
-    forgotColor:    '#7a6247',
-    forgotHover:    '#412D15',
-    errorBg:        'rgba(192,57,43,0.08)',
-    errorText:      '#c0392b',
-    errorBorder:    'rgba(192,57,43,0.2)',
-    btnBg:          'linear-gradient(135deg,#412D15 0%,#2e1e0a 100%)',
-    btnText:        '#E1DCC9',
-    btnShadow:      '0 4px 16px rgba(65,45,21,0.28)',
-    dividerLine:    '#D8D0BE',
-    dividerText:    '#b8a898',
-    outlineBorder:  '#D8D0BE',
-    outlineBg:      'transparent',
-    outlineBgHov:   'rgba(65,45,21,0.05)',
-    outlineBordHov: '#b8a898',
-    outlineText:    '#7a6247',
-    outlineTextHov: '#1F150C',
-    linkColor:      '#412D15',
-  }
+  const T = getAuthThemeTokens(isDark)
 
   const [selectedRole, setSelectedRole] = useState('tenant')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const handleGoogleLogin = async (response) => {
-    setError('')
-    setLoading(true)
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/google`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: response.credential })
-      })
-
-      if (!res.ok) {
-        const errData = await res.json()
-        throw new Error(errData.message || 'Gagal masuk menggunakan Google.')
-      }
-
-      const data = await res.json()
-      
-      localStorage.setItem('token', data.token)
-      localStorage.setItem('user', JSON.stringify(data.user))
-      window.dispatchEvent(new CustomEvent('sikos:auth-changed'))
-
-      toast.success('Berhasil masuk menggunakan Google!')
-      window.location.href = data.user?.role === 'admin' ? '/dashboard' : '/'
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    if (selectedRole === 'tenant') {
-      const initGoogle = () => {
-        /* global google */
-        if (typeof google !== 'undefined') {
-          google.accounts.id.initialize({
-            client_id: "1014355694630-6qd7gfhm24afa1vm67ddprcrg9g508ia.apps.googleusercontent.com",
-            callback: handleGoogleLogin
-          });
-          
-          google.accounts.id.renderButton(
-            document.getElementById("googleBtn"),
-            { 
-              theme: isDark ? "filled_black" : "outline", 
-              size: "large", 
-              width: 320,
-              text: "signin_with",
-              shape: "pill"
-            }
-          );
-        }
-      }
-      
-      const timer = setTimeout(initGoogle, 100)
-      return () => clearTimeout(timer)
-    }
-  }, [selectedRole, isDark])
+  // Gunakan hook Google Auth hasil deduplikasi
+  useGoogleAuth({
+    buttonId: 'googleBtn',
+    isDark,
+    mode: 'masuk',
+    isEnabled: selectedRole === 'tenant',
+    setError,
+    setLoading
+  })
 
   const handleSubmit = async (e) => {
     e.preventDefault()

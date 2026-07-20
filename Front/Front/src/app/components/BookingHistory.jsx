@@ -5,7 +5,7 @@ import { EmptyState } from './EmptyState'
 import { QueryError } from '../../components/QueryError'
 import { useBookingsQuery } from '../../hooks/queries'
 import { formatPrice } from '../../api/roomUtils'
-import { toast } from 'sonner'
+import { CONTACT_WHATSAPP } from '../../constants'
 
 /**
  * BookingHistory — shows booking status, check-in/out, duration.
@@ -85,7 +85,7 @@ function BookingHistoryItem({ booking: b, waMessage, isFirst }) {
   const statusLabel =
     b.status === 'confirmed' || b.status === 'accepted' ? 'Aktif'
     : b.status === 'pending' ? 'Menunggu Konfirmasi'
-    : b.status === 'rejected' ? 'Ditolak'
+    : b.status === 'rejected' ? 'Ditolak / Kadaluarsa'
     : 'Selesai'
 
   const statusBadgeVariant =
@@ -164,21 +164,21 @@ function BookingHistoryItem({ booking: b, waMessage, isFirst }) {
       {/* Action buttons */}
       <div className="flex flex-wrap sm:items-center gap-2.5">
         {/* Payment status indicator — user sees this, upload is in PaymentHistory */}
-        {b.status === 'pending' && (
+        {(b.status === 'pending' || b.status === 'rejected') && (
           <span
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium border"
             style={{
-              borderColor: (b.has_payment_receipt || b.payment_receipt) ? 'var(--primary)' : 'var(--accent, #c79a63)',
-              color: (b.has_payment_receipt || b.payment_receipt) ? 'var(--primary)' : 'var(--accent, #c79a63)',
+              borderColor: b.status === 'rejected' ? '#dc2626' : (b.has_payment_receipt || b.payment_receipt) ? 'var(--primary)' : 'var(--accent, #c79a63)',
+              color: b.status === 'rejected' ? '#dc2626' : (b.has_payment_receipt || b.payment_receipt) ? 'var(--primary)' : 'var(--accent, #c79a63)',
               background: 'transparent',
             }}
           >
-            {(b.has_payment_receipt || b.payment_receipt) ? '✓ Bukti terunggah' : '⏳ Menunggu bukti bayar'}
+            {b.status === 'rejected' ? '✗ Pembayaran kadaluarsa/ditolak' : (b.has_payment_receipt || b.payment_receipt) ? '✓ Bukti terunggah' : '⏳ Menunggu bukti bayar'}
           </span>
         )}
 
         <a
-          href={`https://wa.me/6281234567890?text=${encodeURIComponent(waMessage)}`}
+          href={`https://wa.me/${CONTACT_WHATSAPP}?text=${encodeURIComponent(waMessage)}`}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center justify-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold transition-all duration-200 border cursor-pointer"

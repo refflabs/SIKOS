@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getRooms, getRoomById, createRoom, updateRoom, deleteRoom } from '../api/rooms'
 import { getBookings, createBooking, updateBookingStatus, deleteBooking, requestBookingRenewal, handleBookingRenewalAction } from '../api/bookings'
-import { getUsers, getUserById, updateUser, deleteUser } from '../api/users'
+import { getUsers, updateUser, deleteUser } from '../api/users'
 import { getPaymentSummary, getPayments, verifyPayment } from '../api/payments'
 
 export const roomKeys = {

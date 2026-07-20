@@ -279,18 +279,82 @@ class PaymentController extends Controller
         }
 
         // 3. Jika booking sudah disetujui / lunas, tidak perlu dibayar lagi
-        if ($booking->status === 'accepted') {
-            return response()->json(['message' => 'Pemesanan ini sudah lunas/disetujui'], 422);
+        if (in_array($booking->status, ['accepted', 'confirmed', 'ended'])) {
+            return response()->json(['message' => 'Pemesanan ini sudah lunas, disetujui, atau telah berakhir'], 422);
         }
 
-        // 4. Optimasi: Gunakan token Snap yang sudah ada di database jika belum kedaluwarsa
+        // 4. Jika booking ditolak (rejected), siapkan kembali untuk pembayaran baru (jika kamar masih tersedia)
+        if ($booking->status === 'rejected') {
+            if ($booking->room && $booking->room->stock <= 0) {
+                return response()->json([
+                    'message' => 'Kamar ini sudah penuh. Anda tidak dapat melakukan pembayaran kembali untuk pemesanan ini.'
+                ], 422);
+            }
+            
+            // Ubah status ke pending dan bersihkan token lama
+            $booking->status = 'pending';
+            $booking->midtrans_snap_token = null;
+            $booking->midtrans_order_id = null;
+            $booking->save();
+
+            // Sinkronkan kembali ketersediaan kamar karena status berubah jadi pending
+            if ($booking->room) {
+                $bookingController = new BookingController();
+                $bookingController->syncRoomAvailability($booking->room);
+            }
+        }
+
+        // 5. Cek apakah token Midtrans sudah kadaluarsa/batal di pihak Midtrans
         if ($booking->midtrans_snap_token && $booking->midtrans_order_id) {
             $isProduction = config('services.midtrans.is_production');
-            $baseUrl = $isProduction ? 'https://app.midtrans.com' : 'https://app.sandbox.midtrans.com';
-            return response()->json([
-                'snap_token' => $booking->midtrans_snap_token,
-                'redirect_url' => $baseUrl . '/snap/v2/vtweb/' . $booking->midtrans_snap_token
-            ]);
+            $serverKey = config('services.midtrans.server_key');
+            $statusUrl = $isProduction 
+                ? 'https://api.midtrans.com/v2/' . $booking->midtrans_order_id . '/status' 
+                : 'https://api.sandbox.midtrans.com/v2/' . $booking->midtrans_order_id . '/status';
+
+            $shouldRegenerate = false;
+            try {
+                $statusResponse = \Illuminate\Support\Facades\Http::withBasicAuth($serverKey, '')
+                    ->withHeaders([
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json',
+                    ])
+                    ->get($statusUrl);
+
+                if ($statusResponse->status() === 404) {
+                    // Transaksi tidak ditemukan di Midtrans (mungkin karena belum selesai/sudah hilang/kadaluarsa)
+                    $shouldRegenerate = true;
+                } else if ($statusResponse->successful()) {
+                    $statusData = $statusResponse->json();
+                    $transactionStatus = $statusData['transaction_status'] ?? '';
+                    if (in_array($transactionStatus, ['expire', 'cancel', 'deny'])) {
+                        $shouldRegenerate = true;
+                    }
+                }
+            } catch (\Exception $e) {
+                // Jika terjadi error saat memanggil API, gunakan pengecekan berdasarkan waktu pembuatan
+                $parts = explode('-', $booking->midtrans_order_id);
+                $timestamp = (int) end($parts);
+                // Jika sudah lewat 23 jam, anggap kadaluarsa
+                if (time() - $timestamp > 82800) {
+                    $shouldRegenerate = true;
+                }
+                \Log::error("Gagal memeriksa status transaksi Midtrans: " . $e->getMessage());
+            }
+
+            if ($shouldRegenerate) {
+                $booking->update([
+                    'midtrans_snap_token' => null,
+                    'midtrans_order_id' => null
+                ]);
+            } else {
+                // Token masih aktif dan belum kadaluarsa, gunakan token yang ada
+                $baseUrl = $isProduction ? 'https://app.midtrans.com' : 'https://app.sandbox.midtrans.com';
+                return response()->json([
+                    'snap_token' => $booking->midtrans_snap_token,
+                    'redirect_url' => $baseUrl . '/snap/v2/vtweb/' . $booking->midtrans_snap_token
+                ]);
+            }
         }
 
         // 5. Setup kredensial & URL Endpoint API Midtrans berdasarkan mode (Sandbox / Production)

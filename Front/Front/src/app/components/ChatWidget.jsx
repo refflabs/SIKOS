@@ -5,65 +5,10 @@ import { useSocket } from '../../context/SocketContext'
 import { getSocket } from '../../realtime/socketClient'
 import { RealtimeEvents } from '../../realtime/events'
 import { useRoomsQuery } from '../../hooks/queries'
+import { CONTACT_WHATSAPP } from '../../constants'
 
 /* ─── Config ─── */
 const MAX_MESSAGE_LENGTH = 500
-
-/* ─── AI Knowledge Base: 10 Q&A with keyword triggers ─── */
-const AI_KB = [
-  {
-    id: 'harga',
-    question: 'Berapa harga kamar per bulan?',
-    answer: 'Harga sewa kamar bervariasi sesuai tipe:\n• Tipe Kosongan: mulai Rp 500.000/bulan\n• Tipe Isian (lengkap): mulai Rp 750.000/bulan\nSilakan cek rekomendasi kamar di bawah ini atau buka halaman Cari Kost.',
-    keywords: ['harga', 'biaya', 'tarif', 'bayar', 'sewa', 'mahal', 'murah', 'berapa', 'cost', 'price'],
-  },
-  {
-    id: 'fasilitas',
-    question: 'Fasilitas apa saja yang tersedia?',
-    answer: 'Fasilitas standar setiap kamar:\n• WiFi gratis cepat\n• Kamar mandi dalam\n• Lemari pakaian\n• Meja belajar\n• Listrik & air sudah termasuk\n\nTipe Isian menambah: kasur springbed, bantal, guling, dan cermin.',
-    keywords: ['fasilitas', 'fasiliti', 'lengkap', 'wifi', 'kasur', 'ac', 'air', 'listrik', 'lemari', 'meja', 'kamar mandi', 'apa saja'],
-  },
-  {
-    id: 'booking',
-    question: 'Bagaimana cara booking kamar?',
-    answer: 'Alur booking kamar di SIKOS:\n1. Cari kamar di halaman Cari Kost.\n2. Klik Booking Sekarang.\n3. Isi data pengontrak.\n4. Lakukan transfer dan upload bukti bayar di tab Histori Pembayaran.',
-    keywords: ['booking', 'pesan', 'cara', 'gimana', 'bagaimana', 'reservasi', 'daftar', 'mendaftar', 'sewa'],
-  },
-  {
-    id: 'perempuan',
-    question: 'Apakah ada kost untuk perempuan?',
-    answer: 'Ya! Kami menyediakan kost syariah untuk putra dan putri secara terpisah. Tamu lawan jenis non-muhrim dilarang masuk kamar demi ketertiban bersama.',
-    keywords: ['perempuan', 'putri', 'wanita', 'cewek', 'laki', 'putra', 'cowok', 'syariah', 'aturan', 'gender'],
-  },
-  {
-    id: 'lokasi',
-    question: 'Lokasi kost di mana?',
-    answer: 'Lokasi Kost Pak RT:\nJl. Letjend. S.Parman, Gg. Al-Khalish No.18A, Cinta Raja, Sail, Kota Pekanbaru, Riau 28127. Dekat dengan pusat pendidikan dan kuliner.',
-    keywords: ['lokasi', 'alamat', 'dimana', 'di mana', 'jalan', 'maps', 'peta', 'parkir', 'jauh', 'dekat', 'tempat'],
-  },
-]
-
-/* ─── AI keyword matching engine ─── */
-function findAIResponse(input) {
-  const text = input.toLowerCase().trim()
-  if (!text) return null
-
-  let bestMatch = null
-  let bestScore = 0
-
-  for (const item of AI_KB) {
-    let score = 0
-    for (const kw of item.keywords) {
-      if (text.includes(kw)) score += kw.split(' ').length
-    }
-    if (score > bestScore) {
-      bestScore = score
-      bestMatch = item
-    }
-  }
-
-  return bestScore > 0 ? bestMatch : null
-}
 
 /* ─── Parser Tag Widget ─── */
 function parseWidgetTag(text) {
@@ -198,7 +143,7 @@ function ContactCardWidget() {
       </div>
       <div className="grid grid-cols-2 gap-2 pt-1">
         <a
-          href="https://wa.me/6281234567890?text=Halo%20Pak%20RT,%20saya%20tertarik%20dengan%20Kost%20Pak%20RT."
+          href={`https://wa.me/${CONTACT_WHATSAPP}?text=Halo%20Pak%20RT,%20saya%20tertarik%20dengan%20Kost%20Pak%20RT.`}
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center justify-center gap-1.5 py-2 rounded-xl text-[10px] font-bold bg-green-600 hover:bg-green-700 text-white transition-colors cursor-pointer"
@@ -458,24 +403,9 @@ export function ChatWidget() {
         isAutoReply: true,
       }])
     } catch (err) {
-      // Offline / Error fallback to keyword engine
-      const match = findAIResponse(trimmed)
-      
-      let fallbackText = 'Maaf, saya tidak begitu mengerti pertanyaan tersebut. Silakan tanyakan informasi seputar harga sewa, fasilitas, lokasi, atau tata cara booking kost Pak RT.'
-      if (match) {
-        fallbackText = match.answer
-        if (match.id === 'harga' || match.id === 'ketersediaan') {
-          fallbackText += ' [ROOMS_CAROUSEL]'
-        } else if (match.id === 'lokasi' || match.id === 'kontak') {
-          fallbackText += ' [CONTACT_CARD]'
-        } else if (match.id === 'booking') {
-          fallbackText += ' [BOOKING_WIDGET]'
-        }
-      }
-
       setAiMessages(prev => [...prev, {
         id: `ai-reply-fallback-${Date.now()}`,
-        text: fallbackText,
+        text: 'Maaf, koneksi ke asisten virtual Orion terputus saat ini. Silakan coba beberapa saat lagi atau hubungi Pak RT.',
         role: 'admin',
         timestamp: new Date().toISOString(),
         isAutoReply: true,
@@ -500,18 +430,15 @@ export function ChatWidget() {
     }
     setMessages(prev => [...prev, optimistic])
 
-    // If offline — try AI keyword match as quick auto reply
+    // If offline — show quick offline auto reply
     if (!adminOnline) {
       setMessages(prev => prev.map(m => m.id === tempId ? { ...m, status: 'read', isFaq: true } : m))
       setAiTyping(true)
-      const match = findAIResponse(trimmed)
       setTimeout(() => {
         setAiTyping(false)
         const aiMsg = {
           id: `ai-${Date.now()}`,
-          text: match
-            ? match.answer
-            : 'Maaf, Pak RT sedang offline saat ini. Pesan Anda telah dikirim dan akan segera dijawab ketika beliau aktif kembali. Jika mendesak, silakan klik tombol WhatsApp hijau di atas. 🙏',
+          text: 'Maaf, Pak RT sedang offline saat ini. Pesan Anda telah dikirim dan akan segera dijawab ketika beliau aktif kembali. Jika mendesak, silakan klik tombol WhatsApp hijau di atas. 🙏',
           role: 'admin',
           timestamp: new Date().toISOString(),
           isAutoReply: true,
@@ -616,14 +543,7 @@ export function ChatWidget() {
             animation: 'chatSlideIn 0.2s cubic-bezier(0.34,1.56,0.64,1)',
           }}
         >
-          <style>{`
-            @keyframes chatSlideIn {
-              from { opacity: 0; transform: translateY(12px) scale(0.97); }
-              to   { opacity: 1; transform: translateY(0) scale(1); }
-            }
-            .scrollbar-none::-webkit-scrollbar { display: none; }
-            .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
-          `}</style>
+
 
           {/* ── Header ── */}
           <div
@@ -664,7 +584,7 @@ export function ChatWidget() {
 
             {/* WA Link */}
             <a
-              href="https://wa.me/6281234567890?text=Halo%20Pak%20RT,%20saya%20butuh%20bantuan%20terkait%20kost."
+              href={`https://wa.me/${CONTACT_WHATSAPP}?text=Halo%20Pak%20RT,%20saya%20butuh%20bantuan%20terkait%20kost.`}
               target="_blank"
               rel="noopener noreferrer"
               title="Hubungi via WhatsApp"
@@ -838,7 +758,7 @@ export function ChatWidget() {
                     </button>
                   </a>
                   <a
-                    href="https://wa.me/6281234567890?text=Halo%20Pak%20RT."
+                    href={`https://wa.me/${CONTACT_WHATSAPP}?text=Halo%20Pak%20RT.`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block w-full"
@@ -935,8 +855,6 @@ export function ChatWidget() {
                         animation: `bounce 1s ease-in-out ${i * 0.15}s infinite`,
                       }}
                     />
-                  ))}
-                  <style>{`@keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-5px)} }`}</style>
                 </div>
               </div>
             )}

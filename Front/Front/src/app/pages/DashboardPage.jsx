@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Building2, CalendarDays, DoorOpen, Inbox, Save, Sparkles, Phone, MapPin, Eye, Bell, Settings, Shield, MessageSquare, ArrowRight, Pencil, Plus, Trash2, Upload, Users } from 'lucide-react'
+import { Building2, CalendarDays, DoorOpen, Inbox, Save, Sparkles, Phone, MapPin, Eye, Settings, Shield, MessageSquare, ArrowRight, Pencil, Plus, Trash2, Upload, Users } from 'lucide-react'
 import { AdminLayout } from '../layouts/AdminLayout'
 import { StatCard } from '../components/StatCard'
 import { Badge } from '../components/Badge'
@@ -91,7 +91,6 @@ export function DashboardPage({ search = '' }) {
       const data = await getBookingById(bookingId)
       setViewingReceipt(data.payment_receipt || 'no_receipt')
     } catch (err) {
-      console.error(err)
       toast.error('Gagal memuat bukti pembayaran')
       setViewingReceipt(null)
     }

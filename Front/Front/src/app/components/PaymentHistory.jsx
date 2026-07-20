@@ -151,17 +151,15 @@ function PaymentRow({ booking: b, refetch }) {
   let statusLabel = 'Belum Upload Bukti'
   let statusVariant = 'pending' // 'pending' | 'waiting' | 'verified' | 'rejected'
 
-  if (b.payment_receipt || b.has_payment_receipt) {
-    if (b.status === 'accepted' || b.status === 'confirmed') {
-      statusLabel = 'Lunas / Terverifikasi'
-      statusVariant = 'verified'
-    } else if (b.status === 'rejected') {
-      statusLabel = 'Ditolak / Gagal'
-      statusVariant = 'rejected'
-    } else {
-      statusLabel = 'Menunggu Verifikasi'
-      statusVariant = 'waiting'
-    }
+  if (b.status === 'accepted' || b.status === 'confirmed') {
+    statusLabel = 'Lunas / Terverifikasi'
+    statusVariant = 'verified'
+  } else if (b.status === 'rejected') {
+    statusLabel = 'Ditolak / Kadaluarsa'
+    statusVariant = 'rejected'
+  } else if (b.payment_receipt || b.has_payment_receipt) {
+    statusLabel = 'Menunggu Verifikasi'
+    statusVariant = 'waiting'
   }
 
   const statusStyle = {
@@ -272,7 +270,7 @@ function PaymentRow({ booking: b, refetch }) {
         )}
 
         {/* Pay Online with Midtrans */}
-        {b.status === 'pending' && (
+        {(b.status === 'pending' || b.status === 'rejected') && (
           <button
             onClick={handleOnlinePayment}
             disabled={isProcessingPayment}
@@ -292,14 +290,14 @@ function PaymentRow({ booking: b, refetch }) {
             ) : (
               <>
                 <CreditCard className="h-3 w-3" />
-                Bayar Sekarang (Online)
+                {b.status === 'rejected' ? 'Bayar Ulang (Online)' : 'Bayar Sekarang (Online)'}
               </>
             )}
           </button>
         )}
 
-        {/* Upload receipt — only for pending bookings */}
-        {b.status === 'pending' && (
+        {/* Upload receipt — only for pending or rejected bookings */}
+        {(b.status === 'pending' || b.status === 'rejected') && (
           <label
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer border"
             style={{
@@ -319,7 +317,7 @@ function PaymentRow({ booking: b, refetch }) {
             ) : (
               <>
                 <Upload className="h-3 w-3" />
-                {(b.has_payment_receipt || b.payment_receipt) ? 'Ganti Bukti' : 'Upload Bukti Bayar'}
+                {b.status === 'rejected' ? 'Upload Ulang Bukti' : ((b.has_payment_receipt || b.payment_receipt) ? 'Ganti Bukti' : 'Upload Bukti Bayar')}
               </>
             )}
             <input
