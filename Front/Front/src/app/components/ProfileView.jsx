@@ -76,7 +76,7 @@ export function ProfileView({ user }) {
         className="mt-5 px-4 py-3 rounded-xl text-xs flex items-center gap-2"
         style={{ background: 'var(--secondary)', border: '1px solid var(--border)', color: 'var(--muted-foreground)' }}
       >
-        <span>ℹ️</span>
+        <span>📝</span>
         <span>Untuk mengubah data profil, hubungi pengelola via{' '}
           <a
             href={`https://wa.me/${CONTACT_WHATSAPP}?text=Halo%20Pak%20RT,%20saya%20ingin%20mengubah%20data%20profil%20saya.`}
