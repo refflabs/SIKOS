@@ -471,7 +471,10 @@ class PaymentController extends Controller
 
         // 4. Jika status berubah, update database & jalankan logic pasca-pembayaran
         if ($newStatus && $booking->status !== $newStatus) {
-            $booking->update(['status' => $newStatus]);
+            $booking->update([
+                'status' => $newStatus,
+                'notes' => in_array($transactionStatus, ['deny', 'expire', 'cancel']) ? $transactionStatus : $booking->notes
+            ]);
             
             // Sinkronisasi status ketersediaan kamar kost (stok kamar dibebaskan jika rejected)
             if ($booking->room) {

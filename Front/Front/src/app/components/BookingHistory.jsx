@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Inbox, CalendarDays, Clock, Loader2 } from 'lucide-react'
+import { Inbox, CalendarDays, Clock, Loader2, XCircle, CheckCircle2 } from 'lucide-react'
 import { Badge } from './Badge'
 import { EmptyState } from './EmptyState'
 import { QueryError } from '../../components/QueryError'
@@ -81,15 +81,12 @@ function BookingHistoryItem({ booking: b, waMessage, isFirst, refetch }) {
   const [isRenewing, setIsRenewing] = useState(false)
   const [renewMonths, setRenewMonths] = useState(1)
   const [isCancelling, setIsCancelling] = useState(false)
+  const [showCancelModal, setShowCancelModal] = useState(false)
 
-  const handleCancelBooking = async () => {
-    if (!window.confirm('Apakah Anda yakin ingin membatalkan booking ini?')) {
-      return
-    }
-
+  const executeCancel = async () => {
     setIsCancelling(true)
     try {
-      await updateBookingStatus(b.id, 'rejected')
+      await updateBookingStatus(b.id, 'rejected', 'cancelled_by_user')
       toast.success('Booking berhasil dibatalkan.')
       refetch()
     } catch (err) {
@@ -103,10 +100,16 @@ function BookingHistoryItem({ booking: b, waMessage, isFirst, refetch }) {
   const duration = Number(b.duration_months) || 1
   const totalPrice = roomPrice * duration
 
+  const isCancelled = b.status === 'rejected' && (b.notes === 'cancelled_by_user' || b.notes === 'cancel')
+  const isExpired = b.status === 'rejected' && b.notes === 'expire'
+  const isRejected = b.status === 'rejected' && !isCancelled && !isExpired
+
   const statusLabel =
     b.status === 'confirmed' || b.status === 'accepted' ? 'Aktif'
     : b.status === 'pending' ? 'Menunggu Konfirmasi'
-    : b.status === 'rejected' ? 'Ditolak / Kadaluarsa'
+    : isCancelled ? 'Dibatalkan'
+    : isExpired ? 'Kadaluarsa'
+    : isRejected ? 'Ditolak'
     : 'Selesai'
 
   const statusBadgeVariant =
@@ -116,7 +119,7 @@ function BookingHistoryItem({ booking: b, waMessage, isFirst, refetch }) {
 
   return (
     <div
-      className="p-6 flex flex-col md:flex-row md:items-start justify-between gap-6 transition-colors duration-200"
+      className="p-6 flex flex-col md:flex-row md:items-start justify-between gap-6 transition-colors duration-200 relative"
       style={{
         borderTop: !isFirst ? '1px solid var(--border)' : 'none',
         background: 'transparent',
@@ -187,20 +190,45 @@ function BookingHistoryItem({ booking: b, waMessage, isFirst, refetch }) {
         {/* Payment status indicator — user sees this, upload is in PaymentHistory */}
         {(b.status === 'pending' || b.status === 'rejected') && (
           <span
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium border"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border"
             style={{
-              borderColor: b.status === 'rejected' ? '#dc2626' : (b.has_payment_receipt || b.payment_receipt) ? 'var(--primary)' : 'var(--accent, #c79a63)',
-              color: b.status === 'rejected' ? '#dc2626' : (b.has_payment_receipt || b.payment_receipt) ? 'var(--primary)' : 'var(--accent, #c79a63)',
+              borderColor: isCancelled ? 'var(--border)' : isExpired ? '#ea580c' : b.status === 'rejected' ? '#dc2626' : (b.has_payment_receipt || b.payment_receipt) ? 'var(--primary)' : 'var(--accent, #c79a63)',
+              color: isCancelled ? 'var(--muted-foreground)' : isExpired ? '#ea580c' : b.status === 'rejected' ? '#dc2626' : (b.has_payment_receipt || b.payment_receipt) ? 'var(--primary)' : 'var(--accent, #c79a63)',
               background: 'transparent',
             }}
           >
-            {b.status === 'rejected' ? '✗ Pembayaran kadaluarsa/ditolak' : (b.has_payment_receipt || b.payment_receipt) ? '✓ Bukti terunggah' : '⏳ Menunggu bukti bayar'}
+            {isCancelled ? (
+              <>
+                <XCircle className="h-4 w-4 shrink-0" />
+                <span>Booking Dibatalkan</span>
+              </>
+            ) : isExpired ? (
+              <>
+                <Clock className="h-4 w-4 shrink-0" />
+                <span>Pembayaran Kadaluarsa</span>
+              </>
+            ) : b.status === 'rejected' ? (
+              <>
+                <XCircle className="h-4 w-4 shrink-0" />
+                <span>Pembayaran Ditolak</span>
+              </>
+            ) : (b.has_payment_receipt || b.payment_receipt) ? (
+              <>
+                <CheckCircle2 className="h-4 w-4 shrink-0" />
+                <span>Bukti Terunggah</span>
+              </>
+            ) : (
+              <>
+                <Clock className="h-4 w-4 shrink-0 animate-pulse" />
+                <span>Menunggu Bukti Bayar</span>
+              </>
+            )}
           </span>
         )}
 
         {b.status === 'pending' && (
           <button
-            onClick={handleCancelBooking}
+            onClick={() => setShowCancelModal(true)}
             disabled={isCancelling}
             className="inline-flex items-center justify-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold transition-all duration-200 border cursor-pointer"
             style={{
@@ -238,6 +266,66 @@ function BookingHistoryItem({ booking: b, waMessage, isFirst, refetch }) {
           Hubungi Pak RT
         </a>
       </div>
+
+      {/* Modern Confirmation Modal */}
+      {showCancelModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <div
+            className="bg-card border border-border p-6 rounded-2xl max-w-sm w-full shadow-2xl flex flex-col space-y-4 animate-in fade-in zoom-in-95 duration-200"
+            style={{
+              background: 'var(--card)',
+              borderColor: 'var(--border)',
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <span
+                className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0"
+                style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444' }}
+              >
+                <XCircle className="h-5 w-5" />
+              </span>
+              <div>
+                <h4 className="font-bold text-sm" style={{ color: 'var(--foreground)' }}>Batalkan Booking</h4>
+                <p className="text-[10px] mt-0.5" style={{ color: 'var(--muted-foreground)' }}>Konfirmasi pembatalan sewa</p>
+              </div>
+            </div>
+
+            <p className="text-xs leading-relaxed" style={{ color: 'var(--muted-foreground)' }}>
+              Apakah Anda yakin ingin membatalkan booking kamar ini? Kamar yang Anda pilih akan dibebaskan dan tersedia kembali untuk pengguna lain.
+            </p>
+
+            <div className="flex gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowCancelModal(false)}
+                className="flex-1 py-2 rounded-xl text-xs font-semibold border cursor-pointer transition-colors"
+                style={{
+                  borderColor: 'var(--border)',
+                  color: 'var(--foreground)',
+                  background: 'transparent',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--secondary)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                Kembali
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowCancelModal(false)
+                  executeCancel()
+                }}
+                className="flex-1 py-2 rounded-xl text-xs font-semibold text-white cursor-pointer transition-colors"
+                style={{ background: '#ef4444' }}
+                onMouseEnter={e => e.currentTarget.style.background = '#dc2626'}
+                onMouseLeave={e => e.currentTarget.style.background = '#ef4444'}
+              >
+                Ya, Batalkan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

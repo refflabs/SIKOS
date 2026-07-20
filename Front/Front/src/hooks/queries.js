@@ -53,7 +53,7 @@ export function useCreateBookingMutation() {
 export function useUpdateBookingStatusMutation() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ id, status }) => updateBookingStatus(id, status),
+    mutationFn: ({ id, status, notes }) => updateBookingStatus(id, status, notes),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: bookingKeys.all })
       queryClient.invalidateQueries({ queryKey: roomKeys.all })

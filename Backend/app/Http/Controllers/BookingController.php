@@ -127,6 +127,7 @@ class BookingController extends Controller
 
             $request->validate([
                 'status' => 'required|in:ended,rejected',
+                'notes'  => 'nullable|string|max:500',
             ]);
 
             if ($request->status === 'rejected') {
@@ -135,7 +136,10 @@ class BookingController extends Controller
                     return response()->json(['message' => 'Hanya booking berstatus pending atau ditolak yang dapat dibatalkan.'], 422);
                 }
                 
-                $booking->update(['status' => 'rejected']);
+                $booking->update([
+                    'status' => 'rejected',
+                    'notes' => $request->notes ?? $booking->notes
+                ]);
                 $this->syncRoomAvailability($oldRoom);
 
                 // Kirim notifikasi realtime

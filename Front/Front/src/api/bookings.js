@@ -15,8 +15,8 @@ export const createBooking = async (data) => {
   return res.data
 }
 
-export const updateBookingStatus = async (id, status) => {
-  const res = await api.put(`/bookings/${id}`, { status })
+export const updateBookingStatus = async (id, status, notes = null) => {
+  const res = await api.put(`/bookings/${id}`, { status, notes })
   return res.data
 }
 
