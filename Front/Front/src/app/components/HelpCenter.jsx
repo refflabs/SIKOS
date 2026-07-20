@@ -97,7 +97,7 @@ export function HelpCenter() {
                   onMouseEnter={e => e.currentTarget.style.color = 'var(--foreground)'}
                   onMouseLeave={e => e.currentTarget.style.color = '#6b8f71'}
                 >
-                  +62 812-3456-7890
+                  +62 852-7191-9117
                 </a>
               </div>
             </div>

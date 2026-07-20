@@ -340,7 +340,7 @@ export function MainLayout({ children }) {
               </p>
               <p className="text-[11px] font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--primary)' }}>Kontak</p>
               <p className="text-sm font-medium leading-relaxed" style={{ color: 'var(--foreground)' }}>
-                +62 812-3456-7890
+                +62 852-7191-9117
               </p>
               <p className="text-xs mt-1.5 leading-relaxed" style={{ color: 'var(--muted-foreground)' }}>
                 Jl. Letjend. S.Parman, Gg. Al-Khalish No.18A<br />
