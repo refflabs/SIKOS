@@ -18,7 +18,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Loader2,
-  Info
+  Info,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown
 } from 'lucide-react'
 import {
   usePaymentSummaryQuery,
@@ -42,6 +45,8 @@ export function AdminPaymentsReport() {
   const [endDate, setEndDate] = useState('')
   const [page, setPage] = useState(1)
   const [activeView, setActiveView] = useState('table') // 'table' | 'ledger'
+  const [sortKey, setSortKey] = useState(null)
+  const [sortDir, setSortDir] = useState('asc')
 
   // Modal detail state
   const [selectedPayment, setSelectedPayment] = useState(null)
@@ -79,6 +84,25 @@ export function AdminPaymentsReport() {
   // Fetch Payments list
   const { data: paymentsData, isLoading: listLoading, refetch: refetchList } = usePaymentsQuery(queryParams)
   const payments = paymentsData?.data || []
+
+  const sortedPayments = useMemo(() => {
+    if (!sortKey) return payments
+    return [...payments].sort((a, b) => {
+      let va, vb
+      switch (sortKey) {
+        case 'id': va = a.id; vb = b.id; break
+        case 'user': va = (a.user?.name || '').toLowerCase(); vb = (b.user?.name || '').toLowerCase(); break
+        case 'room': va = (a.room?.name || '').toLowerCase(); vb = (b.room?.name || '').toLowerCase(); break
+        case 'total_price': va = Number(a.total_price) || 0; vb = Number(b.total_price) || 0; break
+        case 'check_in': va = a.check_in || ''; vb = b.check_in || ''; break
+        case 'status': va = a.status || ''; vb = b.status || ''; break
+        default: return 0
+      }
+      if (va < vb) return sortDir === 'asc' ? -1 : 1
+      if (va > vb) return sortDir === 'asc' ? 1 : -1
+      return 0
+    })
+  }, [payments, sortKey, sortDir])
   const lastPage = paymentsData?.last_page || 1
   const totalItems = paymentsData?.total || 0
 
@@ -112,6 +136,22 @@ export function AdminPaymentsReport() {
   // Frontend Print PDF function
   const handlePrint = () => {
     window.print()
+  }
+
+  const handleSort = (key) => {
+    if (sortKey === key) {
+      setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortKey(key)
+      setSortDir('asc')
+    }
+  }
+
+  const SortIcon = ({ colKey }) => {
+    if (sortKey !== colKey) return <ArrowUpDown className="h-3 w-3 opacity-30" />
+    return sortDir === 'asc'
+      ? <ArrowUp className="h-3 w-3 text-primary" />
+      : <ArrowDown className="h-3 w-3 text-primary" />
   }
 
   return (
@@ -312,17 +352,29 @@ export function AdminPaymentsReport() {
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-secondary/40 border-b border-border text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                      <th className="p-4 pl-6">ID Booking</th>
-                      <th className="p-4">Penyewa</th>
-                      <th className="p-4">Kamar</th>
-                      <th className="p-4 text-right">Total Tagihan</th>
-                      <th className="p-4">Tanggal Masuk</th>
-                      <th className="p-4 text-center">Status</th>
+                      <th className="p-4 pl-6 cursor-pointer select-none hover:text-primary" onClick={() => handleSort('id')}>
+                        <span className="inline-flex items-center gap-1">ID Booking <SortIcon colKey="id" /></span>
+                      </th>
+                      <th className="p-4 cursor-pointer select-none hover:text-primary" onClick={() => handleSort('user')}>
+                        <span className="inline-flex items-center gap-1">Penyewa <SortIcon colKey="user" /></span>
+                      </th>
+                      <th className="p-4 cursor-pointer select-none hover:text-primary" onClick={() => handleSort('room')}>
+                        <span className="inline-flex items-center gap-1">Kamar <SortIcon colKey="room" /></span>
+                      </th>
+                      <th className="p-4 text-right cursor-pointer select-none hover:text-primary" onClick={() => handleSort('total_price')}>
+                        <span className="inline-flex items-center gap-1 justify-end">Total Tagihan <SortIcon colKey="total_price" /></span>
+                      </th>
+                      <th className="p-4 cursor-pointer select-none hover:text-primary" onClick={() => handleSort('check_in')}>
+                        <span className="inline-flex items-center gap-1">Tanggal Masuk <SortIcon colKey="check_in" /></span>
+                      </th>
+                      <th className="p-4 text-center cursor-pointer select-none hover:text-primary" onClick={() => handleSort('status')}>
+                        <span className="inline-flex items-center gap-1">Status <SortIcon colKey="status" /></span>
+                      </th>
                       <th className="p-4 text-center">Aksi</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border text-xs">
-                    {payments.map(payment => {
+                    {sortedPayments.map(payment => {
                       const isPendingVerify = payment.status === 'pending' && payment.payment_receipt
                       const isUnpaid = payment.status === 'pending' && !payment.payment_receipt
                       const isLunas = ['accepted', 'confirmed'].includes(payment.status)

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Building2, CalendarDays, DoorOpen, Inbox, Save, Sparkles, Phone, MapPin, Eye, Settings, Shield, MessageSquare, ArrowRight, Pencil, Plus, Trash2, Upload, Users } from 'lucide-react'
+import { Building2, CalendarDays, DoorOpen, Inbox, Save, Sparkles, Phone, MapPin, Eye, Settings, Shield, MessageSquare, ArrowRight, Pencil, Plus, Trash2, Upload, Users, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
 import { AdminLayout } from '../layouts/AdminLayout'
 import { StatCard } from '../components/StatCard'
 import { Badge } from '../components/Badge'
@@ -153,6 +153,46 @@ export function DashboardPage({ search = '' }) {
   const [roomPage, setRoomPage] = useState(1)
   const [bookingPage, setBookingPage] = useState(1)
   const [clientPage, setClientPage] = useState(1)
+
+  // Sort states for Users table
+  const [userSortKey, setUserSortKey] = useState(null)
+  const [userSortDir, setUserSortDir] = useState('asc')
+
+  // Sort states for Bookings list
+  const [bookingSortKey, setBookingSortKey] = useState(null)
+  const [bookingSortDir, setBookingSortDir] = useState('asc')
+
+  const handleUserSort = (key) => {
+    if (userSortKey === key) {
+      setUserSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    } else {
+      setUserSortKey(key)
+      setUserSortDir('asc')
+    }
+  }
+
+  const handleBookingSort = (key) => {
+    if (bookingSortKey === key) {
+      setBookingSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    } else {
+      setBookingSortKey(key)
+      setBookingSortDir('asc')
+    }
+  }
+
+  const UserSortIcon = ({ colKey }) => {
+    if (userSortKey !== colKey) return <ArrowUpDown className="h-3 w-3 opacity-30" />
+    return userSortDir === 'asc'
+      ? <ArrowUp className="h-3 w-3 text-primary" />
+      : <ArrowDown className="h-3 w-3 text-primary" />
+  }
+
+  const BookingSortIcon = ({ colKey }) => {
+    if (bookingSortKey !== colKey) return <ArrowUpDown className="h-3 w-3 opacity-30" />
+    return bookingSortDir === 'asc'
+      ? <ArrowUp className="h-3 w-3 text-primary" />
+      : <ArrowDown className="h-3 w-3 text-primary" />
+  }
 
   // Reset pages when filters change
   useEffect(() => {
@@ -524,15 +564,32 @@ export function DashboardPage({ search = '' }) {
     return filteredRooms.slice((roomPage - 1) * 6, roomPage * 6)
   }, [filteredRooms, roomPage])
 
-  // Filtered bookings
+  // Filtered & sorted bookings
   const filteredBookings = useMemo(() => {
     if (bookingFilter === 'all') return bookings
     return bookings.filter(b => b.status === bookingFilter)
   }, [bookings, bookingFilter])
 
+  const sortedBookings = useMemo(() => {
+    if (!bookingSortKey) return filteredBookings
+    return [...filteredBookings].sort((a, b) => {
+      let va, vb
+      switch (bookingSortKey) {
+        case 'name': va = (a.user?.name || '').toLowerCase(); vb = (b.user?.name || '').toLowerCase(); break
+        case 'total_price': va = Number(a.total_price) || 0; vb = Number(b.total_price) || 0; break
+        case 'check_in': va = a.check_in || ''; vb = b.check_in || ''; break
+        case 'status': va = a.status || ''; vb = b.status || ''; break
+        default: return 0
+      }
+      if (va < vb) return bookingSortDir === 'asc' ? -1 : 1
+      if (va > vb) return bookingSortDir === 'asc' ? 1 : -1
+      return 0
+    })
+  }, [filteredBookings, bookingSortKey, bookingSortDir])
+
   const paginatedBookings = useMemo(() => {
-    return filteredBookings.slice((bookingPage - 1) * 5, bookingPage * 5)
-  }, [filteredBookings, bookingPage])
+    return sortedBookings.slice((bookingPage - 1) * 5, bookingPage * 5)
+  }, [sortedBookings, bookingPage])
 
   // Filtered users
   const users = Array.isArray(usersQuery.data) ? usersQuery.data : []
@@ -546,9 +603,26 @@ export function DashboardPage({ search = '' }) {
     })
   }, [users, userSearch])
 
+  const sortedUsers = useMemo(() => {
+    if (!userSortKey) return filteredUsers
+    return [...filteredUsers].sort((a, b) => {
+      let va, vb
+      switch (userSortKey) {
+        case 'name': va = (a.name || '').toLowerCase(); vb = (b.name || '').toLowerCase(); break
+        case 'phone': va = (a.phone || '').toLowerCase(); vb = (b.phone || '').toLowerCase(); break
+        case 'status': va = onlineUserIds.has(a.id) ? 1 : 0; vb = onlineUserIds.has(b.id) ? 1 : 0; break
+        case 'address': va = (a.address || '').toLowerCase(); vb = (b.address || '').toLowerCase(); break
+        default: return 0
+      }
+      if (va < vb) return userSortDir === 'asc' ? -1 : 1
+      if (va > vb) return userSortDir === 'asc' ? 1 : -1
+      return 0
+    })
+  }, [filteredUsers, userSortKey, userSortDir, onlineUserIds])
+
   const paginatedUsers = useMemo(() => {
-    return filteredUsers.slice((clientPage - 1) * 8, clientPage * 8)
-  }, [filteredUsers, clientPage])
+    return sortedUsers.slice((clientPage - 1) * 8, clientPage * 8)
+  }, [sortedUsers, clientPage])
 
   const loading = roomsQuery.isLoading || bookingsQuery.isLoading || usersQuery.isLoading
   const error =
@@ -615,10 +689,18 @@ export function DashboardPage({ search = '' }) {
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-secondary border-b border-border text-xs font-bold text-primary uppercase tracking-wider">
-                      <th className="p-4 pl-6">Nama / Email</th>
-                      <th className="p-4">WhatsApp / Telp</th>
-                      <th className="p-4">Status</th>
-                      <th className="p-4">Alamat KTP / Asal</th>
+                      <th className="p-4 pl-6 cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => handleUserSort('name')}>
+                        <span className="inline-flex items-center gap-1">Nama / Email <UserSortIcon colKey="name" /></span>
+                      </th>
+                      <th className="p-4 cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => handleUserSort('phone')}>
+                        <span className="inline-flex items-center gap-1">WhatsApp / Telp <UserSortIcon colKey="phone" /></span>
+                      </th>
+                      <th className="p-4 cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => handleUserSort('status')}>
+                        <span className="inline-flex items-center gap-1">Status <UserSortIcon colKey="status" /></span>
+                      </th>
+                      <th className="p-4 cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => handleUserSort('address')}>
+                        <span className="inline-flex items-center gap-1">Alamat KTP / Asal <UserSortIcon colKey="address" /></span>
+                      </th>
                       <th className="p-4 pr-6 text-right">Aksi</th>
                     </tr>
                   </thead>
@@ -807,7 +889,35 @@ export function DashboardPage({ search = '' }) {
             </div>
           ) : (
             <>
-              <div className="flex justify-end">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                {/* Urutkan Booking */}
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-muted-foreground font-bold uppercase tracking-wider">Urutkan:</span>
+                  <div className="flex items-center gap-1 bg-stone-200/50 dark:bg-stone-800/40 p-1 rounded-xl border border-border/60">
+                    {[
+                      { key: 'name', label: 'Nama' },
+                      { key: 'total_price', label: 'Total' },
+                      { key: 'check_in', label: 'Check-in' },
+                      { key: 'status', label: 'Status' }
+                    ].map((opt) => (
+                      <button
+                        key={opt.key}
+                        type="button"
+                        onClick={() => handleBookingSort(opt.key)}
+                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+                          bookingSortKey === opt.key
+                            ? 'bg-primary text-white shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        {opt.label}
+                        <BookingSortIcon colKey={opt.key} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Filter Status */}
                 <div className="flex items-center gap-1.5 bg-secondary p-1 rounded-xl border border-border shrink-0">
                   {['all', 'pending', 'accepted', 'rejected'].map((status) => (
                     <button
