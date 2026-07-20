@@ -83,19 +83,29 @@ export function MainLayout({ children }) {
           </a>
 
           {/* Desktop Nav Links */}
-          <div className="hidden lg:flex items-center gap-1">
+          <div className="hidden lg:flex items-center gap-2">
             {links.map((item) => (
               <a
                 key={item.name}
                 href={item.href}
-                className="relative px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200"
+                className="relative px-3.5 py-2 rounded-xl text-xs font-bold tracking-wider uppercase transition-all duration-300"
                 style={{
-                  color: isActive(item) ? 'var(--primary)' : 'var(--foreground)',
-                  background: isActive(item) ? 'rgba(107,143,113,0.12)' : 'transparent',
-                  fontWeight: isActive(item) ? '600' : '500',
+                  color: isActive(item) ? 'var(--primary)' : 'var(--muted-foreground)',
+                  background: isActive(item) ? 'var(--secondary)' : 'transparent',
+                  border: isActive(item) ? '1px solid var(--border)' : '1px solid transparent',
                 }}
-                onMouseEnter={e => { if (!isActive(item)) { e.currentTarget.style.color = 'var(--primary)' } }}
-                onMouseLeave={e => { if (!isActive(item)) { e.currentTarget.style.color = 'var(--foreground)' } }}
+                onMouseEnter={e => {
+                  if (!isActive(item)) {
+                    e.currentTarget.style.color = 'var(--primary)';
+                    e.currentTarget.style.background = 'rgba(107,143,113,0.06)';
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!isActive(item)) {
+                    e.currentTarget.style.color = 'var(--muted-foreground)';
+                    e.currentTarget.style.background = 'transparent';
+                  }
+                }}
               >
                 {item.name}
               </a>
@@ -122,37 +132,55 @@ export function MainLayout({ children }) {
             </button>
 
             {user ? (
-              <>
-                <span
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium"
-                  style={{ color: 'var(--foreground)' }}
+              <div className="flex items-center gap-2">
+                <div
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl border"
+                  style={{
+                    background: 'var(--secondary)',
+                    borderColor: 'var(--border)',
+                    color: 'var(--foreground)',
+                  }}
                 >
-                  <span className="h-6 w-6 rounded-full flex items-center justify-center text-xs font-bold"
+                  <span className="h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
                     style={{
-                      background: 'rgba(107,143,113,0.15)',
-                      color: 'var(--primary)',
+                      background: 'var(--primary)',
+                      color: 'var(--primary-foreground)',
                     }}
                   >
                     {user.name?.[0]?.toUpperCase() || 'U'}
                   </span>
-                  {user.name}
-                </span>
+                  <span className="text-xs font-bold tracking-wide truncate max-w-[90px]" title={user.name}>
+                    {user.name.split(' ')[0]}
+                  </span>
+                </div>
                 <button
                   onClick={logout}
-                  className="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer border"
-                  style={{ color: 'var(--destructive)', background: 'transparent', borderColor: 'var(--destructive)' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(192,57,43,0.08)' }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+                  className="px-3.5 py-1.5 rounded-xl text-xs font-bold tracking-wider uppercase transition-all duration-300 cursor-pointer border"
+                  style={{
+                    color: 'var(--destructive)',
+                    background: 'transparent',
+                    borderColor: 'rgba(192,57,43,0.3)',
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.background = 'var(--destructive)';
+                    e.currentTarget.style.color = '#ffffff';
+                    e.currentTarget.style.borderColor = 'var(--destructive)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = 'var(--destructive)';
+                    e.currentTarget.style.borderColor = 'rgba(192,57,43,0.3)';
+                  }}
                 >
                   Keluar
                 </button>
-              </>
+              </div>
             ) : (
               <>
                 {/* Masuk — outline */}
                 <a
                   href="/login"
-                  className="px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 border"
+                  className="px-3.5 py-1.5 rounded-xl text-xs font-bold tracking-wider uppercase transition-all duration-300 border"
                   style={{
                     color: 'var(--foreground)',
                     borderColor: 'var(--border)',
@@ -166,7 +194,7 @@ export function MainLayout({ children }) {
                 {/* Daftar — solid */}
                 <a
                   href="/register"
-                  className="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 text-white"
+                  className="px-3.5 py-1.5 rounded-xl text-xs font-bold tracking-wider uppercase transition-all duration-300 text-white border border-transparent"
                   style={{
                     background: 'var(--primary)',
                   }}
@@ -223,10 +251,11 @@ export function MainLayout({ children }) {
               <a
                 key={item.name}
                 href={item.href}
-                className="block px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
+                className="block px-4 py-2.5 rounded-xl text-xs font-bold tracking-wide uppercase transition-all duration-200"
                 style={{
-                  color: isActive(item) ? 'var(--primary)' : 'var(--foreground)',
-                  background: isActive(item) ? 'rgba(107,143,113,0.12)' : 'transparent',
+                  color: isActive(item) ? 'var(--primary)' : 'var(--muted-foreground)',
+                  background: isActive(item) ? 'var(--secondary)' : 'transparent',
+                  border: isActive(item) ? '1px solid var(--border)' : '1px solid transparent',
                 }}
                 onClick={() => setMobileOpen(false)}
               >
@@ -237,8 +266,12 @@ export function MainLayout({ children }) {
               {user ? (
                 <button
                   onClick={() => { setMobileOpen(false); logout() }}
-                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-center cursor-pointer border"
-                  style={{ color: 'var(--destructive)', background: 'transparent', borderColor: 'var(--destructive)' }}
+                  className="flex-1 py-2.5 rounded-xl text-xs font-bold tracking-wider uppercase text-center cursor-pointer border"
+                  style={{
+                    color: 'var(--destructive)',
+                    background: 'transparent',
+                    borderColor: 'rgba(192,57,43,0.3)',
+                  }}
                 >
                   Keluar
                 </button>
@@ -246,10 +279,11 @@ export function MainLayout({ children }) {
                 <>
                   <a
                     href="/login"
-                    className="flex-1 py-2.5 rounded-xl text-sm font-medium text-center border"
+                    className="flex-1 py-2.5 rounded-xl text-xs font-bold tracking-wider uppercase text-center border"
                     style={{
                       color: 'var(--foreground)',
                       borderColor: 'var(--border)',
+                      background: 'transparent',
                     }}
                     onClick={() => setMobileOpen(false)}
                   >
@@ -257,7 +291,7 @@ export function MainLayout({ children }) {
                   </a>
                   <a
                     href="/register"
-                    className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-center text-white"
+                    className="flex-1 py-2.5 rounded-xl text-xs font-bold tracking-wider uppercase text-center text-white border border-transparent"
                     style={{
                       background: 'var(--primary)',
                     }}
