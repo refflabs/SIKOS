@@ -33,8 +33,8 @@ const TRUST_ITEMS = [
 
 const STATS = [
   { label: 'Kamar Tersedia', value: '12+', icon: Home },
-  { label: 'Penghuni Puas', value: '200+', icon: Users },
-  { label: 'Rating Rata-rata', value: '4.9', icon: Star },
+  { label: 'Penghuni Puas', value: '40+', icon: Users },
+  { label: 'Rating Google Maps', value: '4.8', icon: Star },
 ]
 
 const HOW_IT_WORKS = [
