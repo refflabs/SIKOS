@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Building2, Menu, X, Sun, Moon, Home, Search, LayoutDashboard, Calendar, CreditCard, HelpCircle, User, LogOut } from 'lucide-react'
+import { Building2, Menu, X, Sun, Moon, Home, Search, LayoutDashboard, Calendar, CreditCard, HelpCircle, User, LogOut, Phone, MapPin, Instagram, MessageCircle } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
 import { ChatWidget } from '../components/ChatWidget'
@@ -334,8 +334,8 @@ export function MainLayout({ children }) {
           <div className="grid gap-10 md:grid-cols-3 lg:grid-cols-4">
 
             {/* Brand */}
-            <div className="lg:col-span-2">
-              <div className="flex items-center gap-2.5 mb-3">
+            <div className="lg:col-span-2 border-b border-border/60 pb-8 md:border-b-0 md:pb-0">
+              <div className="flex items-center gap-2.5 mb-4">
                 <img
                   src="/logo.png"
                   alt="Kost Pak RT"
@@ -346,35 +346,66 @@ export function MainLayout({ children }) {
                   <span className="block text-[10px] mt-0.5" style={{ color: 'var(--primary)' }}>Hunian Syariah Pekanbaru</span>
                 </div>
               </div>
-              <p className="text-sm max-w-sm leading-relaxed mb-4" style={{ color: 'var(--muted-foreground)' }}>
+              <p className="text-sm max-w-sm leading-relaxed mb-6" style={{ color: 'var(--muted-foreground)' }}>
                 Platform booking kost syariah modern. Hunian nyaman, lokasi strategis, fasilitas lengkap.
               </p>
-              <p className="text-[11px] font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--primary)' }}>Kontak</p>
-              <p className="text-sm font-medium leading-relaxed" style={{ color: 'var(--foreground)' }}>
-                +62 852-7191-9117
-              </p>
-              <p className="text-xs mt-1.5 leading-relaxed" style={{ color: 'var(--muted-foreground)' }}>
-                Jl. Letjend. S.Parman, Gg. Al-Khalish No.18A<br />
-                Cinta Raja, Sail, Kota Pekanbaru, Riau 28127
-              </p>
+              
+              <div className="space-y-3.5">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary shrink-0">
+                    <Phone className="h-4 w-4" />
+                  </div>
+                  <span className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>+62 852-7191-9117</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary shrink-0 mt-0.5">
+                    <MapPin className="h-4 w-4" />
+                  </div>
+                  <span className="text-xs leading-relaxed" style={{ color: 'var(--muted-foreground)' }}>
+                    Jl. Letjend. S.Parman, Gg. Al-Khalish No.18A, Cinta Raja, Sail, Kota Pekanbaru, Riau 28127
+                  </span>
+                </div>
+              </div>
+
+              {/* Social Media Links */}
+              <div className="flex items-center gap-3 mt-6">
+                <a
+                  href="https://wa.me/6285271919117"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center h-9 w-9 rounded-xl border border-border/80 text-muted-foreground hover:text-primary hover:border-primary hover:scale-105 transition-all duration-200 bg-card/40"
+                  title="WhatsApp Pengelola"
+                >
+                  <MessageCircle className="h-4.5 w-4.5" />
+                </a>
+                <a
+                  href="https://instagram.com/kostpakrt"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center h-9 w-9 rounded-xl border border-border/80 text-muted-foreground hover:text-primary hover:border-primary hover:scale-105 transition-all duration-200 bg-card/40"
+                  title="Instagram Kost Pak RT"
+                >
+                  <Instagram className="h-4.5 w-4.5" />
+                </a>
+              </div>
             </div>
 
             {/* Menu */}
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--primary)' }}>Menu</p>
-              <ul className="space-y-2.5">
+            <div className="border-b border-border/60 pb-8 md:border-b-0 md:pb-0">
+              <p className="text-[11px] font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--primary)' }}>Menu navigasi</p>
+              <ul className="space-y-3">
                 {links.map((item) => {
                   const Icon = item.icon
                   return (
                     <li key={item.name}>
                       <a
                         href={item.href}
-                        className="flex items-center gap-2 text-sm transition-colors duration-200"
+                        className="flex items-center gap-2.5 text-sm transition-all duration-200 hover:translate-x-1 group"
                         style={{ color: 'var(--muted-foreground)' }}
                         onMouseEnter={e => { e.currentTarget.style.color = 'var(--primary)' }}
                         onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted-foreground)' }}
                       >
-                        {Icon && <Icon className="h-4 w-4 shrink-0" style={{ color: 'var(--primary)' }} />}
+                        {Icon && <Icon className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-primary transition-colors duration-200" />}
                         <span>{item.name}</span>
                       </a>
                     </li>
@@ -385,9 +416,9 @@ export function MainLayout({ children }) {
 
             {/* Map */}
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--primary)' }}>Lokasi Kami</p>
+              <p className="text-[11px] font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--primary)' }}>Lokasi Kami</p>
               <div
-                className="relative rounded-xl overflow-hidden"
+                className="relative rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group"
                 style={{ border: '1.5px solid var(--border)', height: '180px' }}
               >
                 <iframe
@@ -405,15 +436,12 @@ export function MainLayout({ children }) {
                 href="https://maps.app.goo.gl/YXGqhuEbE9uWDLJAA"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-2 flex items-center gap-1.5 text-xs font-medium transition-colors duration-200 cursor-pointer"
+                className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold transition-colors duration-200 cursor-pointer"
                 style={{ color: 'var(--primary)' }}
                 onMouseEnter={e => e.currentTarget.style.color = 'var(--primary-dark)'}
                 onMouseLeave={e => e.currentTarget.style.color = 'var(--primary)'}
               >
-                <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                  <circle cx="12" cy="10" r="3"/>
-                </svg>
+                <MapPin className="h-3.5 w-3.5" />
                 Buka di Google Maps ↗
               </a>
             </div>
@@ -421,7 +449,7 @@ export function MainLayout({ children }) {
           </div>
 
           <p
-            className="mt-10 pt-6 text-xs"
+            className="mt-10 pt-6 text-xs text-center md:text-left"
             style={{
               color: 'var(--muted-foreground)',
               borderTop: '1px solid var(--border)',
