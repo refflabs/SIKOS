@@ -21,7 +21,8 @@ import {
   Info,
   ArrowUpDown,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  BookOpen
 } from 'lucide-react'
 import {
   usePaymentSummaryQuery,
@@ -171,19 +172,21 @@ export function AdminPaymentsReport() {
           <button
             type="button"
             onClick={() => setActiveView('table')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeView === 'table' ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
             }`}
           >
+            <FileText className="h-3.5 w-3.5" />
             Jurnal Transaksi
           </button>
           <button
             type="button"
             onClick={() => setActiveView('ledger')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeView === 'ledger' ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
             }`}
           >
+            <BookOpen className="h-3.5 w-3.5" />
             Buku Besar
           </button>
         </div>

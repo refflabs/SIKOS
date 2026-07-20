@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Building2, CalendarDays, DoorOpen, Inbox, Save, Sparkles, Phone, MapPin, Eye, Settings, Shield, MessageSquare, ArrowRight, Pencil, Plus, Trash2, Upload, Users, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
+import { Building2, CalendarDays, DoorOpen, Inbox, Save, Sparkles, Phone, MapPin, Eye, Settings, Shield, MessageSquare, ArrowRight, Pencil, Plus, Trash2, Upload, Users, ArrowUpDown, ArrowUp, ArrowDown, BookOpen } from 'lucide-react'
 import { AdminLayout } from '../layouts/AdminLayout'
 import { StatCard } from '../components/StatCard'
 import { Badge } from '../components/Badge'
@@ -858,27 +858,29 @@ export function DashboardPage({ search = '' }) {
               <p className="text-xs text-muted-foreground mt-0.5">Kelola booking aktif dari calon penghuni kost secara instan.</p>
             </div>
             
-            <div className="flex border-b border-border gap-4 shrink-0">
+            <div className="flex border-b border-border gap-5 shrink-0">
               <button
                 type="button"
                 onClick={() => setBookingsSubTab('list')}
-                className={`pb-2 text-xs font-bold border-b-2 cursor-pointer transition-all ${
+                className={`pb-2 text-xs font-bold border-b-2 cursor-pointer transition-all flex items-center gap-1.5 ${
                   bookingsSubTab === 'list' 
                     ? 'border-primary text-primary' 
                     : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}
               >
+                <CalendarDays className="h-3.5 w-3.5" />
                 Daftar Booking
               </button>
               <button
                 type="button"
                 onClick={() => setBookingsSubTab('ledger')}
-                className={`pb-2 text-xs font-bold border-b-2 cursor-pointer transition-all ${
+                className={`pb-2 text-xs font-bold border-b-2 cursor-pointer transition-all flex items-center gap-1.5 ${
                   bookingsSubTab === 'ledger' 
                     ? 'border-primary text-primary' 
                     : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}
               >
+                <BookOpen className="h-3.5 w-3.5" />
                 Buku Besar
               </button>
             </div>
