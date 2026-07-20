@@ -78,17 +78,17 @@ export function MainLayout({ children }) {
             />
             <span className="hidden sm:block">
               <span className="block text-sm font-bold leading-none" style={{ color: 'var(--foreground)' }}>Kost Pak RT</span>
-              <span className="block text-[10px] mt-0.5" style={{ color: 'var(--primary)' }}>Sewa kost syariah</span>
+              <span className="hidden xl:block text-[10px] mt-0.5" style={{ color: 'var(--primary)' }}>Sewa kost syariah</span>
             </span>
           </a>
 
           {/* Desktop Nav Links */}
-          <div className="hidden lg:flex items-center gap-2 shrink-0">
+          <div className="hidden lg:flex items-center gap-1 xl:gap-2 shrink-0">
             {links.map((item) => (
               <a
                 key={item.name}
                 href={item.href}
-                className="relative px-3.5 py-2 rounded-xl text-xs font-bold tracking-wider uppercase transition-all duration-300 whitespace-nowrap"
+                className="relative px-2 py-1.5 xl:px-3.5 xl:py-2 rounded-xl text-[10px] xl:text-xs font-bold tracking-wider uppercase transition-all duration-300 whitespace-nowrap"
                 style={{
                   color: isActive(item) ? 'var(--primary)' : 'var(--muted-foreground)',
                   background: isActive(item) ? 'var(--secondary)' : 'transparent',
@@ -149,13 +149,13 @@ export function MainLayout({ children }) {
                   >
                     {user.name?.[0]?.toUpperCase() || 'U'}
                   </span>
-                  <span className="text-xs font-bold tracking-wide truncate max-w-[90px]" title={user.name}>
+                  <span className="hidden xl:block text-xs font-bold tracking-wide truncate max-w-[90px]" title={user.name}>
                     {user.name.split(' ')[0]}
                   </span>
                 </div>
                 <button
                   onClick={logout}
-                  className="px-3.5 py-1.5 rounded-xl text-xs font-bold tracking-wider uppercase transition-all duration-300 cursor-pointer border"
+                  className="px-2.5 py-1.5 xl:px-3.5 xl:py-2 rounded-xl text-[10px] xl:text-xs font-bold tracking-wider uppercase transition-all duration-300 cursor-pointer border"
                   style={{
                     color: 'var(--destructive)',
                     background: 'transparent',
@@ -180,7 +180,7 @@ export function MainLayout({ children }) {
                 {/* Masuk — outline */}
                 <a
                   href="/login"
-                  className="px-3.5 py-1.5 rounded-xl text-xs font-bold tracking-wider uppercase transition-all duration-300 border"
+                  className="px-2.5 py-1.5 xl:px-3.5 xl:py-2 rounded-xl text-[10px] xl:text-xs font-bold tracking-wider uppercase transition-all duration-300 border"
                   style={{
                     color: 'var(--foreground)',
                     borderColor: 'var(--border)',
@@ -194,7 +194,7 @@ export function MainLayout({ children }) {
                 {/* Daftar — solid */}
                 <a
                   href="/register"
-                  className="px-3.5 py-1.5 rounded-xl text-xs font-bold tracking-wider uppercase transition-all duration-300 text-white border border-transparent"
+                  className="px-2.5 py-1.5 xl:px-3.5 xl:py-2 rounded-xl text-[10px] xl:text-xs font-bold tracking-wider uppercase transition-all duration-300 text-white border border-transparent"
                   style={{
                     background: 'var(--primary)',
                   }}
