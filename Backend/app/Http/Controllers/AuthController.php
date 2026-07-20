@@ -101,30 +101,33 @@ class AuthController extends Controller
         $user = Auth::user();
 
         // 3. Jika email belum terverifikasi ATAU jika ini perangkat/IP baru, paksa verifikasi OTP
-        $deviceKey = md5($request->ip() . '|' . $request->userAgent());
-        $knownDevices = $user->known_devices ?? [];
+        //    KECUALI untuk admin — admin cukup email + password saja.
+        if ($user->role !== 'admin') {
+            $deviceKey = md5($request->ip() . '|' . $request->userAgent());
+            $knownDevices = $user->known_devices ?? [];
 
-        if (is_null($user->email_verified_at) || !in_array($deviceKey, $knownDevices)) {
-            // Set email_verified_at ke null sementara jika ini perangkat baru
-            if (!is_null($user->email_verified_at)) {
-                $user->update(['email_verified_at' => null]);
+            if (is_null($user->email_verified_at) || !in_array($deviceKey, $knownDevices)) {
+                // Set email_verified_at ke null sementara jika ini perangkat baru
+                if (!is_null($user->email_verified_at)) {
+                    $user->update(['email_verified_at' => null]);
+                }
+
+                Auth::logout();
+
+                $otp = $this->generateAndSendOtp($user, SendOTPMail::class);
+
+                $response = [
+                    'message'    => 'Akun Anda mendeteksi masuk dari perangkat atau IP baru. Silakan verifikasi kode OTP yang dikirim ke email Anda.',
+                    'unverified' => true,
+                    'email'      => $user->email,
+                ];
+
+                if (app()->environment('local', 'testing')) {
+                    $response['_debug_otp'] = $otp;
+                }
+
+                return response()->json($response, 403);
             }
-
-            Auth::logout();
-
-            $otp = $this->generateAndSendOtp($user, SendOTPMail::class);
-
-            $response = [
-                'message'    => 'Akun Anda mendeteksi masuk dari perangkat atau IP baru. Silakan verifikasi kode OTP yang dikirim ke email Anda.',
-                'unverified' => true,
-                'email'      => $user->email,
-            ];
-
-            if (app()->environment('local', 'testing')) {
-                $response['_debug_otp'] = $otp;
-            }
-
-            return response()->json($response, 403);
         }
 
         BookingController::autoReleaseExpiredBookings();
