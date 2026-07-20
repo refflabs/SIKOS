@@ -259,8 +259,8 @@ export function LandingPage({ search = '' }) {
                   <Star className="h-4 w-4 text-white fill-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold leading-none" style={{ color: 'var(--foreground)' }}>4.9 / 5.0</p>
-                  <p className="text-[10px] mt-0.5" style={{ color: 'var(--muted-foreground)' }}>200+ ulasan penghuni</p>
+                  <p className="text-sm font-bold leading-none" style={{ color: 'var(--foreground)' }}>4.8 / 5.0</p>
+                  <p className="text-[10px] mt-0.5" style={{ color: 'var(--muted-foreground)' }}>40+ ulasan Google</p>
                 </div>
               </div>
             </div>
