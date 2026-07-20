@@ -855,6 +855,7 @@ export function ChatWidget() {
                         animation: `bounce 1s ease-in-out ${i * 0.15}s infinite`,
                       }}
                     />
+                  ))}
                 </div>
               </div>
             )}
