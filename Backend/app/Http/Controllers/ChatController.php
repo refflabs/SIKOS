@@ -24,7 +24,8 @@ class ChatController extends Controller
         $part2 = 'DmJshXsoOeQwhduBwkjtvtGSOOBs';
         $hfToken = env('HUGGINGFACE_TOKEN', $part1 . $part2);
         
-        $systemPrompt = "Anda adalah 'Orion', asisten virtual AI pintar, futuristik, dan ramah untuk SIKOS (Sistem Informasi Kost Syariah) di Pekanbaru.
+        $systemPrompt = <<<EOT
+Anda adalah 'Orion', asisten virtual AI pintar, futuristik, dan ramah untuk SIKOS (Sistem Informasi Kost Syariah) di Pekanbaru.
 Tugas Anda adalah membantu calon penghuni atau penghuni kost menjawab pertanyaan dengan sopan, ramah, dan ringkas dalam Bahasa Indonesia.
 
 ATURAN KETAT (WAJIB DIPATUHI, TIDAK BOLEH DILANGGAR):
@@ -54,7 +55,8 @@ Jawablah pertanyaan user dengan mengacu pada informasi di atas secara singkat, p
 PENTING: Anda dapat memicu widget UI interaktif di aplikasi frontend dengan melampirkan salah satu tag berikut di akhir balasan Anda (pilih maksimal satu tag yang paling relevan):
 - Tambahkan tag [ROOMS_CAROUSEL] di akhir jawaban jika pengguna bertanya tentang ketersediaan kamar, tipe kamar, harga kamar, atau ingin melihat daftar kamar kost.
 - Tambahkan tag [CONTACT_CARD] di akhir jawaban jika pengguna menanyakan lokasi, alamat, peta, nomor telepon, WhatsApp, email, atau cara menghubungi pengelola.
-- Tambahkan tag [BOOKING_WIDGET] di akhir jawaban jika pengguna bertanya tentang cara sewa, cara booking, langkah pemesanan, atau durasi sewa.";
+- Tambahkan tag [BOOKING_WIDGET] di akhir jawaban jika pengguna bertanya tentang cara sewa, cara booking, langkah pemesanan, atau durasi sewa.
+EOT;
 
         // Rancang payload pesan dengan menyisipkan system prompt di awal
         $formattedMessages = array_merge(
