@@ -361,9 +361,7 @@ export function MainLayout({ children }) {
                   <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary shrink-0">
                     <MapPin className="h-4 w-4" />
                   </div>
-                  <span className="text-sm font-medium" style={{ color: 'var(--muted-foreground)' }}>
-                    Jl. Letjend. S.Parman, Gg. Al-Khalish No.18A, Cinta Raja, Sail, Kota Pekanbaru, Riau 28127
-                  </span>
+                  <span className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Jl. Letjend. S.Parman, Gg. Al-Khalish No.18A, Cinta Raja, Sail, Kota Pekanbaru, Riau 28127</span>
                 </div>
               </div>
 
