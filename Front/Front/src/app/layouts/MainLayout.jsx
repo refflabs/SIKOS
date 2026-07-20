@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Building2, Menu, X, Sun, Moon } from 'lucide-react'
+import { Building2, Menu, X, Sun, Moon, Home, Search, LayoutDashboard, Calendar, CreditCard, HelpCircle, User, LogOut } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
 import { ChatWidget } from '../components/ChatWidget'
@@ -18,19 +18,19 @@ export function MainLayout({ children }) {
   }, [])
 
   const links = [
-    { name: 'Beranda', href: '/' },
-    { name: 'Cari Kost', href: '/rooms' },
+    { name: 'Beranda', href: '/', icon: Home },
+    { name: 'Cari Kost', href: '/rooms', icon: Search },
   ]
 
   if (user) {
     if (user.role === 'admin') {
-      links.push({ name: 'Dashboard', href: '/dashboard' })
+      links.push({ name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard })
     } else {
       links.push(
-        { name: 'Booking Saya', href: '/?tab=bookings' },
-        { name: 'Histori Pembayaran', href: '/?tab=payments' },
-        { name: 'Bantuan', href: '/?tab=help' },
-        { name: 'Profil', href: '/?tab=profile' }
+        { name: 'Booking Saya', href: '/?tab=bookings', icon: Calendar },
+        { name: 'Histori Pembayaran', href: '/?tab=payments', icon: CreditCard },
+        { name: 'Bantuan', href: '/?tab=help', icon: HelpCircle },
+        { name: 'Profil', href: '/?tab=profile', icon: User }
       )
     }
   }
@@ -84,32 +84,36 @@ export function MainLayout({ children }) {
 
           {/* Desktop Nav Links */}
           <div className="hidden lg:flex items-center gap-1 xl:gap-2 shrink-0">
-            {links.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="relative px-2 py-1.5 xl:px-3.5 xl:py-2 rounded-xl text-[10px] xl:text-xs font-bold tracking-wider uppercase transition-all duration-300 whitespace-nowrap"
-                style={{
-                  color: isActive(item) ? 'var(--primary)' : 'var(--muted-foreground)',
-                  background: isActive(item) ? 'var(--secondary)' : 'transparent',
-                  border: isActive(item) ? '1px solid var(--border)' : '1px solid transparent',
-                }}
-                onMouseEnter={e => {
-                  if (!isActive(item)) {
-                    e.currentTarget.style.color = 'var(--primary)';
-                    e.currentTarget.style.background = 'rgba(107,143,113,0.06)';
-                  }
-                }}
-                onMouseLeave={e => {
-                  if (!isActive(item)) {
-                    e.currentTarget.style.color = 'var(--muted-foreground)';
-                    e.currentTarget.style.background = 'transparent';
-                  }
-                }}
-              >
-                {item.name}
-              </a>
-            ))}
+            {links.map((item) => {
+              const Icon = item.icon
+              return (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  className="relative flex items-center gap-1.5 px-2 py-1.5 xl:px-3 xl:py-2 rounded-xl text-[10px] xl:text-xs font-bold tracking-wider uppercase transition-all duration-300 whitespace-nowrap"
+                  style={{
+                    color: isActive(item) ? 'var(--primary)' : 'var(--muted-foreground)',
+                    background: isActive(item) ? 'var(--secondary)' : 'transparent',
+                    border: isActive(item) ? '1px solid var(--border)' : '1px solid transparent',
+                  }}
+                  onMouseEnter={e => {
+                    if (!isActive(item)) {
+                      e.currentTarget.style.color = 'var(--primary)';
+                      e.currentTarget.style.background = 'rgba(107,143,113,0.06)';
+                    }
+                  }}
+                  onMouseLeave={e => {
+                    if (!isActive(item)) {
+                      e.currentTarget.style.color = 'var(--muted-foreground)';
+                      e.currentTarget.style.background = 'transparent';
+                    }
+                  }}
+                >
+                  {Icon && <Icon className="h-3.5 w-3.5" />}
+                  <span>{item.name}</span>
+                </a>
+              )
+            })}
           </div>
 
           {/* Theme Toggle + CTA Area */}
@@ -155,7 +159,7 @@ export function MainLayout({ children }) {
                 </div>
                 <button
                   onClick={logout}
-                  className="px-2.5 py-1.5 xl:px-3.5 xl:py-2 rounded-xl text-[10px] xl:text-xs font-bold tracking-wider uppercase transition-all duration-300 cursor-pointer border"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 xl:px-3.5 xl:py-2 rounded-xl text-[10px] xl:text-xs font-bold tracking-wider uppercase transition-all duration-300 cursor-pointer border"
                   style={{
                     color: 'var(--destructive)',
                     background: 'transparent',
@@ -172,7 +176,8 @@ export function MainLayout({ children }) {
                     e.currentTarget.style.borderColor = 'rgba(192,57,43,0.3)';
                   }}
                 >
-                  Keluar
+                  <LogOut className="h-3.5 w-3.5" />
+                  <span>Keluar</span>
                 </button>
               </div>
             ) : (
@@ -247,21 +252,25 @@ export function MainLayout({ children }) {
               boxShadow: '0 10px 30px -10px rgba(0,0,0,0.15)',
             }}
           >
-            {links.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="block px-4 py-2.5 rounded-xl text-xs font-bold tracking-wide uppercase transition-all duration-200"
-                style={{
-                  color: isActive(item) ? 'var(--primary)' : 'var(--muted-foreground)',
-                  background: isActive(item) ? 'var(--secondary)' : 'transparent',
-                  border: isActive(item) ? '1px solid var(--border)' : '1px solid transparent',
-                }}
-                onClick={() => setMobileOpen(false)}
-              >
-                {item.name}
-              </a>
-            ))}
+            {links.map((item) => {
+              const Icon = item.icon
+              return (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-bold tracking-wide uppercase transition-all duration-200"
+                  style={{
+                    color: isActive(item) ? 'var(--primary)' : 'var(--muted-foreground)',
+                    background: isActive(item) ? 'var(--secondary)' : 'transparent',
+                    border: isActive(item) ? '1px solid var(--border)' : '1px solid transparent',
+                  }}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {Icon && <Icon className="h-4 w-4" />}
+                  <span>{item.name}</span>
+                </a>
+              )
+            })}
             <div className="pt-3 flex gap-2 border-t" style={{ borderColor: 'var(--border)' }}>
               {user ? (
                 <button
