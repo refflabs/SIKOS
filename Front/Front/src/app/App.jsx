@@ -133,7 +133,7 @@ export default function App() {
   };
 
   return (
-    <Suspense fallback={<LoadingSpinner />}>
+    <Suspense fallback={<LoadingSpinner fullScreen />}>
       {renderPage()}
       <RenewalReminder />
     </Suspense>

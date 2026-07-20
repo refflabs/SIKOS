@@ -4,7 +4,7 @@ import { LoadingSpinner } from './LoadingSpinner'
 export function ProtectedRoute({ children, requireAdmin = false }) {
   const { isAuthenticated, isAdmin, isLoading } = useAuth()
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <LoadingSpinner fullScreen />
 
   if (!isAuthenticated) {
     window.location.href = '/login'
