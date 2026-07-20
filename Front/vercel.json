@@ -1,4 +1,28 @@
 {
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "sikos-two.vercel.app"
+        }
+      ],
+      "destination": "https://sikos.biz.id/:path*",
+      "statusCode": 301
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "sikos-sikospakrt.vercel.app"
+        }
+      ],
+      "destination": "https://sikos.biz.id/:path*",
+      "statusCode": 301
+    }
+  ],
   "rewrites": [
     { "source": "/images/:path*", "destination": "https://sikos-bpsw.vercel.app/images/:path*" },
     { "source": "/api/:path*", "destination": "https://sikos-bpsw.vercel.app/api/:path*" },
