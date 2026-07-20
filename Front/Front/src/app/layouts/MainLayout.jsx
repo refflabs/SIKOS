@@ -83,7 +83,7 @@ export function MainLayout({ children }) {
           </a>
 
           {/* Desktop Nav Links */}
-          <div className="hidden lg:flex items-center gap-0.5 xl:gap-2 shrink-0">
+          <div className="hidden lg:flex items-center gap-0.5 xl:gap-1 min-w-0 overflow-hidden">
             {links.map((item) => {
               const Icon = item.icon
               return (
@@ -160,7 +160,7 @@ export function MainLayout({ children }) {
                 <button
                   onClick={logout}
                   title="Keluar"
-                  className="flex items-center justify-center h-9 w-9 rounded-xl transition-all duration-300 cursor-pointer border shrink-0"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold tracking-wider uppercase transition-all duration-300 cursor-pointer border shrink-0 whitespace-nowrap"
                   style={{
                     color: 'var(--destructive)',
                     background: 'transparent',
@@ -177,7 +177,8 @@ export function MainLayout({ children }) {
                     e.currentTarget.style.borderColor = 'rgba(192,57,43,0.3)';
                   }}
                 >
-                  <LogOut className="h-4 w-4" />
+                  <LogOut className="h-3.5 w-3.5" />
+                  Keluar
                 </button>
               </div>
             ) : (
