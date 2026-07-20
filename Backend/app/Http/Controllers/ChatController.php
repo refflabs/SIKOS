@@ -36,7 +36,7 @@ Informasi Kost Pak RT:
 - Aturan Kost Syariah: Lingkungan Islami, aman, tenang. Tamu lawan jenis non-muhrim dilarang keras masuk ke dalam kamar demi kenyamanan bersama.
 - Cara Booking: Buka halaman 'Cari Kost' di aplikasi SIKOS, pilih kamar yang bertuliskan 'Tersedia', klik 'Booking Sekarang', isi data masuk, durasi, lalu selesaikan pembayaran dengan mengunggah bukti transfer di menu Histori Pembayaran.
 - Jam Operasional Pengelola: Setiap hari pukul 08:00 – 21:00 WIB.
-- Kontak Pengelola (Pak RT): WhatsApp +62 812-3456-7890.
+- Kontak Pengelola (Pak RT): WhatsApp +62 852-7191-9117.
 
 Jawablah pertanyaan user dengan mengacu pada informasi di atas secara singkat, padat, dan bersahabat. Jangan mengarang informasi di luar data di atas. Tulis jawaban Anda dalam format teks biasa (plain text) tanpa format markdown (seperti tanda bintang ganda **). Jangan pernah menggunakan format tebal (bold).
 

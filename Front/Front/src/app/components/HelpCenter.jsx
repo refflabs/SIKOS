@@ -113,13 +113,13 @@ export function HelpCenter() {
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: 'var(--muted-foreground)' }}>Email</p>
                 <a
-                  href="mailto:support@kostpakrt.com"
+                  href="mailto:sikostpakrt@gmail.com"
                   className="text-xs font-semibold transition-colors duration-200"
                   style={{ color: '#6b8f71' }}
                   onMouseEnter={e => e.currentTarget.style.color = 'var(--foreground)'}
                   onMouseLeave={e => e.currentTarget.style.color = '#6b8f71'}
                 >
-                  support@kostpakrt.com
+                  sikostpakrt@gmail.com
                 </a>
               </div>
             </div>
