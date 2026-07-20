@@ -55,7 +55,7 @@ export function BookingHistory({ user }) {
         <h2 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>Histori Booking</h2>
         <p className="text-xs mt-1" style={{ color: 'var(--muted-foreground)' }}>
           Daftar pesanan kamar kost Anda yang sedang diproses maupun telah disetujui.
-          Untuk upload bukti pembayaran, gunakan menu <strong>Histori Pembayaran</strong>.
+          Untuk upload bukti pembayaran, gunakan menu <strong>Pembayaran</strong>.
         </p>
       </div>
 
@@ -100,7 +100,7 @@ function BookingHistoryItem({ booking: b, waMessage, isFirst, refetch }) {
   const duration = Number(b.duration_months) || 1
   const totalPrice = roomPrice * duration
 
-  const isCancelled = b.status === 'rejected' && (b.notes === 'cancelled_by_user' || b.notes === 'cancel')
+  const isCancelled = b.status === 'rejected' && (!b.notes || b.notes === 'cancelled_by_user' || b.notes === 'cancel') && !b.payment_receipt
   const isExpired = b.status === 'rejected' && b.notes === 'expire'
   const isRejected = b.status === 'rejected' && !isCancelled && !isExpired
 

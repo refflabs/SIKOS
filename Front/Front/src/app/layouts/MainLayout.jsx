@@ -28,7 +28,7 @@ export function MainLayout({ children }) {
     } else {
       links.push(
         { name: 'Booking Saya', href: '/?tab=bookings', icon: Calendar },
-        { name: 'Histori Pembayaran', href: '/?tab=payments', icon: CreditCard },
+        { name: 'Pembayaran', href: '/?tab=payments', icon: CreditCard },
         { name: 'Bantuan', href: '/?tab=help', icon: HelpCircle },
         { name: 'Profil', href: '/?tab=profile', icon: User }
       )

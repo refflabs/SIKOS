@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { CalendarDays, CreditCard, ExternalLink, CheckCircle, AlertCircle, Clock, Upload, Loader2, BookOpen, Receipt } from 'lucide-react'
+import { CalendarDays, CreditCard, ExternalLink, CheckCircle, AlertCircle, Clock, Upload, Loader2, BookOpen, Receipt, XCircle } from 'lucide-react'
 import { EmptyState } from './EmptyState'
 import { LedgerView } from './LedgerView'
 import { QueryError } from '../../components/QueryError'
@@ -34,7 +34,7 @@ export function PaymentHistory({ user }) {
   if (isError) {
     return (
       <div className="rounded-2xl p-8" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
-        <QueryError message="Gagal memuat histori pembayaran." onRetry={refetch} />
+        <QueryError message="Gagal memuat pembayaran." onRetry={refetch} />
       </div>
     )
   }  return (
@@ -43,7 +43,7 @@ export function PaymentHistory({ user }) {
       <div className="px-6 py-5" style={{ borderBottom: '1px solid var(--border)', background: 'var(--secondary)' }}>
         <h2 className="text-lg font-bold flex items-center gap-2 mb-1" style={{ color: 'var(--foreground)' }}>
           <CreditCard className="h-5 w-5" style={{ color: 'var(--accent, #c79a63)' }} />
-          Histori Pembayaran
+          Pembayaran
         </h2>
         <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
           Bayar tagihan sewa Anda secara online atau unggah bukti transfer manual.
@@ -147,27 +147,30 @@ function PaymentRow({ booking: b, refetch }) {
 
   const totalPrice = b.room ? Number(b.room.price) * Number(b.duration_months || 1) : 0
 
+  const isCancelled = b.status === 'rejected' && (!b.notes || b.notes === 'cancelled_by_user' || b.notes === 'cancel') && !b.payment_receipt
+  const isExpired = b.status === 'rejected' && b.notes === 'expire'
+  const isRejected = b.status === 'rejected' && !isCancelled && !isExpired
+
   // Payment status logic
   let statusLabel = 'Belum Upload Bukti'
-  let statusVariant = 'pending' // 'pending' | 'waiting' | 'verified' | 'rejected'
+  let statusStyle = { color: 'var(--muted-foreground)', bg: 'var(--secondary)', border: 'var(--border)', icon: <Clock className="h-3 w-3" /> }
 
   if (b.status === 'accepted' || b.status === 'confirmed') {
     statusLabel = 'Lunas / Terverifikasi'
-    statusVariant = 'verified'
-  } else if (b.status === 'rejected') {
-    statusLabel = 'Ditolak / Kadaluarsa'
-    statusVariant = 'rejected'
+    statusStyle = { color: '#16a34a', bg: 'rgba(22,163,74,0.1)', border: 'rgba(22,163,74,0.25)', icon: <CheckCircle className="h-3 w-3" /> }
+  } else if (isCancelled) {
+    statusLabel = 'Dibatalkan'
+    statusStyle = { color: 'var(--muted-foreground)', bg: 'var(--secondary)', border: 'var(--border)', icon: <XCircle className="h-3 w-3" /> }
+  } else if (isExpired) {
+    statusLabel = 'Kadaluarsa'
+    statusStyle = { color: '#ea580c', bg: 'rgba(234,88,12,0.1)', border: 'rgba(234,88,12,0.25)', icon: <Clock className="h-3 w-3" /> }
+  } else if (isRejected) {
+    statusLabel = 'Ditolak'
+    statusStyle = { color: '#dc2626', bg: 'rgba(220,38,38,0.1)', border: 'rgba(220,38,38,0.25)', icon: <XCircle className="h-3 w-3" /> }
   } else if (b.payment_receipt || b.has_payment_receipt) {
     statusLabel = 'Menunggu Verifikasi'
-    statusVariant = 'waiting'
+    statusStyle = { color: '#d97706', bg: 'rgba(217,119,6,0.1)', border: 'rgba(217,119,6,0.25)', icon: <Clock className="h-3 w-3 animate-pulse" /> }
   }
-
-  const statusStyle = {
-    pending:  { color: 'var(--muted-foreground)', bg: 'var(--secondary)', border: 'var(--border)', icon: <Clock className="h-3 w-3" /> },
-    waiting:  { color: '#d97706', bg: 'rgba(217,119,6,0.1)', border: 'rgba(217,119,6,0.25)', icon: <Clock className="h-3 w-3 animate-pulse" /> },
-    verified: { color: '#16a34a', bg: 'rgba(22,163,74,0.1)', border: 'rgba(22,163,74,0.25)', icon: <CheckCircle className="h-3 w-3" /> },
-    rejected: { color: '#dc2626', bg: 'rgba(220,38,38,0.1)', border: 'rgba(220,38,38,0.25)', icon: <AlertCircle className="h-3 w-3" /> },
-  }[statusVariant]
 
   const handleFileChange = async (e) => {
     const file = e.target.files?.[0]
@@ -270,7 +273,7 @@ function PaymentRow({ booking: b, refetch }) {
         )}
 
         {/* Pay Online with Midtrans */}
-        {(b.status === 'pending' || b.status === 'rejected') && (
+        {(b.status === 'pending' || isRejected) && (
           <button
             onClick={handleOnlinePayment}
             disabled={isProcessingPayment}
@@ -297,7 +300,7 @@ function PaymentRow({ booking: b, refetch }) {
         )}
 
         {/* Upload receipt — only for pending or rejected bookings */}
-        {(b.status === 'pending' || b.status === 'rejected') && (
+        {(b.status === 'pending' || isRejected) && (
           <label
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer border"
             style={{

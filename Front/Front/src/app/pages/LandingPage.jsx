@@ -64,7 +64,7 @@ export function LandingPage({ search = '' }) {
     }
     const tabTitle =
       activeTab === 'bookings' ? 'Histori Booking'
-      : activeTab === 'payments' ? 'Histori Pembayaran'
+      : activeTab === 'payments' ? 'Pembayaran'
       : activeTab === 'profile' ? 'Profil Saya'
       : 'Pusat Bantuan'
 

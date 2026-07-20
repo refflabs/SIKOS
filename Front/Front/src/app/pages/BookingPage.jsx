@@ -11,6 +11,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
 import { formatPrice, roomImage, roomFacilities } from '../../api/roomUtils'
 import { QueryError } from '../../components/QueryError'
+import { toast } from 'sonner'
 
 function BookingFormSkeleton() {
   return (
@@ -83,6 +84,11 @@ export function BookingPage({ search = '' }) {
         type: 'success',
         text: 'Booking berhasil! Admin akan menghubungi Anda segera.',
       })
+
+      toast.success('Booking berhasil! Mengalihkan ke halaman Pembayaran...')
+      setTimeout(() => {
+        window.location.href = '/?tab=payments'
+      }, 1000)
     } catch (err) {
       setMessage({
         type: 'error',
@@ -162,7 +168,7 @@ export function BookingPage({ search = '' }) {
                       className="underline font-bold"
                       style={{ color: 'var(--accent)' }}
                     >
-                      Upload bukti transfer di Histori Pembayaran →
+                      Upload bukti transfer di Pembayaran →
                     </a>
                   </p>
                 </div>

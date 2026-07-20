@@ -179,7 +179,7 @@ function BookingWidget() {
         <div className="relative">
           <div className="absolute -left-[20px] top-0.5 h-2.5 w-2.5 rounded-full bg-primary border border-card" />
           <p className="text-[10px] font-bold text-foreground">3. Pembayaran & Verifikasi</p>
-          <p className="text-[9px] text-muted-foreground mt-0.5">Upload bukti bayar di tab Histori Pembayaran.</p>
+          <p className="text-[9px] text-muted-foreground mt-0.5">Upload bukti bayar di tab Pembayaran.</p>
         </div>
       </div>
       <a href="/" className="block">

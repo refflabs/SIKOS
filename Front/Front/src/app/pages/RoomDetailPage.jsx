@@ -117,7 +117,7 @@ export function RoomDetailPage({ search = '' }) {
 
             {isRoomAvailable(room) && (
               <p className="text-[10px] text-center mt-3" style={{ color: 'var(--muted-foreground)' }}>
-                Setelah booking, upload bukti transfer di tab Histori Pembayaran.
+                Setelah booking, upload bukti transfer di tab Pembayaran.
               </p>
             )}
           </div>
