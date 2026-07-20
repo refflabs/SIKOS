@@ -117,7 +117,7 @@ export function MainLayout({ children }) {
           </div>
 
           {/* Theme Toggle + CTA Area */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-2 shrink-0">
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
