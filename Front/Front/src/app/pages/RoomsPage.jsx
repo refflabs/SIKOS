@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Search } from 'lucide-react'
+import { Search, ChevronDown } from 'lucide-react'
 import { ListingCard } from '../components/ListingCard'
 import { EmptyState } from '../components/EmptyState'
 import { useRoomsQuery } from '../../hooks/queries'
@@ -26,18 +26,6 @@ export function RoomsPage() {
     room.name?.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
-  const inputStyle = {
-    background: 'var(--card)',
-    border: '1.5px solid var(--border)',
-    color: 'var(--foreground)',
-    borderRadius: '0.75rem',
-    padding: '0.625rem 1rem',
-    fontSize: '0.875rem',
-    width: '100%',
-    outline: 'none',
-    transition: 'border-color 0.2s',
-  }
-
   return (
     <div className="pb-16" style={{ background: 'transparent' }}>
       {/* Page intro */}
@@ -55,49 +43,99 @@ export function RoomsPage() {
         </p>
       </div>
 
-      {/* Search bar */}
-      <div
-        className="relative z-10"
-        style={{ background: 'var(--secondary)', borderBottom: '1px solid var(--border)' }}
-      >
-        <div className="container-app py-3">
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="flex-1 relative">
+      {/* Search & Filter Card */}
+      <div className="container-app mb-6 relative z-10">
+        <div
+          className="p-4 sm:p-5 rounded-2xl border transition-all duration-300"
+          style={{
+            background: 'var(--card)',
+            borderColor: 'var(--border)',
+            boxShadow: '0 10px 30px -10px rgba(0,0,0,0.06)',
+            backdropFilter: 'blur(8px)',
+          }}
+        >
+          <div className="flex flex-col md:flex-row gap-4 items-center">
+            {/* Search Input */}
+            <div className="w-full md:flex-1 relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: 'var(--muted-foreground)' }} />
               <input
                 type="text"
-                placeholder="Cari nama kamar…"
+                placeholder="Cari nama kamar atau deskripsi…"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                style={{ ...inputStyle, paddingLeft: '2.75rem' }}
-                onFocus={e => e.currentTarget.style.borderColor = '#6b8f71'}
-                onBlur={e => e.currentTarget.style.borderColor = 'var(--border)'}
+                className="w-full pl-11 pr-4 py-3 rounded-xl text-sm transition-all duration-200 outline-none border"
+                style={{
+                  background: 'var(--secondary)',
+                  borderColor: 'var(--border)',
+                  color: 'var(--foreground)',
+                }}
+                onFocus={e => {
+                  e.currentTarget.style.borderColor = 'var(--primary)';
+                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(107,143,113,0.15)';
+                }}
+                onBlur={e => {
+                  e.currentTarget.style.borderColor = 'var(--border)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
               />
             </div>
-            <div className="flex gap-2 items-center">
-              <select
-                value={selectedType}
-                onChange={(e) => setSelectedType(e.target.value)}
-                style={{ ...inputStyle, width: '8rem', padding: '0.625rem 0.75rem', cursor: 'pointer' }}
-                onFocus={e => e.currentTarget.style.borderColor = '#6b8f71'}
-                onBlur={e => e.currentTarget.style.borderColor = 'var(--border)'}
-              >
-                <option value="all">Semua tipe</option>
-                <option value="kosongan">Kosongan</option>
-                <option value="fasilitas">Fasilitas (Isian)</option>
-              </select>
-              <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                style={{ ...inputStyle, width: '9.5rem', padding: '0.625rem 0.75rem', cursor: 'pointer' }}
-                onFocus={e => e.currentTarget.style.borderColor = '#6b8f71'}
-                onBlur={e => e.currentTarget.style.borderColor = 'var(--border)'}
-              >
-                <option value="all">Semua status</option>
-                <option value="available">Tersedia</option>
-                <option value="booked">Terisi</option>
-                <option value="maintenance">Perawatan</option>
-              </select>
+
+            {/* Filter Dropdowns */}
+            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+              {/* Type Select */}
+              <div className="relative w-full sm:w-44">
+                <select
+                  value={selectedType}
+                  onChange={(e) => setSelectedType(e.target.value)}
+                  className="w-full pl-4 pr-10 py-3 rounded-xl text-sm transition-all duration-200 outline-none border appearance-none cursor-pointer"
+                  style={{
+                    background: 'var(--secondary)',
+                    borderColor: 'var(--border)',
+                    color: 'var(--foreground)',
+                  }}
+                  onFocus={e => {
+                    e.currentTarget.style.borderColor = 'var(--primary)';
+                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(107,143,113,0.15)';
+                  }}
+                  onBlur={e => {
+                    e.currentTarget.style.borderColor = 'var(--border)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  <option value="all">Semua tipe</option>
+                  <option value="kosongan">Kosongan</option>
+                  <option value="fasilitas">Fasilitas (Isian)</option>
+                </select>
+                <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none" style={{ color: 'var(--muted-foreground)' }} />
+              </div>
+
+              {/* Status Select */}
+              <div className="relative w-full sm:w-48">
+                <select
+                  value={selectedStatus}
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  className="w-full pl-4 pr-10 py-3 rounded-xl text-sm transition-all duration-200 outline-none border appearance-none cursor-pointer"
+                  style={{
+                    background: 'var(--secondary)',
+                    borderColor: 'var(--border)',
+                    color: 'var(--foreground)',
+                  }}
+                  onFocus={e => {
+                    e.currentTarget.style.borderColor = 'var(--primary)';
+                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(107,143,113,0.15)';
+                  }}
+                  onBlur={e => {
+                    e.currentTarget.style.borderColor = 'var(--border)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  <option value="all">Semua status</option>
+                  <option value="available">Tersedia</option>
+                  <option value="booked">Terisi</option>
+                  <option value="maintenance">Perawatan</option>
+                </select>
+                <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none" style={{ color: 'var(--muted-foreground)' }} />
+              </div>
             </div>
           </div>
         </div>
