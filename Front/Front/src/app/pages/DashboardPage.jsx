@@ -5,6 +5,7 @@ import { StatCard } from '../components/StatCard'
 import { Badge } from '../components/Badge'
 import { EmptyState } from '../components/EmptyState'
 import { LedgerView } from '../components/LedgerView'
+import { DatePicker } from '../components/DatePicker'
 import { 
   useRoomsQuery, 
   useBookingsQuery, 
@@ -1647,12 +1648,11 @@ export function DashboardPage({ search = '' }) {
                   {/* Check-In Date */}
                   <div>
                     <label className="block text-xs font-semibold text-foreground mb-1">Tanggal Check-In</label>
-                    <input
-                      type="date"
+                    <DatePicker
                       value={formBookingCheckIn}
                       onChange={(e) => setFormBookingCheckIn(e.target.value)}
+                      placeholder="Pilih tanggal check-in"
                       required
-                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-secondary/50"
                     />
                   </div>
 

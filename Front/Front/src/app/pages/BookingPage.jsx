@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Calendar, CheckCircle, ChevronRight } from 'lucide-react'
+import { DatePicker } from '../components/DatePicker'
 import { Button } from '../components/Button'
 import { LazyImage } from '../../components/LazyImage'
 import {
@@ -218,17 +219,11 @@ export function BookingPage({ search = '' }) {
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs uppercase tracking-wider font-bold block mb-2" style={{ color: 'var(--foreground)' }}>Tanggal mulai</label>
-                  <input
-                    type="date"
-                    name="check_in"
+                  <DatePicker
                     value={form.check_in}
                     onChange={handleChange}
-                    className="input-field outline-none"
-                    style={{
-                      background: 'var(--secondary)',
-                      color: 'var(--foreground)',
-                      borderColor: 'var(--border)'
-                    }}
+                    minDate={new Date().toISOString().split('T')[0]}
+                    placeholder="Pilih tanggal masuk"
                     required
                   />
                 </div>

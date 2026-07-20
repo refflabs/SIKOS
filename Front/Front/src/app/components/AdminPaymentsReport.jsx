@@ -34,6 +34,7 @@ import { Badge } from './Badge'
 import { Button } from './Button'
 import { EmptyState } from './EmptyState'
 import { LedgerView } from './LedgerView'
+import { DatePicker } from './DatePicker'
 import { toast } from 'sonner'
 import { getBookingById } from '../../api/bookings'
 
@@ -297,20 +298,21 @@ export function AdminPaymentsReport() {
                 ))}
               </select>
 
-              {/* Date inputs */}
-              <input
-                type="date"
-                value={startDate}
-                onChange={e => { setStartDate(e.target.value); setPage(1) }}
-                className="px-3 py-2 text-xs rounded-xl border border-border bg-background focus:outline-none"
-              />
+              <div className="w-40">
+                <DatePicker
+                  value={startDate}
+                  onChange={e => { setStartDate(e.target.value); setPage(1) }}
+                  placeholder="Mulai tanggal"
+                />
+              </div>
               <span className="text-xs text-muted-foreground">s/d</span>
-              <input
-                type="date"
-                value={endDate}
-                onChange={e => { setEndDate(e.target.value); setPage(1) }}
-                className="px-3 py-2 text-xs rounded-xl border border-border bg-background focus:outline-none"
-              />
+              <div className="w-40">
+                <DatePicker
+                  value={endDate}
+                  onChange={e => { setEndDate(e.target.value); setPage(1) }}
+                  placeholder="Sampai tanggal"
+                />
+              </div>
 
               {/* Export/Download Buttons */}
               <div className="flex gap-2">
