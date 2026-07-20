@@ -35,6 +35,7 @@ export function BookingPage({ search = '' }) {
     room_id: preselectedRoom || '',
     check_in: '',
     duration_months: '1',
+    occupant_count: '1',
     notes: '',
   })
 
@@ -78,6 +79,7 @@ export function BookingPage({ search = '' }) {
         room_id: Number(form.room_id),
         check_in: form.check_in,
         duration_months: Number(form.duration_months),
+        occupant_count: Number(form.occupant_count),
         notes: form.notes || undefined,
       })
 
@@ -110,7 +112,10 @@ export function BookingPage({ search = '' }) {
     )
   }
 
-  const total = room ? Number(room.price) * Number(form.duration_months || 1) : 0
+  const occupantCount = Number(form.occupant_count || 1)
+  const basePrice = room ? Number(room.price) : 0
+  const monthlyPrice = occupantCount === 2 ? basePrice + 100000 : basePrice
+  const total = monthlyPrice * Number(form.duration_months || 1)
   const loading = roomsLoading || (roomLoading && roomId)
 
   return (
@@ -216,7 +221,7 @@ export function BookingPage({ search = '' }) {
                 </select>
               </div>
 
-              <div className="grid sm:grid-cols-2 gap-4">
+              <div className="grid sm:grid-cols-3 gap-4">
                 <div>
                   <label className="text-xs uppercase tracking-wider font-bold block mb-2" style={{ color: 'var(--foreground)' }}>Tanggal mulai</label>
                   <DatePicker
@@ -243,6 +248,23 @@ export function BookingPage({ search = '' }) {
                     {[1, 3, 6, 12].map((m) => (
                       <option key={m} value={m} style={{ background: 'var(--card)', color: 'var(--foreground)' }}>{m} bulan</option>
                     ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs uppercase tracking-wider font-bold block mb-2" style={{ color: 'var(--foreground)' }}>Jumlah Penghuni</label>
+                  <select
+                    name="occupant_count"
+                    value={form.occupant_count}
+                    onChange={handleChange}
+                    className="input-field outline-none"
+                    style={{
+                      background: 'var(--secondary)',
+                      color: 'var(--foreground)',
+                      borderColor: 'var(--border)'
+                    }}
+                  >
+                    <option value="1" style={{ background: 'var(--card)', color: 'var(--foreground)' }}>1 Orang</option>
+                    <option value="2" style={{ background: 'var(--card)', color: 'var(--foreground)' }}>2 Orang (+Rp 100k/bln)</option>
                   </select>
                 </div>
               </div>
@@ -296,9 +318,15 @@ export function BookingPage({ search = '' }) {
                     </div>
                     <div className="space-y-2 text-sm border-t pt-4" style={{ borderColor: 'var(--border)' }}>
                       <div className="flex justify-between" style={{ color: 'var(--muted-foreground)' }}>
-                        <span>Harga/bulan</span>
+                        <span>Harga dasar/bulan</span>
                         <span>{formatPrice(room.price)}</span>
                       </div>
+                      {occupantCount === 2 && (
+                        <div className="flex justify-between text-xs text-amber-600 dark:text-amber-400 font-semibold">
+                          <span>Tambahan (2 Penghuni)</span>
+                          <span>+{formatPrice(100000)}/bln</span>
+                        </div>
+                      )}
                       <div className="flex justify-between" style={{ color: 'var(--muted-foreground)' }}>
                         <span>Durasi</span>
                         <span>{form.duration_months} bln</span>

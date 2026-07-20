@@ -140,6 +140,7 @@ export function DashboardPage({ search = '' }) {
   const [formBookingCheckIn, setFormBookingCheckIn] = useState('')
   const [formBookingDuration, setFormBookingDuration] = useState(1)
   const [formBookingNotes, setFormBookingNotes] = useState('')
+  const [formBookingOccupants, setFormBookingOccupants] = useState(1)
 
   // State for settings
   const [kostName, setKostName] = useState('Kost Pak RT')
@@ -324,6 +325,7 @@ export function DashboardPage({ search = '' }) {
     setFormBookingCheckIn(checkInDate)
     setFormBookingDuration(b.duration_months || 1)
     setFormBookingNotes(b.notes || '')
+    setFormBookingOccupants(b.occupant_count || 1)
     setIsBookingModalOpen(true)
   }
 
@@ -342,6 +344,7 @@ export function DashboardPage({ search = '' }) {
         room_id: Number(formBookingRoomId),
         check_in: formBookingCheckIn,
         duration_months: Number(formBookingDuration),
+        occupant_count: Number(formBookingOccupants),
         notes: formBookingNotes,
       })
       toast.success('Pemesanan berhasil diperbarui!')
@@ -970,7 +973,7 @@ export function DashboardPage({ search = '' }) {
                               <span className="text-[10px] text-muted-foreground font-medium px-2 py-0.5 rounded-full bg-secondary border border-border">{b.user?.phone || 'No telp -'}</span>
                             </div>
                             <p className="text-xs text-muted-foreground mt-1">
-                              Kamar: <span className="font-medium text-foreground">{b.room?.name || 'Kamar -'}</span> &bull; Check-in: <span className="font-medium text-foreground">{String(b.check_in).slice(0, 10)}</span>
+                              Kamar: <span className="font-medium text-foreground">{b.room?.name || 'Kamar -'}</span> &bull; Check-in: <span className="font-medium text-foreground">{String(b.check_in).slice(0, 10)}</span> &bull; Penghuni: <span className="font-medium text-foreground">{b.occupant_count || 1} Orang</span>
                             </p>
                             {b.renewal_requested && (
                               <div className="mt-1.5">
@@ -1669,6 +1672,20 @@ export function DashboardPage({ search = '' }) {
                       required
                       className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-secondary/50"
                     />
+                  </div>
+
+                  {/* Jumlah Penghuni */}
+                  <div>
+                    <label className="block text-xs font-semibold text-foreground mb-1">Jumlah Penghuni</label>
+                    <select
+                      value={formBookingOccupants}
+                      onChange={(e) => setFormBookingOccupants(Number(e.target.value))}
+                      required
+                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-secondary/50"
+                    >
+                      <option value={1}>1 Orang</option>
+                      <option value={2}>2 Orang (+Rp 100.000/bln)</option>
+                    </select>
                   </div>
 
                   {/* Catatan */}

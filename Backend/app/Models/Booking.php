@@ -19,6 +19,7 @@ class Booking extends Model
         'total_price',
         'notes',
         'duration_months',
+        'occupant_count',
         'renewal_requested',
         'renewal_months',
         'midtrans_snap_token',
@@ -30,6 +31,7 @@ class Booking extends Model
         'check_out'         => 'date',
         'total_price'       => 'decimal:2',
         'renewal_requested' => 'boolean',
+        'occupant_count'    => 'integer',
     ];
 
     public function user()

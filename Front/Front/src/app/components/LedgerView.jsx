@@ -20,9 +20,8 @@ export function LedgerView({ bookings = [] }) {
     )
 
     for (const b of sorted) {
-      const price = Number(b.room?.price || 0)
       const duration = Number(b.duration_months || 1)
-      const charge = price * duration
+      const charge = Number(b.total_price || 0)
 
       // ── Debit row (tagihan) ──
       runningBalance += charge

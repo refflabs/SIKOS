@@ -65,6 +65,7 @@ class BookingController extends Controller
             'check_in'        => 'required|date',
             'duration_months' => 'required|integer|min:1',
             'notes'           => 'nullable|string',
+            'occupant_count'  => 'nullable|integer|min:1|max:2',
         ]);
 
         // 1. Cari data kamar yang dipilih
@@ -78,7 +79,14 @@ class BookingController extends Controller
         // 3. Hitung tanggal check-out (check-in + durasi sewa) dan total harga sewa
         $checkIn   = \Carbon\Carbon::parse($request->check_in);
         $checkOut  = $checkIn->copy()->addMonths($request->duration_months);
-        $totalPrice = $room->price * $request->duration_months;
+        
+        $occupantCount = (int)$request->input('occupant_count', 1);
+        $monthlyPrice  = $room->price;
+        if ($occupantCount === 2) {
+            $monthlyPrice += 100000;
+        }
+        
+        $totalPrice = $monthlyPrice * $request->duration_months;
 
         // 4. Buat record booking baru dengan status awal 'pending'
         $booking = Booking::create([
@@ -87,6 +95,7 @@ class BookingController extends Controller
             'check_in'        => $checkIn,
             'check_out'       => $checkOut,
             'duration_months' => $request->duration_months,
+            'occupant_count'  => $occupantCount,
             'total_price'     => $totalPrice,
             'status'          => 'pending',
             'notes'           => $request->notes,
@@ -173,6 +182,7 @@ class BookingController extends Controller
             'check_in'        => 'nullable|date',
             'duration_months' => 'nullable|integer|min:1',
             'notes'           => 'nullable|string',
+            'occupant_count'  => 'nullable|integer|min:1|max:2',
             'renewal_action'  => 'nullable|in:approve,reject',
         ]);
 
@@ -189,12 +199,23 @@ class BookingController extends Controller
             $updates['notes'] = $request->notes;
         }
 
+        if ($request->has('occupant_count')) {
+            $updates['occupant_count'] = (int)$request->occupant_count;
+            $recalculateOutPrice = true;
+        }
+
         // Penanganan Persetujuan Perpanjangan Sewa (Renewal)
         if ($request->renewal_action === 'approve' && $booking->renewal_requested) {
             $duration = $booking->renewal_months;
             $updates['duration_months'] = $booking->duration_months + $duration;
             $updates['check_out'] = $booking->check_out->copy()->addMonths($duration);
-            $updates['total_price'] = $booking->total_price + ($oldRoom->price * $duration);
+            
+            $monthlyPrice = $oldRoom->price;
+            if ($booking->occupant_count === 2) {
+                $monthlyPrice += 100000;
+            }
+            
+            $updates['total_price'] = $booking->total_price + ($monthlyPrice * $duration);
             $updates['renewal_requested'] = false;
             $updates['renewal_months'] = 0;
         } elseif ($request->renewal_action === 'reject' && $booking->renewal_requested) {
@@ -224,11 +245,18 @@ class BookingController extends Controller
         if ($recalculateOutPrice) {
             $checkIn = $request->has('check_in') ? \Carbon\Carbon::parse($request->check_in) : $booking->check_in;
             $duration = $request->has('duration_months') ? (int)$request->duration_months : $booking->duration_months;
+            $occupantCount = $request->has('occupant_count') ? (int)$request->occupant_count : ($updates['occupant_count'] ?? $booking->occupant_count);
             
             $updates['check_in'] = $checkIn;
             $updates['duration_months'] = $duration;
             $updates['check_out'] = $checkIn->copy()->addMonths($duration);
-            $updates['total_price'] = $targetRoom->price * $duration;
+            
+            $monthlyPrice = $targetRoom->price;
+            if ($occupantCount === 2) {
+                $monthlyPrice += 100000;
+            }
+            
+            $updates['total_price'] = $monthlyPrice * $duration;
         }
 
         // Lakukan pembaruan ke database
