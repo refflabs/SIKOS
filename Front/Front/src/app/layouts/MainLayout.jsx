@@ -78,12 +78,12 @@ export function MainLayout({ children }) {
             />
             <span className="hidden sm:block">
               <span className="block text-sm font-bold leading-none" style={{ color: 'var(--foreground)' }}>Kost Pak RT</span>
-              <span className="hidden xl:block text-[10px] mt-0.5" style={{ color: 'var(--primary)' }}>Sewa kost syariah</span>
+              <span className="hidden 2xl:block text-[10px] mt-0.5" style={{ color: 'var(--primary)' }}>Sewa kost syariah</span>
             </span>
           </a>
 
           {/* Desktop Nav Links */}
-          <div className="hidden lg:flex items-center gap-1 xl:gap-2 shrink-0">
+          <div className="hidden lg:flex items-center gap-0.5 xl:gap-1 shrink-0">
             {links.map((item) => {
               const Icon = item.icon
               return (
@@ -91,7 +91,7 @@ export function MainLayout({ children }) {
                   key={item.name}
                   href={item.href}
                   title={item.name}
-                  className="relative flex items-center justify-center gap-1.5 p-2 xl:px-3 xl:py-2 rounded-xl text-[10px] xl:text-xs font-bold tracking-wider uppercase transition-all duration-300 whitespace-nowrap"
+                  className="relative flex items-center justify-center gap-1 xl:gap-1.5 p-1.5 xl:px-2.5 xl:py-1.5 rounded-xl text-[10px] xl:text-[11px] font-bold tracking-wider uppercase transition-all duration-300 whitespace-nowrap"
                   style={{
                     color: isActive(item) ? 'var(--primary)' : 'var(--muted-foreground)',
                     background: isActive(item) ? 'var(--secondary)' : 'transparent',
@@ -118,7 +118,7 @@ export function MainLayout({ children }) {
           </div>
 
           {/* Theme Toggle + CTA Area */}
-          <div className="hidden md:flex items-center gap-2 shrink-0">
+          <div className="hidden md:flex items-center gap-1.5 shrink-0">
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
@@ -137,9 +137,9 @@ export function MainLayout({ children }) {
             </button>
 
             {user ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <div
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl border"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border"
                   style={{
                     background: 'var(--secondary)',
                     borderColor: 'var(--border)',
@@ -154,14 +154,14 @@ export function MainLayout({ children }) {
                   >
                     {user.name?.[0]?.toUpperCase() || 'U'}
                   </span>
-                  <span className="hidden xl:block text-xs font-bold tracking-wide truncate max-w-[90px]" title={user.name}>
+                  <span className="hidden xl:block text-xs font-bold tracking-wide truncate max-w-[80px]" title={user.name}>
                     {user.name.split(' ')[0]}
                   </span>
                 </div>
                 <button
                   onClick={logout}
                   title="Keluar"
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold tracking-wider uppercase transition-all duration-300 cursor-pointer border shrink-0 whitespace-nowrap"
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] xl:text-xs font-bold tracking-wider uppercase transition-all duration-300 cursor-pointer border shrink-0 whitespace-nowrap"
                   style={{
                     color: 'var(--destructive)',
                     background: 'transparent',
