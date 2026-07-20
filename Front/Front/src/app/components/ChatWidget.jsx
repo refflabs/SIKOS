@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { MessageSquare, Send, X, MessageCircle, Sparkles } from 'lucide-react'
+import { MessageSquare, Send, X, MessageCircle, HelpCircle, Check, CheckCheck, Info, Sparkles } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
+import { useSocket } from '../../context/SocketContext'
+import { getSocket } from '../../realtime/socketClient'
+import { RealtimeEvents } from '../../realtime/events'
 import { useRoomsQuery } from '../../hooks/queries'
 import { CONTACT_WHATSAPP } from '../../constants'
 
@@ -26,11 +29,37 @@ function parseWidgetTag(text) {
   return { cleanText, activeWidget };
 }
 
-/* ─── Simple Markdown / Bold Asterisks Stripper ─── */
+/* ─── Simple Markdown Formatter ─── */
 function renderFormattedText(text) {
   if (!text) return ''
-  // Hapus semua tanda bintang ganda (**) agar terlihat seperti teks biasa manusia
   return text.replace(/\*\*/g, '')
+}
+
+/* ─── Read Receipt Icon ─── */
+function ReadReceipt({ status }) {
+  if (status === 'sending') return <Check className="h-3 w-3 opacity-40" style={{ color: 'var(--muted-foreground)' }} />
+  if (status === 'sent') return <Check className="h-3 w-3" style={{ color: 'var(--muted-foreground)' }} />
+  if (status === 'delivered') return <CheckCheck className="h-3 w-3" style={{ color: 'var(--muted-foreground)' }} />
+  if (status === 'read') return <CheckCheck className="h-3 w-3" style={{ color: 'var(--primary)' }} />
+  return null
+}
+
+/* ─── Online Dot ─── */
+function OnlineDot({ online }) {
+  return (
+    <span className="relative flex h-2.5 w-2.5">
+      {online && (
+        <span
+          className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-60"
+          style={{ background: '#4ade80' }}
+        />
+      )}
+      <span
+        className="relative inline-flex rounded-full h-2.5 w-2.5"
+        style={{ background: online ? '#22c55e' : '#6b7280' }}
+      />
+    </span>
+  )
 }
 
 /* ─── Interactive Widget 1: Rooms Carousel ─── */
@@ -61,7 +90,7 @@ function RoomsCarouselWidget() {
       {rooms.map(room => (
         <div
           key={room.id}
-          className="w-[190px] bg-card rounded-2xl border overflow-hidden shrink-0 shadow-sm flex flex-col"
+          className="w-[190px] bg-card rounded-2xl border overflow-hidden shrink-0 shadow-sm transition-transform duration-200 hover:-translate-y-0.5 flex flex-col"
           style={{ borderColor: 'var(--border)', scrollSnapAlign: 'start' }}
         >
           {room.image ? (
@@ -167,36 +196,152 @@ function BookingWidget() {
 
 export function ChatWidget() {
   const { user } = useAuth()
+  const { connected } = useSocket()
+
   const [isOpen, setIsOpen] = useState(false)
-  
-  const [messages, setMessages] = useState([
-    {
-      id: 'welcome-orion',
-      text: 'Halo! Saya adalah Orion, asisten virtual untuk SIKOS. Saya bisa mencarikan kamar kosong, memberi tahu info seputar harga sewa, fasilitas, lokasi, hingga memandu Anda cara melakukan booking secara otomatis. Ada yang ingin ditanyakan? 😊',
-      role: 'admin',
-      timestamp: new Date().toISOString(),
-      isAutoReply: true,
-    }
-  ])
-  
+  const [messages, setMessages] = useState([])
+  const [aiMessages, setAiMessages] = useState([])
+  const [chatMode, setChatMode] = useState(user ? 'owner' : 'ai') // Default 'owner' if logged in, 'ai' if guest
   const [inputText, setInputText] = useState('')
+  const [unreadCount, setUnreadCount] = useState(0)
+  const [adminOnline, setAdminOnline] = useState(false)
   const [aiTyping, setAiTyping] = useState(false)
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
 
-  // Don't render for admin users
+  // Don't render for admins
   if (user?.role === 'admin') return null
 
-  const scrollToBottom = () => {
+  /* ── Initialize welcome message for AI mode ── */
+  useEffect(() => {
+    if (aiMessages.length === 0) {
+      setAiMessages([
+        {
+          id: 'welcome-ai',
+          text: 'Halo! Saya adalah Orion, asisten virtual AI pintar dan ramah untuk SIKOS. Saya bisa mencarikan kamar kosong, memberi tahu info seputar harga sewa, fasilitas, lokasi, hingga memandu Anda cara melakukan booking secara otomatis. Ada yang ingin ditanyakan? 😊',
+          role: 'admin',
+          timestamp: new Date().toISOString(),
+          isAutoReply: true,
+        }
+      ])
+    }
+  }, [aiMessages])
+
+  /* ── Scroll to bottom ── */
+  const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
+  }, [])
 
   useEffect(() => {
     if (isOpen) {
       scrollToBottom()
+      if (chatMode === 'owner') {
+        setUnreadCount(0)
+        const socket = getSocket()
+        if (socket && user) {
+          socket.emit(RealtimeEvents.CHAT_MARK_READ, {})
+          setMessages(prev =>
+            prev.map(m => (m.role !== 'admin' && m.status !== 'read' ? { ...m, status: 'read' } : m))
+          )
+        }
+      }
     }
-  }, [isOpen, messages, aiTyping])
+  }, [isOpen, chatMode, scrollToBottom])
 
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages, aiMessages, aiTyping, scrollToBottom])
+
+  /* ── Socket listeners for Owner Chat ── */
+  useEffect(() => {
+    if (!user) {
+      setMessages([])
+      setAdminOnline(false)
+      return
+    }
+
+    const socket = getSocket()
+    if (!socket) return
+
+    const checkAdminPresence = () => {
+      socket.emit('presence:get_admin', {}, (res) => {
+        if (res?.online !== undefined) setAdminOnline(res.online)
+      })
+    }
+
+    if (socket.connected) {
+      socket.emit(RealtimeEvents.CHAT_GET_HISTORY, {}, (history) => {
+        if (Array.isArray(history)) {
+          const withStatus = history.map(m => ({
+            ...m,
+            status: m.role !== 'admin' ? (m.read ? 'read' : 'delivered') : undefined,
+          }))
+          setMessages(withStatus)
+        }
+      })
+      checkAdminPresence()
+    }
+
+    const handleConnect = () => {
+      socket.emit(RealtimeEvents.CHAT_GET_HISTORY, {}, (history) => {
+        if (Array.isArray(history)) {
+          const withStatus = history.map(m => ({
+            ...m,
+            status: m.role !== 'admin' ? (m.read ? 'read' : 'delivered') : undefined,
+          }))
+          setMessages(withStatus)
+        }
+      })
+      checkAdminPresence()
+    }
+
+    const handleNewMessage = (msg) => {
+      if (msg.userId === user.id) {
+        setMessages(prev => {
+          if (prev.some(m => m.id === msg.id)) return prev
+          return [...prev, { ...msg, status: msg.role !== 'admin' ? 'delivered' : undefined }]
+        })
+        if (!isOpen || chatMode !== 'owner') setUnreadCount(c => c + 1)
+      }
+    }
+
+    const handleAdminOnline = (payload) => {
+      if (!payload || payload.role === 'admin') setAdminOnline(true)
+    }
+    const handleAdminOffline = (payload) => {
+      if (!payload || payload.role === 'admin') setAdminOnline(false)
+    }
+
+    const handleMessageRead = ({ messageId }) => {
+      setMessages(prev => prev.map(m => (m.id === messageId ? { ...m, status: 'read' } : m)))
+    }
+
+    const handleSessionDeleted = ({ userId }) => {
+      if (user && Number(userId) === user.id) setMessages([])
+    }
+
+    const handleAllDeleted = () => setMessages([])
+
+    socket.on('connect', handleConnect)
+    socket.on(RealtimeEvents.CHAT_MESSAGE_RECEIVED, handleNewMessage)
+    socket.on(RealtimeEvents.USER_ONLINE, handleAdminOnline)
+    socket.on(RealtimeEvents.USER_OFFLINE, handleAdminOffline)
+    socket.on(RealtimeEvents.CHAT_MESSAGE_READ, handleMessageRead)
+    socket.on('chat:session_deleted', handleSessionDeleted)
+    socket.on('chat:all_deleted', handleAllDeleted)
+
+    return () => {
+      socket.off('connect', handleConnect)
+      socket.off(RealtimeEvents.CHAT_MESSAGE_RECEIVED, handleNewMessage)
+      socket.off(RealtimeEvents.USER_ONLINE, handleAdminOnline)
+      socket.off(RealtimeEvents.USER_OFFLINE, handleAdminOffline)
+      socket.off(RealtimeEvents.CHAT_MESSAGE_READ, handleMessageRead)
+      socket.off('chat:session_deleted', handleSessionDeleted)
+      socket.off('chat:all_deleted', handleAllDeleted)
+    }
+  }, [user, isOpen, chatMode, connected])
+
+  /* ── Send Message Router ── */
   const handleSendMessage = (e) => {
     e.preventDefault()
     const trimmed = inputText.trim()
@@ -204,9 +349,15 @@ export function ChatWidget() {
     if (trimmed.length > MAX_MESSAGE_LENGTH) return
 
     setInputText('')
-    handleSendAiMessage(trimmed)
+
+    if (chatMode === 'ai') {
+      handleSendAiMessage(trimmed)
+    } else {
+      handleSendOwnerMessage(trimmed)
+    }
   }
 
+  /* ── Send Message in AI Mode (LLM integration with fallback) ── */
   const handleSendAiMessage = async (trimmed) => {
     const userMsg = {
       id: `user-ai-${Date.now()}`,
@@ -216,11 +367,11 @@ export function ChatWidget() {
       timestamp: new Date().toISOString(),
     }
 
-    setMessages(prev => [...prev, userMsg])
+    setAiMessages(prev => [...prev, userMsg])
     setAiTyping(true)
 
     // Build context history (last 6 messages)
-    const history = [...messages, userMsg]
+    const history = [...aiMessages, userMsg]
       .slice(-6)
       .map(m => ({
         role: m.role === 'admin' ? 'assistant' : 'user',
@@ -237,7 +388,7 @@ export function ChatWidget() {
       if (!res.ok) throw new Error('API failed')
 
       const data = await res.json()
-      setMessages(prev => [...prev, {
+      setAiMessages(prev => [...prev, {
         id: `ai-reply-${Date.now()}`,
         text: data.reply,
         role: 'admin',
@@ -245,7 +396,7 @@ export function ChatWidget() {
         isAutoReply: true,
       }])
     } catch (err) {
-      setMessages(prev => [...prev, {
+      setAiMessages(prev => [...prev, {
         id: `ai-reply-fallback-${Date.now()}`,
         text: 'Maaf, koneksi ke asisten virtual Orion terputus saat ini. Silakan coba beberapa saat lagi atau hubungi Pak RT.',
         role: 'admin',
@@ -258,6 +409,83 @@ export function ChatWidget() {
     }
   }
 
+  /* ── Send Message in Owner Mode (Socket) ── */
+  const handleSendOwnerMessage = (trimmed) => {
+    const socket = getSocket()
+    const tempId = `temp-${Date.now()}`
+    const optimistic = {
+      id: tempId,
+      text: trimmed,
+      role: user.role,
+      userId: user.id,
+      timestamp: new Date().toISOString(),
+      status: 'sending',
+    }
+    setMessages(prev => [...prev, optimistic])
+
+    // Jika pemilik sedang offline, Orion AI akan secara otomatis membalas di room chat yang sama
+    if (!adminOnline) {
+      setMessages(prev => prev.map(m => m.id === tempId ? { ...m, status: 'read' } : m))
+      setAiTyping(true)
+
+      // Bangun riwayat chat (6 pesan terakhir) untuk konteks Orion AI
+      const history = [...messages, optimistic]
+        .slice(-6)
+        .map(m => ({
+          role: m.role === 'admin' ? 'assistant' : 'user',
+          content: m.text,
+        }))
+
+      fetch(`${import.meta.env.VITE_API_URL}/chat/ai`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: history }),
+      })
+      .then(res => {
+        if (!res.ok) throw new Error('API failed')
+        return res.json()
+      })
+      .then(data => {
+        setMessages(prev => [...prev, {
+          id: `ai-${Date.now()}`,
+          text: data.reply,
+          role: 'admin',
+          timestamp: new Date().toISOString(),
+          isAutoReply: true,
+        }])
+      })
+      .catch(() => {
+        setMessages(prev => [...prev, {
+          id: `ai-err-${Date.now()}`,
+          text: 'Maaf, koneksi ke asisten virtual Orion terputus saat ini. Silakan hubungi Pak RT via WhatsApp jika mendesak.',
+          role: 'admin',
+          timestamp: new Date().toISOString(),
+          isAutoReply: true,
+        }])
+      })
+      .finally(() => {
+        setAiTyping(false)
+      })
+    }
+
+    // Emit socket
+    if (socket && connected) {
+      socket.emit(RealtimeEvents.CHAT_SEND_MESSAGE, { text: trimmed }, (res) => {
+        if (res?.ok && res.message) {
+          setMessages(prev => {
+            const filtered = prev.filter(m => m.id !== tempId)
+            if (filtered.some(m => m.id === res.message.id)) return filtered
+            return [...filtered, { ...res.message, status: 'sent' }]
+          })
+        }
+      })
+    }
+
+    inputRef.current?.focus()
+  }
+
+
+
   const formatTime = (isoString) => {
     try {
       return new Date(isoString).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
@@ -266,22 +494,36 @@ export function ChatWidget() {
     }
   }
 
+  const statusLabel = chatMode === 'ai' ? 'Orion AI Aktif' : adminOnline ? 'Owner Online' : 'Owner Offline'
   const charsLeft = MAX_MESSAGE_LENGTH - inputText.length
   const isNearLimit = charsLeft <= 80
 
   return (
     <div className="fixed bottom-6 right-6 z-40">
-      {/* ── FAB Button ── */}
+      {/* ── FAB ── */}
       <button
         type="button"
         onClick={() => setIsOpen(o => !o)}
-        className="flex h-13 w-13 items-center justify-center rounded-full text-white shadow-lg cursor-pointer transition-all duration-300 hover:scale-[1.03]"
+        className="relative flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-all duration-200 active:scale-95 cursor-pointer"
         style={{
           background: 'var(--primary)',
-          boxShadow: '0 4px 18px rgba(107,143,113,0.3)',
+          color: '#ffffff',
         }}
+        aria-label="Sistem Chat SIKOS"
+        onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.06)'; e.currentTarget.style.background = 'var(--primary-dark)' }}
+        onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.background = 'var(--primary)' }}
       >
         {isOpen ? <X className="h-6 w-6" /> : <MessageSquare className="h-6 w-6" />}
+
+        {/* Unread badge */}
+        {!isOpen && unreadCount > 0 && (
+          <span
+            className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold animate-pulse"
+            style={{ background: '#ef4444', color: '#fff', border: '2px solid white' }}
+          >
+            {unreadCount}
+          </span>
+        )}
       </button>
 
       {/* ── Chat Panel ── */}
@@ -297,6 +539,8 @@ export function ChatWidget() {
             animation: 'chatSlideIn 0.2s cubic-bezier(0.34,1.56,0.64,1)',
           }}
         >
+
+
           {/* ── Header ── */}
           <div
             className="flex items-center justify-between px-4 py-3.5 shrink-0"
@@ -311,17 +555,25 @@ export function ChatWidget() {
                   className="flex h-9 w-9 items-center justify-center rounded-xl font-bold text-sm"
                   style={{ background: 'rgba(255,255,255,0.2)', color: '#ffffff' }}
                 >
-                  AI
+                  {chatMode === 'ai' ? 'AI' : 'RT'}
                 </span>
+                {chatMode === 'owner' && (
+                  <span
+                    className="absolute -bottom-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full"
+                    style={{ background: 'var(--primary-dark)' }}
+                  >
+                    <OnlineDot online={adminOnline} />
+                  </span>
+                )}
               </div>
 
               <div>
                 <h4 className="text-sm font-bold leading-tight text-white flex items-center gap-1.5">
-                  Asisten Orion
-                  <Sparkles className="h-3.5 w-3.5 text-yellow-300 fill-yellow-300 animate-pulse" />
+                  {chatMode === 'ai' ? 'Orion (AI)' : 'Hubungi Pak RT'}
+                  {chatMode === 'ai' && <Sparkles className="h-3.5 w-3.5 text-yellow-300 fill-yellow-300 animate-pulse" />}
                 </h4>
-                <span className="text-[10px] font-medium" style={{ color: '#86efac' }}>
-                  Aktif
+                <span className="text-[10px] font-medium" style={{ color: chatMode === 'ai' || adminOnline ? '#86efac' : 'rgba(255,255,255,0.6)' }}>
+                  {statusLabel}
                 </span>
               </div>
             </div>
@@ -331,7 +583,7 @@ export function ChatWidget() {
               href={`https://wa.me/${CONTACT_WHATSAPP}?text=Halo%20Pak%20RT,%20saya%20butuh%20bantuan%20terkait%20kost.`}
               target="_blank"
               rel="noopener noreferrer"
-              title="Hubungi Pak RT via WhatsApp"
+              title="Hubungi via WhatsApp"
               className="p-2 rounded-xl transition-colors cursor-pointer"
               style={{ color: '#86efac', background: 'rgba(134,239,172,0.15)' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(134,239,172,0.25)' }}
@@ -341,8 +593,42 @@ export function ChatWidget() {
             </a>
           </div>
 
-          {/* ── Suggestion Chips (shows on start) ── */}
-          {messages.length <= 1 && (
+          {/* ── Mode Segmented Control ── */}
+          <div
+            className="flex p-1 shrink-0"
+            style={{
+              background: 'var(--secondary)',
+              borderBottom: '1px solid var(--border)',
+            }}
+          >
+            <button
+              type="button"
+              className="flex-1 text-center py-2 text-[11px] font-bold rounded-xl transition-all duration-200 cursor-pointer"
+              style={{
+                background: chatMode === 'owner' ? 'var(--card)' : 'transparent',
+                color: chatMode === 'owner' ? 'var(--primary)' : 'var(--muted-foreground)',
+                boxShadow: chatMode === 'owner' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
+              }}
+              onClick={() => { setChatMode('owner'); setUnreadCount(0) }}
+            >
+              Tanya Pemilik (RT)
+            </button>
+            <button
+              type="button"
+              className="flex-1 text-center py-2 text-[11px] font-bold rounded-xl transition-all duration-200 cursor-pointer"
+              style={{
+                background: chatMode === 'ai' ? 'var(--card)' : 'transparent',
+                color: chatMode === 'ai' ? 'var(--primary)' : 'var(--muted-foreground)',
+                boxShadow: chatMode === 'ai' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
+              }}
+              onClick={() => setChatMode('ai')}
+            >
+              Tanya Orion
+            </button>
+          </div>
+
+          {/* ── AI Mode: Suggestion Chips ── */}
+          {chatMode === 'ai' && user && aiMessages.length <= 1 && (
             <div
               className="px-3 py-2 shrink-0 space-y-1.5"
               style={{
@@ -385,46 +671,107 @@ export function ChatWidget() {
             className="flex-1 overflow-y-auto p-4 space-y-3"
             style={{ background: 'var(--background)' }}
           >
-            {messages.map((msg) => {
-              const isAdmin = msg.role === 'admin'
-              const { cleanText, activeWidget } = parseWidgetTag(msg.text)
-              return (
-                <div key={msg.id} className={`flex ${isAdmin ? 'justify-start' : 'justify-end'}`}>
-                  <div className={`max-w-[85%] flex flex-col ${isAdmin ? 'items-start' : 'items-end'}`}>
-                    {msg.isAutoReply && (
-                      <span className="text-[9px] mb-0.5 px-1 font-semibold flex items-center gap-1" style={{ color: 'var(--primary)' }}>
-                        Orion
-                        <Sparkles className="h-2.5 w-2.5 text-yellow-500" />
-                      </span>
-                    )}
-                    <div
-                      className="px-3.5 py-2 text-xs leading-relaxed"
-                      style={{
-                        borderRadius: isAdmin ? '4px 16px 16px 16px' : '16px 4px 16px 16px',
-                        background: isAdmin ? 'var(--card)' : 'var(--primary)',
-                        color: isAdmin ? 'var(--foreground)' : '#ffffff',
-                        border: isAdmin ? '1px solid var(--border)' : 'none',
-                        whiteSpace: 'pre-line',
-                      }}
+            {!user && chatMode === 'owner' ? (
+              /* Guest mode */
+              <div className="flex flex-col items-center justify-center h-full text-center px-4 space-y-4">
+                <div
+                  className="flex h-12 w-12 items-center justify-center rounded-2xl"
+                  style={{ background: 'rgba(107,143,113,0.1)', color: 'var(--primary)' }}
+                >
+                  <HelpCircle className="h-6 w-6" />
+                </div>
+                <div>
+                  <h5 className="font-bold text-sm" style={{ color: 'var(--foreground)' }}>Hubungi Pak RT</h5>
+                  <p className="text-xs mt-1.5 leading-relaxed" style={{ color: 'var(--muted-foreground)' }}>
+                    Masuk ke akun Anda untuk mulai chat langsung dengan pengelola kost atau asisten AI.
+                  </p>
+                </div>
+                <div className="w-full pt-2 space-y-2">
+                  <a href="/login" className="block w-full">
+                    <button
+                      className="w-full py-2.5 rounded-xl text-xs font-bold cursor-pointer"
+                      style={{ background: 'var(--primary)', color: '#ffffff' }}
                     >
-                      {renderFormattedText(cleanText)}
-                    </div>
+                      Masuk ke Akun
+                    </button>
+                  </a>
+                  <a
+                    href={`https://wa.me/${CONTACT_WHATSAPP}?text=Halo%20Pak%20RT.`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full"
+                  >
+                    <button
+                      className="w-full py-2.5 rounded-xl text-xs font-semibold border cursor-pointer"
+                      style={{ borderColor: 'var(--border)', color: 'var(--foreground)', background: 'transparent' }}
+                    >
+                      Hubungi via WhatsApp ↗
+                    </button>
+                  </a>
+                </div>
+              </div>
+            ) : (chatMode === 'owner' ? messages : aiMessages).length === 0 ? (
+              /* Empty state */
+              <div className="flex flex-col items-center justify-center h-full text-center px-6 space-y-3">
+                <div
+                  className="flex h-10 w-10 items-center justify-center rounded-2xl"
+                  style={{ background: 'rgba(107,143,113,0.1)', color: 'var(--primary)' }}
+                >
+                  <MessageSquare className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="font-semibold text-xs" style={{ color: 'var(--foreground)' }}>Belum ada percakapan</p>
+                  <p className="text-[11px] mt-1 leading-relaxed" style={{ color: 'var(--muted-foreground)' }}>
+                    {chatMode === 'owner'
+                      ? (adminOnline ? 'Pak RT sedang online. Kirim pesan untuk mulai bertanya.' : 'Pak RT sedang offline. Pesan Anda akan terkirim saat beliau kembali online.')
+                      : 'Ketik apa saja untuk bertanya langsung kepada Asisten AI.'}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              /* Message List */
+              (chatMode === 'owner' ? messages : aiMessages).map((msg) => {
+                const isAdmin = msg.role === 'admin'
+                const { cleanText, activeWidget } = parseWidgetTag(msg.text)
+                return (
+                  <div key={msg.id} className={`flex ${isAdmin ? 'justify-start' : 'justify-end'}`}>
+                    <div className={`max-w-[85%] flex flex-col ${isAdmin ? 'items-start' : 'items-end'}`}>
+                      {msg.isAutoReply && (
+                        <span className="text-[9px] mb-0.5 px-1 font-semibold flex items-center gap-1" style={{ color: 'var(--primary)' }}>
+                          Orion AI
+                          {chatMode === 'ai' && <Sparkles className="h-2.5 w-2.5 text-yellow-500" />}
+                        </span>
+                      )}
+                      <div
+                        className="px-3.5 py-2 text-xs leading-relaxed"
+                        style={{
+                          borderRadius: isAdmin ? '4px 16px 16px 16px' : '16px 4px 16px 16px',
+                          background: isAdmin ? 'var(--card)' : 'var(--primary)',
+                          color: isAdmin ? 'var(--foreground)' : '#ffffff',
+                          border: isAdmin ? '1px solid var(--border)' : 'none',
+                          whiteSpace: 'pre-line',
+                        }}
+                      >
+                        {renderFormattedText(cleanText)}
+                      </div>
 
-                    {/* Render Interactive Actions Widget */}
-                    {activeWidget === 'ROOMS_CAROUSEL' && <RoomsCarouselWidget />}
-                    {activeWidget === 'CONTACT_CARD' && <ContactCardWidget />}
-                    {activeWidget === 'BOOKING_WIDGET' && <BookingWidget />}
+                      {/* Render Interactive Actions Widget below message bubble */}
+                      {activeWidget === 'ROOMS_CAROUSEL' && <RoomsCarouselWidget />}
+                      {activeWidget === 'CONTACT_CARD' && <ContactCardWidget />}
+                      {activeWidget === 'BOOKING_WIDGET' && <BookingWidget />}
 
-                    {/* Time stamp */}
-                    <div className="flex items-center gap-1 mt-0.5 px-1">
-                      <span className="text-[9px]" style={{ color: 'var(--muted-foreground)' }}>
-                        {formatTime(msg.timestamp)}
-                      </span>
+                      {/* Time + Receipt */}
+                      <div className="flex items-center gap-1 mt-0.5 px-1">
+                        <span className="text-[9px]" style={{ color: 'var(--muted-foreground)' }}>
+                          {formatTime(msg.timestamp)}
+                        </span>
+                        {!isAdmin && msg.status && chatMode === 'owner' && <ReadReceipt status={msg.status} />}
+                      </div>
                     </div>
                   </div>
-                </div>
-              )
-            })}
+                )
+              })
+            )}
 
             {/* AI Typing Indicator */}
             {aiTyping && (
@@ -455,61 +802,64 @@ export function ChatWidget() {
           </div>
 
           {/* ── Input Footer ── */}
-          <div
-            className="shrink-0"
-            style={{ borderTop: '1px solid var(--border)', background: 'var(--card)' }}
-          >
-            <form
-              onSubmit={handleSendMessage}
-              className="flex gap-2 items-center px-3 pt-2.5 pb-2"
+          {(user || chatMode === 'ai') && (
+            <div
+              className="shrink-0"
+              style={{ borderTop: '1px solid var(--border)', background: 'var(--card)' }}
             >
-              <div className="flex-1 relative">
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={inputText}
-                  onChange={e => {
-                    if (e.target.value.length <= MAX_MESSAGE_LENGTH) {
-                      setInputText(e.target.value)
-                    }
-                  }}
-                  placeholder="Tanya Orion..."
-                  maxLength={MAX_MESSAGE_LENGTH}
-                  className="w-full text-xs px-4 py-2.5 rounded-xl focus:outline-none transition-all duration-200"
-                  style={{
-                    background: 'var(--background)',
-                    border: '1.5px solid var(--border)',
-                    color: 'var(--foreground)',
-                  }}
-                  onFocus={e => { e.currentTarget.style.borderColor = 'var(--primary)' }}
-                  onBlur={e => { e.currentTarget.style.borderColor = 'var(--border)' }}
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={!inputText.trim() || inputText.length > MAX_MESSAGE_LENGTH}
-                className="flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-200 cursor-pointer disabled:opacity-30 shrink-0"
-                style={{ background: 'var(--primary)', color: '#ffffff' }}
-                onMouseEnter={e => { if (!e.currentTarget.disabled) e.currentTarget.style.background = 'var(--primary-dark)' }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'var(--primary)' }}
-                aria-label="Kirim pesan"
+              <form
+                onSubmit={handleSendMessage}
+                className="flex gap-2 items-center px-3 pt-2.5 pb-2"
               >
-                <Send className="h-3.5 w-3.5" />
-              </button>
-            </form>
-
-            {/* Character counter */}
-            {isNearLimit && (
-              <div className="px-4 pb-2 text-right">
-                <span
-                  className="text-[10px] font-medium"
-                  style={{ color: charsLeft <= 20 ? '#dc2626' : 'var(--muted-foreground)' }}
+                <div className="flex-1 relative">
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={inputText}
+                    onChange={e => {
+                      if (e.target.value.length <= MAX_MESSAGE_LENGTH) {
+                        setInputText(e.target.value)
+                      }
+                    }}
+                    placeholder={chatMode === 'ai' ? 'Tanya Asisten AI...' : (connected ? 'Ketik pesan...' : 'Koneksi terputus...')}
+                    disabled={chatMode === 'owner' && !connected}
+                    maxLength={MAX_MESSAGE_LENGTH}
+                    className="w-full text-xs px-4 py-2.5 rounded-xl focus:outline-none transition-all duration-200"
+                    style={{
+                      background: 'var(--background)',
+                      border: '1.5px solid var(--border)',
+                      color: 'var(--foreground)',
+                    }}
+                    onFocus={e => { e.currentTarget.style.borderColor = 'var(--primary)' }}
+                    onBlur={e => { e.currentTarget.style.borderColor = 'var(--border)' }}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={!inputText.trim() || (chatMode === 'owner' && !connected) || inputText.length > MAX_MESSAGE_LENGTH}
+                  className="flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-200 cursor-pointer disabled:opacity-30 shrink-0"
+                  style={{ background: 'var(--primary)', color: '#ffffff' }}
+                  onMouseEnter={e => { if (!e.currentTarget.disabled) e.currentTarget.style.background = 'var(--primary-dark)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--primary)' }}
+                  aria-label="Kirim pesan"
                 >
-                  {charsLeft} karakter &bull; limit 500
-                </span>
-              </div>
-            )}
-          </div>
+                  <Send className="h-3.5 w-3.5" />
+                </button>
+              </form>
+
+              {/* Character counter */}
+              {isNearLimit && (
+                <div className="px-4 pb-2 text-right">
+                  <span
+                    className="text-[10px] font-medium"
+                    style={{ color: charsLeft <= 20 ? '#dc2626' : 'var(--muted-foreground)' }}
+                  >
+                    {charsLeft} karakter tersisa
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
