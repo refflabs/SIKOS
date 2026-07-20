@@ -33,5 +33,7 @@ Backend/storage/framework/cache/
 .vercel
 .env*
 .agent/
+.agents/
+skills-lock.json
 
 .vercel
