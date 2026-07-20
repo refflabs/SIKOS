@@ -175,7 +175,7 @@ export function AdminPaymentsReport() {
               activeView === 'table' ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            Laporan & Tabel
+            Jurnal Transaksi
           </button>
           <button
             type="button"
@@ -184,7 +184,7 @@ export function AdminPaymentsReport() {
               activeView === 'ledger' ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            Buku Kas (Ledger)
+            Buku Besar
           </button>
         </div>
       </div>

@@ -879,7 +879,7 @@ export function DashboardPage({ search = '' }) {
                     : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}
               >
-                Buku Kas (Ledger)
+                Buku Besar
               </button>
             </div>
           </div>
