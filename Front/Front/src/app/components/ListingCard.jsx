@@ -23,7 +23,15 @@ export function ListingCard({
   const facilities = roomFacilities(room)
 
   return (
-    <article className="group flex flex-col h-full">
+    <article
+      className="group flex flex-col h-full rounded-2xl overflow-hidden border shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-md"
+      style={{
+        background: 'var(--card)',
+        borderColor: 'var(--border)',
+      }}
+      onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--primary)'}
+      onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
+    >
       {/* ── Image ── */}
       <a
         href={`/room-detail?id=${room.id}`}

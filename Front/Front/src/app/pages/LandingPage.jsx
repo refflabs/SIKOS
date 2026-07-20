@@ -362,21 +362,7 @@ export function LandingPage({ search = '' }) {
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {featuredRooms.map((room) => (
-                <div
-                  key={room.id}
-                  className="rounded-2xl overflow-hidden transition-all duration-300 border"
-                  style={{ background: 'var(--card)', borderColor: 'var(--border)' }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.borderColor = 'var(--primary)'
-                    e.currentTarget.style.transform = 'translateY(-2px)'
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.borderColor = 'var(--border)'
-                    e.currentTarget.style.transform = 'translateY(0)'
-                  }}
-                >
-                  <ListingCard room={room} ctaStyle="outline" />
-                </div>
+                <ListingCard key={room.id} room={room} ctaStyle="outline" />
               ))}
             </div>
           )}
