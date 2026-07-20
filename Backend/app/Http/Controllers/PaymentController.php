@@ -368,6 +368,24 @@ class PaymentController extends Controller
         $orderId = 'SIKOS-' . $booking->id . '-' . time();
 
         // 6. Menyusun payload JSON sesuai format standard API Midtrans
+        $itemDetails = [
+            [
+                'id' => 'room_' . $booking->room->id,
+                'price' => (int)$booking->room->price,
+                'quantity' => $booking->duration_months,
+                'name' => 'Sewa Kamar ' . $booking->room->name,
+            ]
+        ];
+
+        if ((int)$booking->occupant_count === 2) {
+            $itemDetails[] = [
+                'id' => 'extra_occupant_' . $booking->id,
+                'price' => 100000,
+                'quantity' => $booking->duration_months,
+                'name' => 'Biaya Tambahan 2 Penghuni',
+            ];
+        }
+
         $payload = [
             'transaction_details' => [
                 'order_id' => $orderId,
@@ -378,14 +396,7 @@ class PaymentController extends Controller
                 'email' => $booking->user->email,
                 'phone' => $booking->user->phone ?? '',
             ],
-            'item_details' => [
-                [
-                    'id' => 'room_' . $booking->room->id,
-                    'price' => (int)$booking->room->price,
-                    'quantity' => $booking->duration_months,
-                    'name' => 'Sewa Kamar ' . $booking->room->name,
-                ]
-            ]
+            'item_details' => $itemDetails
         ];
 
         // 7. Melakukan HTTP POST request ke Midtrans menggunakan basic auth (Username = serverKey, Password = kosong)

@@ -145,7 +145,7 @@ function PaymentRow({ booking: b, refetch }) {
     }
   }
 
-  const totalPrice = b.room ? Number(b.room.price) * Number(b.duration_months || 1) : 0
+  const totalPrice = Number(b.total_price) || (b.room ? Number(b.room.price) * Number(b.duration_months || 1) : 0)
 
   const isCancelled = b.status === 'rejected' && (!b.notes || b.notes === 'cancelled_by_user' || b.notes === 'cancel') && !b.payment_receipt
   const isExpired = b.status === 'rejected' && b.notes === 'expire'

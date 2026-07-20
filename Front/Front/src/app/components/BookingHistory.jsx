@@ -96,9 +96,7 @@ function BookingHistoryItem({ booking: b, waMessage, isFirst, refetch }) {
     }
   }
 
-  const roomPrice = Number(b.room?.price) || 0
-  const duration = Number(b.duration_months) || 1
-  const totalPrice = roomPrice * duration
+  const totalPrice = Number(b.total_price) || (Number(b.room?.price || 0) * Number(b.duration_months || 1))
 
   const isCancelled = b.status === 'rejected' && (!b.notes || b.notes === 'cancelled_by_user' || b.notes === 'cancel') && !b.payment_receipt
   const isExpired = b.status === 'rejected' && b.notes === 'expire'
