@@ -168,25 +168,29 @@ export function AdminPaymentsReport() {
         </div>
 
         {/* View Switcher */}
-        <div className="flex items-center gap-1.5 bg-stone-200/50 p-1 rounded-xl border border-border/50 self-start sm:self-auto">
+        <div className="flex items-center gap-1 bg-stone-200/80 dark:bg-stone-800/80 p-1.5 rounded-2xl border-2 border-stone-300/80 dark:border-stone-700/80 self-start sm:self-auto shadow-inner">
           <button
             type="button"
             onClick={() => setActiveView('table')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeView === 'table' ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer flex items-center gap-2 select-none ${
+              activeView === 'table' 
+                ? 'bg-primary text-white shadow-md scale-[1.02]' 
+                : 'text-stone-600 dark:text-stone-300 hover:bg-stone-300/40 dark:hover:bg-stone-700/40 hover:text-foreground'
             }`}
           >
-            <FileText className="h-3.5 w-3.5" />
+            <FileText className={`h-4 w-4 ${activeView === 'table' ? 'text-white' : 'text-stone-500'}`} />
             Jurnal Transaksi
           </button>
           <button
             type="button"
             onClick={() => setActiveView('ledger')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeView === 'ledger' ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer flex items-center gap-2 select-none ${
+              activeView === 'ledger' 
+                ? 'bg-primary text-white shadow-md scale-[1.02]' 
+                : 'text-stone-600 dark:text-stone-300 hover:bg-stone-300/40 dark:hover:bg-stone-700/40 hover:text-foreground'
             }`}
           >
-            <BookOpen className="h-3.5 w-3.5" />
+            <BookOpen className={`h-4 w-4 ${activeView === 'ledger' ? 'text-white' : 'text-stone-500'}`} />
             Buku Besar
           </button>
         </div>

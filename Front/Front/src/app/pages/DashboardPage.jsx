@@ -858,29 +858,29 @@ export function DashboardPage({ search = '' }) {
               <p className="text-xs text-muted-foreground mt-0.5">Kelola booking aktif dari calon penghuni kost secara instan.</p>
             </div>
             
-            <div className="flex border-b border-border gap-5 shrink-0">
+            <div className="flex items-center gap-1 bg-stone-200/80 dark:bg-stone-800/80 p-1.5 rounded-2xl border-2 border-stone-300/80 dark:border-stone-700/80 shrink-0 shadow-inner">
               <button
                 type="button"
                 onClick={() => setBookingsSubTab('list')}
-                className={`pb-2 text-xs font-bold border-b-2 cursor-pointer transition-all flex items-center gap-1.5 ${
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer flex items-center gap-2 select-none ${
                   bookingsSubTab === 'list' 
-                    ? 'border-primary text-primary' 
-                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                    ? 'bg-primary text-white shadow-md scale-[1.02]' 
+                    : 'text-stone-600 dark:text-stone-300 hover:bg-stone-300/40 dark:hover:bg-stone-700/40 hover:text-foreground'
                 }`}
               >
-                <CalendarDays className="h-3.5 w-3.5" />
+                <CalendarDays className={`h-4 w-4 ${bookingsSubTab === 'list' ? 'text-white' : 'text-stone-500'}`} />
                 Daftar Booking
               </button>
               <button
                 type="button"
                 onClick={() => setBookingsSubTab('ledger')}
-                className={`pb-2 text-xs font-bold border-b-2 cursor-pointer transition-all flex items-center gap-1.5 ${
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer flex items-center gap-2 select-none ${
                   bookingsSubTab === 'ledger' 
-                    ? 'border-primary text-primary' 
-                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                    ? 'bg-primary text-white shadow-md scale-[1.02]' 
+                    : 'text-stone-600 dark:text-stone-300 hover:bg-stone-300/40 dark:hover:bg-stone-700/40 hover:text-foreground'
                 }`}
               >
-                <BookOpen className="h-3.5 w-3.5" />
+                <BookOpen className={`h-4 w-4 ${bookingsSubTab === 'ledger' ? 'text-white' : 'text-stone-500'}`} />
                 Buku Besar
               </button>
             </div>
