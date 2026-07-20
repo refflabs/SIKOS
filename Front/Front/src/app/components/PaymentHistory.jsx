@@ -110,7 +110,7 @@ function PaymentRow({ booking: b, refetch }) {
             toast.error('Pembayaran gagal dilakukan.')
           },
           onClose: function () {
-            toast.info('Popup pembayaran ditutup.')
+            // No action needed when popup is closed
           }
         })
       } else {
