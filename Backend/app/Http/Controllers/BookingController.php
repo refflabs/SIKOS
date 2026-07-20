@@ -119,20 +119,36 @@ class BookingController extends Controller
         $oldRoom = $booking->room;
         $user = $request->user();
 
-        // 2. JALUR NON-ADMIN (Penyewa): Hanya boleh menghentikan sewa sendiri (mengubah status menjadi 'ended')
+        // 2. JALUR NON-ADMIN (Penyewa): Boleh menghentikan sewa ('ended') atau membatalkan booking ('rejected')
         if ($user->role !== 'admin') {
             if ($booking->user_id !== $user->id) {
                 return response()->json(['message' => 'Unauthorized'], 403);
             }
-            if ($request->status !== 'ended') {
-                return response()->json(['message' => 'Forbidden'], 403);
-            }
 
             $request->validate([
-                'status' => 'required|in:ended',
+                'status' => 'required|in:ended,rejected',
             ]);
 
-            // Set status sewa berakhir dan kembalikan ketersediaan kamar
+            if ($request->status === 'rejected') {
+                // Hanya boleh membatalkan booking jika saat ini pending atau rejected
+                if (!in_array($booking->status, ['pending', 'rejected'])) {
+                    return response()->json(['message' => 'Hanya booking berstatus pending atau ditolak yang dapat dibatalkan.'], 422);
+                }
+                
+                $booking->update(['status' => 'rejected']);
+                $this->syncRoomAvailability($oldRoom);
+
+                // Kirim notifikasi realtime
+                app(RealtimeService::class)->roomUpdated($oldRoom->fresh());
+                app(RealtimeService::class)->bookingStatusChanged($booking->fresh(['user', 'room']));
+
+                return response()->json([
+                    'message' => 'Pemesanan berhasil dibatalkan',
+                    'booking' => $booking->load(['user', 'room']),
+                ]);
+            }
+
+            // Jika mengakhiri sewa ('ended')
             $booking->update(['status' => 'ended']);
             $this->syncRoomAvailability($oldRoom);
 

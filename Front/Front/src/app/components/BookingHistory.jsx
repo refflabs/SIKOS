@@ -6,6 +6,8 @@ import { QueryError } from '../../components/QueryError'
 import { useBookingsQuery } from '../../hooks/queries'
 import { formatPrice } from '../../api/roomUtils'
 import { CONTACT_WHATSAPP } from '../../constants'
+import { toast } from 'sonner'
+import { updateBookingStatus } from '../../api/bookings'
 
 /**
  * BookingHistory — shows booking status, check-in/out, duration.
@@ -66,6 +68,7 @@ export function BookingHistory({ user }) {
               booking={b}
               waMessage={waMessage}
               isFirst={i === 0}
+              refetch={refetch}
             />
           )
         })}
@@ -74,9 +77,27 @@ export function BookingHistory({ user }) {
   )
 }
 
-function BookingHistoryItem({ booking: b, waMessage, isFirst }) {
+function BookingHistoryItem({ booking: b, waMessage, isFirst, refetch }) {
   const [isRenewing, setIsRenewing] = useState(false)
   const [renewMonths, setRenewMonths] = useState(1)
+  const [isCancelling, setIsCancelling] = useState(false)
+
+  const handleCancelBooking = async () => {
+    if (!window.confirm('Apakah Anda yakin ingin membatalkan booking ini?')) {
+      return
+    }
+
+    setIsCancelling(true)
+    try {
+      await updateBookingStatus(b.id, 'rejected')
+      toast.success('Booking berhasil dibatalkan.')
+      refetch()
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Gagal membatalkan booking.')
+    } finally {
+      setIsCancelling(false)
+    }
+  }
 
   const roomPrice = Number(b.room?.price) || 0
   const duration = Number(b.duration_months) || 1
@@ -175,6 +196,30 @@ function BookingHistoryItem({ booking: b, waMessage, isFirst }) {
           >
             {b.status === 'rejected' ? '✗ Pembayaran kadaluarsa/ditolak' : (b.has_payment_receipt || b.payment_receipt) ? '✓ Bukti terunggah' : '⏳ Menunggu bukti bayar'}
           </span>
+        )}
+
+        {b.status === 'pending' && (
+          <button
+            onClick={handleCancelBooking}
+            disabled={isCancelling}
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold transition-all duration-200 border cursor-pointer"
+            style={{
+              borderColor: 'var(--border)',
+              color: '#ef4444',
+              background: 'transparent',
+            }}
+            onMouseEnter={e => { if (!isCancelling) { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'; e.currentTarget.style.borderColor = '#ef4444' } }}
+            onMouseLeave={e => { if (!isCancelling) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'var(--border)' } }}
+          >
+            {isCancelling ? (
+              <>
+                <Loader2 className="h-3 w-3 animate-spin" />
+                Membatalkan...
+              </>
+            ) : (
+              'Batalkan Booking'
+            )}
+          </button>
         )}
 
         <a
