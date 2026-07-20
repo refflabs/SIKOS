@@ -290,7 +290,7 @@ function PaymentRow({ booking: b, refetch }) {
             ) : (
               <>
                 <CreditCard className="h-3 w-3" />
-                {b.status === 'rejected' ? 'Bayar Ulang (Online)' : 'Bayar Sekarang (Online)'}
+                Bayar Sekarang (Online)
               </>
             )}
           </button>
