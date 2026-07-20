@@ -83,12 +83,12 @@ export function MainLayout({ children }) {
           </a>
 
           {/* Desktop Nav Links */}
-          <div className="hidden lg:flex items-center gap-2">
+          <div className="hidden lg:flex items-center gap-2 shrink-0">
             {links.map((item) => (
               <a
                 key={item.name}
                 href={item.href}
-                className="relative px-3.5 py-2 rounded-xl text-xs font-bold tracking-wider uppercase transition-all duration-300"
+                className="relative px-3.5 py-2 rounded-xl text-xs font-bold tracking-wider uppercase transition-all duration-300 whitespace-nowrap"
                 style={{
                   color: isActive(item) ? 'var(--primary)' : 'var(--muted-foreground)',
                   background: isActive(item) ? 'var(--secondary)' : 'transparent',
