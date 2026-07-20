@@ -10,6 +10,35 @@ import { CONTACT_WHATSAPP } from '../../constants'
 /* ─── Config ─── */
 const MAX_MESSAGE_LENGTH = 500
 
+/* ─── AI Knowledge Base / FAQ ─── */
+const AI_KB = [
+  {
+    id: 'faq-1',
+    question: 'Di mana lokasi Kost Pak RT?',
+    answer: 'Lokasi Kost Pak RT berada di Jl. Letjend. S.Parman, Gg. Al-Khalish No.18A, Cinta Raja, Sail, Kota Pekanbaru, Riau 28127. Peta lokasi bisa diakses lewat menu kontak di widget chat ini.',
+  },
+  {
+    id: 'faq-2',
+    question: 'Berapa harga sewa dan tipe kamarnya?',
+    answer: 'Tersedia dua tipe kamar:\n1. Tipe Kosongan: Mulai dari Rp 500.000 / bulan.\n2. Tipe Isian (Fasilitas): Mulai dari Rp 750.000 / bulan (sudah termasuk kasur, lemari, kipas angin, kamar mandi dalam, dan WiFi gratis).',
+  },
+  {
+    id: 'faq-3',
+    question: 'Fasilitas apa saja yang didapat?',
+    answer: 'Semua kamar dilengkapi kamar mandi dalam, akses WiFi berkecepatan tinggi gratis, pasokan air bersih, dan biaya listrik sudah termasuk dalam uang sewa bulanan.',
+  },
+  {
+    id: 'faq-4',
+    question: 'Bagaimana cara melakukan booking?',
+    answer: 'Buka menu "Cari Kamar", pilih kamar yang berstatus "Tersedia", klik "Booking Sekarang", isi detail sewa, lalu selesaikan pembayaran instan menggunakan QRIS/Virtual Account Midtrans.',
+  },
+  {
+    id: 'faq-5',
+    question: 'Apa saja aturan syariah di kost ini?',
+    answer: 'Demi ketertiban dan kenyamanan bersama, tamu lawan jenis non-muhrim dilarang keras masuk ke dalam kamar. Lingkungan kost aman, bersih, tenang, dan kondusif untuk belajar maupun bekerja.',
+  },
+]
+
 /* ─── Parser Tag Widget ─── */
 function parseWidgetTag(text) {
   let cleanText = text || '';
