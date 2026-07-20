@@ -100,14 +100,22 @@ class AuthController extends Controller
 
         $user = Auth::user();
 
-        // 3. Jika email belum terverifikasi, paksa logout, generate OTP baru, kirim email, dan kembalikan error status
-        if (is_null($user->email_verified_at)) {
+        // 3. Jika email belum terverifikasi ATAU jika ini perangkat/IP baru, paksa verifikasi OTP
+        $deviceKey = md5($request->ip() . '|' . $request->userAgent());
+        $knownDevices = $user->known_devices ?? [];
+
+        if (is_null($user->email_verified_at) || !in_array($deviceKey, $knownDevices)) {
+            // Set email_verified_at ke null sementara jika ini perangkat baru
+            if (!is_null($user->email_verified_at)) {
+                $user->update(['email_verified_at' => null]);
+            }
+
             Auth::logout();
 
             $otp = $this->generateAndSendOtp($user, SendOTPMail::class);
 
             $response = [
-                'message'    => 'Akun Anda belum terverifikasi. Silakan lakukan verifikasi.',
+                'message'    => 'Akun Anda mendeteksi masuk dari perangkat atau IP baru. Silakan verifikasi kode OTP yang dikirim ke email Anda.',
                 'unverified' => true,
                 'email'      => $user->email,
             ];
@@ -157,11 +165,18 @@ class AuthController extends Controller
             ]);
         }
 
-        // 4. Update status email_verified_at dan hapus token OTP dari DB
+        // 4. Update status email_verified_at, hapus token OTP dari DB, dan tambahkan perangkat saat ini ke known_devices
+        $deviceKey = md5($request->ip() . '|' . $request->userAgent());
+        $knownDevices = $user->known_devices ?? [];
+        if (!in_array($deviceKey, $knownDevices)) {
+            $knownDevices[] = $deviceKey;
+        }
+
         $user->update([
             'email_verified_at'           => now(),
             'verification_otp'            => null,
             'verification_otp_expires_at' => null,
+            'known_devices'               => $knownDevices,
         ]);
 
         // 5. Buat token akses baru menggunakan Laravel Sanctum untuk langsung login otomatis
@@ -328,16 +343,25 @@ class AuthController extends Controller
 
         $email = $googleUser['email'];
 
-        // Cari atau daftarkan user baru dengan role default 'user'
-        $user = User::firstOrCreate(
-            ['email' => $email],
-            [
-                'name'              => $googleUser['name'],
-                'password'          => Hash::make(Str::random(24)),
-                'phone'             => '—',
-                'email_verified_at' => now(),
-            ]
-        );
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            throw ValidationException::withMessages([
+                'token' => ['Alamat email Google ini belum terdaftar di SIKOS. Silakan daftar terlebih dahulu.'],
+            ]);
+        }
+
+        // Simpan perangkat saat ini sebagai perangkat tepercaya agar tidak meminta OTP via password login nantinya
+        $deviceKey = md5($request->ip() . '|' . $request->userAgent());
+        $knownDevices = $user->known_devices ?? [];
+        if (!in_array($deviceKey, $knownDevices)) {
+            $knownDevices[] = $deviceKey;
+        }
+
+        $user->update([
+            'email_verified_at' => $user->email_verified_at ?? now(),
+            'known_devices'     => $knownDevices,
+        ]);
 
         // Buat Sanctum access token
         $token = $user->createToken('auth_token')->plainTextToken;

@@ -23,6 +23,7 @@ class User extends Authenticatable
         'verification_otp',
         'verification_otp_expires_at',
         'email_verified_at',
+        'known_devices',
     ];
 
     protected $hidden = [
@@ -35,6 +36,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'known_devices' => 'array',
         ];
     }
 }
