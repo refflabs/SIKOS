@@ -34,3 +34,8 @@ export const handleBookingRenewalAction = async (id, action) => {
   const res = await api.put(`/bookings/${id}`, { renewal_action: action })
   return res.data
 }
+
+export const uploadPaymentReceipt = async (id, imageBase64) => {
+  const res = await api.post(`/bookings/${id}/payment-receipt`, { image: imageBase64 })
+  return res.data
+}

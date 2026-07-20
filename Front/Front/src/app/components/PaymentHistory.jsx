@@ -6,7 +6,7 @@ import { QueryError } from '../../components/QueryError'
 import { useBookingsQuery } from '../../hooks/queries'
 import { formatPrice } from '../../api/roomUtils'
 import { toast } from 'sonner'
-import { getBookingById } from '../../api/bookings'
+import { getBookingById, uploadPaymentReceipt } from '../../api/bookings'
 
 /**
  * PaymentHistory — shows payment/transaction records and allows receipt upload.
@@ -187,23 +187,13 @@ function PaymentRow({ booking: b, refetch }) {
     }
 
     setIsUploading(true)
-    const token = localStorage.getItem('token')
 
     const reader = new FileReader()
     reader.readAsDataURL(file)
     reader.onload = async () => {
       try {
         const base64Image = reader.result
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/bookings/${b.id}/payment-receipt`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ image: base64Image }),
-        })
-
-        if (!res.ok) throw new Error('Gagal mengupload bukti transfer')
+        await uploadPaymentReceipt(b.id, base64Image)
         toast.success('Bukti pembayaran berhasil diunggah!')
         refetch()
       } catch (err) {
