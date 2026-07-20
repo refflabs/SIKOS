@@ -63,13 +63,13 @@ PENTING: Anda dapat memicu widget UI interaktif di aplikasi frontend dengan mela
         );
 
         try {
-            // Panggil API HuggingFace Serverless Inference (menggunakan model Llama-3.3-70B yang sangat cerdas)
+            // Panggil API HuggingFace Serverless Inference (menggunakan model Qwen2.5-7B yang sangat cepat)
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $hfToken,
             ])
             ->timeout(12)
             ->post('https://router.huggingface.co/v1/chat/completions', [
-                'model' => 'meta-llama/Llama-3.3-70B-Instruct',
+                'model' => 'Qwen/Qwen2.5-7B-Instruct',
                 'messages' => $formattedMessages,
                 'temperature' => 0.6,
                 'max_tokens' => 450,
