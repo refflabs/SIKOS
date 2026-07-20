@@ -1,3 +1,4 @@
+import { Navigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { LoadingSpinner } from './LoadingSpinner'
 
@@ -7,13 +8,11 @@ export function ProtectedRoute({ children, requireAdmin = false }) {
   if (isLoading) return <LoadingSpinner fullScreen />
 
   if (!isAuthenticated) {
-    window.location.href = '/login'
-    return null
+    return <Navigate to="/login" replace />
   }
 
   if (requireAdmin && !isAdmin) {
-    window.location.href = '/'
-    return null
+    return <Navigate to="/" replace />
   }
 
   return children

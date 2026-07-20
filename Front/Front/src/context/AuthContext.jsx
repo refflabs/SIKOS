@@ -103,14 +103,6 @@ export function AuthProvider({ children }) {
 
   const register = useCallback(async (formData) => {
     const data = await apiRegister(formData)
-    const newToken = data.token
-    const newUser = data.user
-
-    persistAuth(newToken, newUser)
-    setToken(newToken)
-    setUser(newUser)
-    notifyAuthChanged()
-
     return data
   }, [])
 

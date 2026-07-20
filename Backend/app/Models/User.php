@@ -39,4 +39,9 @@ class User extends Authenticatable
             'known_devices' => 'array',
         ];
     }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
 }
