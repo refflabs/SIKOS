@@ -58,7 +58,7 @@ export function MainLayout({ children }) {
         className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pt-4 pointer-events-none"
       >
         <nav
-          className="pointer-events-auto w-full max-w-6xl flex items-center justify-between gap-4 px-5 py-3 rounded-2xl transition-all duration-300 border"
+          className="pointer-events-auto w-full max-w-6xl flex items-center justify-between gap-4 px-5 py-3 rounded-2xl transition-all duration-300 border overflow-hidden"
           style={{
             background: 'var(--card)',
             borderColor: 'var(--border)',
@@ -160,7 +160,7 @@ export function MainLayout({ children }) {
                 <button
                   onClick={logout}
                   title="Keluar"
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 xl:px-3.5 xl:py-2 rounded-xl text-[10px] xl:text-xs font-bold tracking-wider uppercase transition-all duration-300 cursor-pointer border"
+                  className="flex items-center justify-center gap-1.5 h-9 w-9 xl:w-auto xl:px-3 rounded-xl text-[10px] xl:text-xs font-bold tracking-wider uppercase transition-all duration-300 cursor-pointer border shrink-0"
                   style={{
                     color: 'var(--destructive)',
                     background: 'transparent',
@@ -177,7 +177,7 @@ export function MainLayout({ children }) {
                     e.currentTarget.style.borderColor = 'rgba(192,57,43,0.3)';
                   }}
                 >
-                  <LogOut className="h-3.5 w-3.5" />
+                  <LogOut className="h-3.5 w-3.5 shrink-0" />
                   <span className="hidden xl:inline">Keluar</span>
                 </button>
               </div>
