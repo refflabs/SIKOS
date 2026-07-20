@@ -58,7 +58,7 @@ export function MainLayout({ children }) {
         className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pt-4 pointer-events-none"
       >
         <nav
-          className="pointer-events-auto w-full max-w-5xl flex items-center justify-between gap-4 px-5 py-3 rounded-2xl transition-all duration-300 border"
+          className="pointer-events-auto w-full max-w-6xl flex items-center justify-between gap-4 px-5 py-3 rounded-2xl transition-all duration-300 border"
           style={{
             background: 'var(--card)',
             borderColor: 'var(--border)',
