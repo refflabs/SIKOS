@@ -87,7 +87,8 @@ export function BookingPage({ search = '' }) {
 
       toast.success('Booking berhasil! Mengalihkan ke halaman Pembayaran...')
       setTimeout(() => {
-        window.location.href = '/?tab=payments'
+        window.history.pushState({}, '', '/?tab=payments')
+        window.dispatchEvent(new PopStateEvent('popstate'))
       }, 1000)
     } catch (err) {
       setMessage({
