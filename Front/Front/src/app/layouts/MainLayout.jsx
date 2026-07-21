@@ -152,10 +152,10 @@ export function MainLayout({ children }) {
                       color: 'var(--primary-foreground)',
                     }}
                   >
-                    {user.name?.[0]?.toUpperCase() || 'U'}
+                    {(user.name || 'User')[0]?.toUpperCase() || 'U'}
                   </span>
-                  <span className="hidden xl:block text-xs font-bold tracking-wide truncate max-w-[80px]" title={user.name}>
-                    {user.name.split(' ')[0]}
+                  <span className="hidden xl:block text-xs font-bold tracking-wide truncate max-w-[80px]" title={user.name || 'User'}>
+                    {(user.name || 'User').split(' ')[0]}
                   </span>
                 </div>
                 <button

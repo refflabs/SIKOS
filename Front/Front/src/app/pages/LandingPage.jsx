@@ -72,7 +72,7 @@ export function LandingPage({ search = '' }) {
       <div className="container-app py-8 md:py-12 max-w-5xl">
         <div className="mb-8 pb-4" style={{ borderBottom: '1px solid var(--border)' }}>
           <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--foreground)' }}>{tabTitle}</h1>
-          <p className="text-xs mt-1" style={{ color: 'var(--muted-foreground)' }}>Halaman khusus panel akun {user.name}.</p>
+          <p className="text-xs mt-1" style={{ color: 'var(--muted-foreground)' }}>Halaman khusus panel akun {user.name || 'Pengguna'}.</p>
         </div>
         {renderTabContent()}
       </div>
