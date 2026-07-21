@@ -70,7 +70,9 @@ export function LoginPage() {
       setError(
         err.response?.data?.message ||
         err.response?.data?.errors?.email?.[0] ||
-        'Email atau password salah. Coba lagi.'
+        (err.response?.status 
+          ? `Terjadi kesalahan pada server (Status: ${err.response.status}). Silakan coba beberapa saat lagi.` 
+          : 'Gagal terhubung ke server. Periksa koneksi internet Anda.')
       )
     } finally {
       setLoading(false)

@@ -354,32 +354,44 @@ class BookingController extends Controller
      */
     public static function autoReleaseExpiredBookings()
     {
-        // Throttle check to once every 10 minutes to prevent slow page loads from duplicate concurrent runs
-        $cacheKey = 'sikos_last_auto_release';
         try {
-            $lastChecked = cache($cacheKey);
-            if ($lastChecked && now()->diffInMinutes($lastChecked) < 10) {
-                return;
+            // Throttle check to once every 10 minutes to prevent slow page loads from duplicate concurrent runs
+            $cacheKey = 'sikos_last_auto_release';
+            try {
+                $lastChecked = cache($cacheKey);
+                if ($lastChecked && now()->diffInMinutes($lastChecked) < 10) {
+                    return;
+                }
+                cache([$cacheKey => now()], now()->addMinutes(15));
+            } catch (\Throwable $e) {
+                // Fallback silently if cache is unavailable
             }
-            cache([$cacheKey => now()], now()->addMinutes(15));
+
+            $expiredBookings = Booking::where('status', 'accepted')
+                ->where('check_out', '<=', now()->subDays(3)->toDateString())
+                ->get();
+
+            foreach ($expiredBookings as $booking) {
+                try {
+                    $booking->update(['status' => 'ended']);
+                    
+                    $room = $booking->room;
+                    if ($room) {
+                        $controller = new self();
+                        $controller->syncRoomAvailability($room);
+                    }
+                    
+                    try {
+                        app(RealtimeService::class)->bookingStatusChanged($booking->fresh(['user', 'room']));
+                    } catch (\Throwable $re) {
+                        \Illuminate\Support\Facades\Log::warning('Realtime failed in autoRelease: ' . $re->getMessage());
+                    }
+                } catch (\Throwable $be) {
+                    \Illuminate\Support\Facades\Log::warning('Failed to process single expired booking: ' . $be->getMessage());
+                }
+            }
         } catch (\Throwable $e) {
-            // Fallback silently if cache is unavailable
-        }
-
-        $expiredBookings = Booking::where('status', 'accepted')
-            ->where('check_out', '<=', now()->subDays(3)->toDateString())
-            ->get();
-
-        foreach ($expiredBookings as $booking) {
-            $booking->update(['status' => 'ended']);
-            
-            $room = $booking->room;
-            if ($room) {
-                $controller = new self();
-                $controller->syncRoomAvailability($room);
-            }
-            
-            app(RealtimeService::class)->bookingStatusChanged($booking->fresh(['user', 'room']));
+            \Illuminate\Support\Facades\Log::error('autoReleaseExpiredBookings global failure: ' . $e->getMessage());
         }
     }
 
