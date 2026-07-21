@@ -397,36 +397,49 @@ class BookingController extends Controller
         $base64Image = $request->image;
         $url = null;
 
-        if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
-            $base64Image = substr($base64Image, strpos($base64Image, ',') + 1);
-            $type = strtolower($type[1]); // png, jpg, jpeg, gif, webp
+        if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $typeMatch)) {
+            $type = strtolower($typeMatch[1]); // png, jpg, jpeg, gif, webp
 
             if (!in_array($type, ['jpg', 'jpeg', 'gif', 'png', 'webp'])) {
                 return response()->json(['message' => 'Format gambar tidak valid. Hanya menerima jpg, jpeg, png, gif, webp'], 422);
             }
 
-            $base64Image = str_replace(' ', '+', $base64Image);
-            $decodedData = base64_decode($base64Image);
+            $rawBase64 = substr($base64Image, strpos($base64Image, ',') + 1);
+            $rawBase64 = str_replace(' ', '+', $rawBase64);
+            $decodedData = base64_decode($rawBase64);
 
             if ($decodedData === false) {
                 return response()->json(['message' => 'Gagal membaca gambar'], 422);
             }
 
-            // Batasi ukuran file maksimal 5MB
-            if (strlen($decodedData) > 5 * 1024 * 1024) {
-                return response()->json(['message' => 'Ukuran file maksimal adalah 5MB'], 422);
+            // Batasi ukuran file dekode maksimal 10MB
+            if (strlen($decodedData) > 10 * 1024 * 1024) {
+                return response()->json(['message' => 'Ukuran file maksimal adalah 10MB'], 422);
             }
 
             $filename = 'receipt_' . time() . '_' . uniqid() . '.' . $type;
             
-            // Pastikan folder uploads ada
-            if (!file_exists(public_path('uploads'))) {
-                mkdir(public_path('uploads'), 0755, true);
+            // Coba simpan ke folder uploads jika filesystem diizinkan (writable)
+            try {
+                $uploadDir = public_path('uploads');
+                if (!file_exists($uploadDir)) {
+                    @mkdir($uploadDir, 0755, true);
+                }
+                
+                if (is_dir($uploadDir) && is_writable($uploadDir)) {
+                    $filePath = $uploadDir . '/' . $filename;
+                    if (@file_put_contents($filePath, $decodedData) !== false) {
+                        $url = $request->getSchemeAndHttpHost() . '/uploads/' . $filename;
+                    }
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning('Local file save failed, using base64 fallback: ' . $e->getMessage());
             }
 
-            file_put_contents(public_path('uploads/' . $filename), $decodedData);
-
-            $url = $request->getSchemeAndHttpHost() . '/uploads/' . $filename;
+            // Jika gagal menyimpan ke file lokal (misal Vercel serverless read-only), gunakan string Base64 langsung
+            if (!$url) {
+                $url = $request->image;
+            }
         } else {
             // Jika dikirim sebagai URL biasa
             $url = $base64Image;
@@ -436,8 +449,12 @@ class BookingController extends Controller
             'payment_receipt' => $url
         ]);
 
-        // Broadcast real-time update
-        app(RealtimeService::class)->bookingStatusChanged($booking->fresh(['user', 'room']));
+        // Broadcast real-time update secara aman
+        try {
+            app(RealtimeService::class)->bookingStatusChanged($booking->fresh(['user', 'room']));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Realtime broadcast failed on receipt upload: ' . $e->getMessage());
+        }
 
         return response()->json([
             'message' => 'Bukti pembayaran berhasil diunggah',

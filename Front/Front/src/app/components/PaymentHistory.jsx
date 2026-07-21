@@ -172,6 +172,37 @@ function PaymentRow({ booking: b, refetch }) {
     statusStyle = { color: '#d97706', bg: 'rgba(217,119,6,0.1)', border: 'rgba(217,119,6,0.25)', icon: <Clock className="h-3 w-3 animate-pulse" /> }
   }
 
+  const compressImage = (file, maxWidth = 1200, quality = 0.7) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = (event) => {
+        const img = new Image()
+        img.src = event.target.result
+        img.onload = () => {
+          let width = img.width
+          let height = img.height
+
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width)
+            width = maxWidth
+          }
+
+          const canvas = document.createElement('canvas')
+          canvas.width = width
+          canvas.height = height
+
+          const ctx = canvas.getContext('2d')
+          ctx.drawImage(img, 0, 0, width, height)
+
+          resolve(canvas.toDataURL('image/jpeg', quality))
+        }
+        img.onerror = (err) => reject(err)
+      }
+      reader.onerror = (err) => reject(err)
+    })
+  }
+
   const handleFileChange = async (e) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -181,29 +212,22 @@ function PaymentRow({ booking: b, refetch }) {
       toast.error('File harus berupa gambar (JPG, PNG, dll.)')
       return
     }
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Ukuran file maksimal 5MB')
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Ukuran file maksimal 10MB')
       return
     }
 
     setIsUploading(true)
 
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = async () => {
-      try {
-        const base64Image = reader.result
-        await uploadPaymentReceipt(b.id, base64Image)
-        toast.success('Bukti pembayaran berhasil diunggah!')
-        refetch()
-      } catch (err) {
-        toast.error(err.message || 'Terjadi kesalahan saat mengunggah bukti bayar')
-      } finally {
-        setIsUploading(false)
-      }
-    }
-    reader.onerror = () => {
-      toast.error('Gagal membaca file')
+    try {
+      const base64Image = await compressImage(file)
+      await uploadPaymentReceipt(b.id, base64Image)
+      toast.success('Bukti pembayaran berhasil diunggah!')
+      refetch()
+    } catch (err) {
+      const errMsg = err.response?.data?.message || err.message || 'Terjadi kesalahan saat mengunggah bukti bayar'
+      toast.error(errMsg)
+    } finally {
       setIsUploading(false)
     }
   }
