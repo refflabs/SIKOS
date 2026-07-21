@@ -69,7 +69,7 @@ EOT;
             ])
             ->timeout(12)
             ->post('https://router.huggingface.co/v1/chat/completions', [
-                'model' => 'Qwen/Qwen2.5-7B-Instruct',
+                'model' => 'meta-llama/Llama-3.3-70B-Instruct',
                 'messages' => $formattedMessages,
                 'temperature' => 0.6,
                 'max_tokens' => 450,
